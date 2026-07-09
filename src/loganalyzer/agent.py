@@ -1,8 +1,8 @@
 """
-StateGraph for the LogAnalyzer AI agent.
+StateGraph para o agente LogAnalyzer AI.
 
-This module defines the main agent graph structure using LangGraph,
-including nodes, edges, and execution flow for log analysis automation.
+Define a estrutura principal do grafo de agente usando LangGraph,
+incluindo nós, arestas e fluxo de execução para automação de análise de logs.
 """
 
 from langgraph.graph import StateGraph, END
@@ -21,43 +21,43 @@ from src.loganalyzer.nodes import (
 
 def create_agent_graph() -> StateGraph:
     """
-    Create and return the configured StateGraph for LogAnalyzer AI.
+    Cria e retorna o StateGraph configurado para LogAnalyzer AI.
 
-    Graph Structure:
+    Estrutura do grafo:
     ```
-    START
+    INÍCIO
       ↓
-    [validate_input] ──(invalid)──→ [error_handling] → END
-      ↓ (valid)
-    [read_file] ──(error)──→ [error_handling] → END
-      ↓ (success)
-    [parse_events] ──(error)──→ [error_handling] → END
-      ↓ (success)
-    [analyze_patterns] ──(error)──→ [error_handling] → END
-      ↓ (success)
-    [interpret_with_llm] ──(error)──→ [error_handling] → END
-      ↓ (success)
+    [validate_input] ──(inválido)──→ [error_handling] → FIM
+      ↓ (válido)
+    [read_file] ──(erro)──→ [error_handling] → FIM
+      ↓ (sucesso)
+    [parse_events] ──(erro)──→ [error_handling] → FIM
+      ↓ (sucesso)
+    [analyze_patterns] ──(erro)──→ [error_handling] → FIM
+      ↓ (sucesso)
+    [interpret_with_llm] ──(erro)──→ [error_handling] → FIM
+      ↓ (sucesso)
     [generate_report]
       ↓
-    END
+    FIM
     ```
 
-    Returns:
-        StateGraph: Configured graph ready for execution
+    Retorno:
+        StateGraph: Grafo configurado pronto para execução
 
-    Note:
-        Conditional edges (if-else transitions) will be added in Issue #3
-        when node logic is fully implemented.
+    Nota:
+        Arestas condicionais (transições if-else) serão adicionadas em Issue #3
+        quando a lógica dos nós estiver completamente implementada.
     """
 
-    # Initialize the graph with LogAnalysisState
+    # Inicializa o grafo com LogAnalysisState
     graph = StateGraph(LogAnalysisState)
 
     # ============================================
-    # 1. ADD NODES TO GRAPH
+    # 1. ADICIONA NÓS AO GRAFO
     # ============================================
 
-    # Main processing pipeline nodes
+    # Nós principais do pipeline de processamento
     graph.add_node("validate_input", validate_input_node)
     graph.add_node("read_file", read_file_node)
     graph.add_node("parse_events", parse_events_node)
@@ -65,19 +65,19 @@ def create_agent_graph() -> StateGraph:
     graph.add_node("interpret_with_llm", interpret_with_llm_node)
     graph.add_node("generate_report", generate_report_node)
 
-    # Error handling node
+    # Nó de tratamento de erro
     graph.add_node("error_handling", error_handling_node)
 
     # ============================================
-    # 2. SET ENTRY POINT
+    # 2. DEFINE PONTO DE ENTRADA
     # ============================================
     graph.set_entry_point("validate_input")
 
     # ============================================
-    # 3. ADD EDGES (Connections between nodes)
+    # 3. ADICIONA ARESTAS (Conexões entre nós)
     # ============================================
 
-    # Happy path: Linear progression through pipeline
+    # Caminho feliz: Progressão linear pelo pipeline
     graph.add_edge("validate_input", "read_file")
     graph.add_edge("read_file", "parse_events")
     graph.add_edge("parse_events", "analyze_patterns")
@@ -85,13 +85,13 @@ def create_agent_graph() -> StateGraph:
     graph.add_edge("interpret_with_llm", "generate_report")
     graph.add_edge("generate_report", END)
 
-    # Error paths: Any step can transition to error_handling
-    # Note: Conditional edges based on state.is_valid or error flags
-    # will be implemented in Issue #3 when node logic is ready
+    # Caminhos de erro: Qualquer etapa pode transicionar para error_handling
+    # Nota: Arestas condicionais baseadas em state.is_valid ou flags de erro
+    # serão implementadas em Issue #3 quando lógica dos nós estiver pronta
     graph.add_edge("error_handling", END)
 
     # ============================================
-    # 4. COMPILE GRAPH
+    # 4. COMPILA O GRAFO
     # ============================================
 
     agent = graph.compile()
@@ -100,13 +100,13 @@ def create_agent_graph() -> StateGraph:
 
 def get_initial_state(file_path: str) -> LogAnalysisState:
     """
-    Create initial state for the agent execution.
-    
-    Args:
-        file_path: Path to the log file to analyze
-        
-    Returns:
-        Initial LogAnalysisState ready for agent execution
+    Cria estado inicial para execução do agente.
+
+    Argumentos:
+        file_path: Caminho do arquivo de log a analisar
+
+    Retorno:
+        LogAnalysisState inicial pronto para execução do agente
     """
     return LogAnalysisState(
         file_path=file_path,
@@ -118,7 +118,7 @@ def get_initial_state(file_path: str) -> LogAnalysisState:
         analysis_result={},
         report="",
         metadata={
-            "start_time": None,  # Will be set at runtime
+            "start_time": None,  # Será definido em runtime
             "version": "0.0.1",
             "agent_name": "LogAnalyzer AI",
         },

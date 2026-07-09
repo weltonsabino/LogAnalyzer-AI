@@ -1,12 +1,12 @@
 """
-Node functions for the LogAnalyzer AI StateGraph.
+Funções de nós para o StateGraph do LogAnalyzer AI.
 
-Each node represents a step in the agent's execution pipeline,
-responsible for a specific part of the log analysis workflow.
+Cada nó representa uma etapa no pipeline de execução do agente,
+responsável por uma parte específica do workflow de análise de logs.
 
-Nodes will be implemented in subsequent issues:
-- Issue #3: Implement actual node logic
-- Issue #4: Integrate tools and LLM calls
+Implementação dos nós será feita em issues subsequentes:
+- Issue #3: Implementar lógica real dos nós
+- Issue #4: Integrar ferramentas e chamadas ao LLM
 """
 
 from src.loganalyzer.models import LogAnalysisState
@@ -14,161 +14,161 @@ from src.loganalyzer.models import LogAnalysisState
 
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Validate the log file path and prepare for reading.
-    
-    This node:
-    - Checks if file_path is provided
-    - Validates file exists and is readable (basic checks)
-    - Sets is_valid flag
-    - Populates metadata with validation timestamp
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with validation results
-        
-    Implementation: Issue #3
+    Valida o caminho do arquivo de log e prepara para leitura.
+
+    Este nó:
+    - Verifica se file_path foi fornecido
+    - Valida se arquivo existe e é legível (verificações básicas)
+    - Define flag is_valid
+    - Popula metadata com timestamp de validação
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com resultados de validação
+
+    Implementação: Issue #3
     """
-    # TODO: Implement validation logic
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar lógica de validação
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def read_file_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Read the log file content using the file_reader tool.
-    
-    This node:
-    - Uses the file_reader tool (Issue #4)
-    - Populates file_content in state
-    - Handles read errors gracefully
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with file_content populated
-        
-    Tool Integration: Issue #4
+    Lê o conteúdo do arquivo de log usando a ferramenta file_reader.
+
+    Este nó:
+    - Usa a ferramenta file_reader (Issue #4)
+    - Popula file_content no estado
+    - Trata erros de leitura graciosamente
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com file_content preenchido
+
+    Integração de ferramenta: Issue #4
     """
-    # TODO: Integrate file_reader tool
-    # For now, return state as-is (placeholder)
+    # TODO: Integrar ferramenta file_reader
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Parse log file content and identify individual events.
-    
-    This node:
-    - Calls the parser tool (Issue #4)
-    - Extracts events from raw log content
-    - Populates parsed_events list
-    - Handles various log formats (JSON, plain text, custom)
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with parsed_events populated
-        
-    Implementation & Tool: Issue #3 & #4
+    Faz parsing do conteúdo do log e identifica eventos individuais.
+
+    Este nó:
+    - Chama a ferramenta parser (Issue #4)
+    - Extrai eventos do conteúdo bruto do log
+    - Popula lista parsed_events
+    - Trata vários formatos de log (JSON, texto plano, customizado)
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com parsed_events preenchido
+
+    Implementação e ferramenta: Issue #3 & #4
     """
-    # TODO: Implement event parsing logic
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar lógica de parsing de eventos
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Analyze parsed events to identify patterns, errors, warnings.
-    
-    This node:
-    - Calls the detector tool (Issue #4)
-    - Identifies errors, warnings, critical events
-    - Groups similar events
-    - Uses regex and heuristics for pattern detection
-    - Populates errors_found, warnings_found, critical_events lists
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with analysis results
-        
-    Implementation & Tool: Issue #3 & #4
+    Analisa eventos analisados para identificar padrões, erros, avisos.
+
+    Este nó:
+    - Chama a ferramenta detector (Issue #4)
+    - Identifica erros, avisos, eventos críticos
+    - Agrupa eventos similares
+    - Usa regex e heurísticas para detecção de padrões
+    - Popula listas errors_found, warnings_found, critical_events
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com resultados de análise
+
+    Implementação e ferramenta: Issue #3 & #4
     """
-    # TODO: Implement pattern detection logic
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar lógica de detecção de padrões
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Use LLM to interpret the analysis and generate insights.
-    
-    This node:
-    - Calls LangChain/LLM with analysis context
-    - Generates structured analysis_result
-    - Adds recommendations and insights
-    - May call LLM multiple times for different aspects
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with analysis_result populated
-        
-    LLM Integration: Issue #4
+    Usa LLM para interpretar a análise e gerar insights.
+
+    Este nó:
+    - Chama LangChain/LLM com contexto de análise
+    - Gera analysis_result estruturado
+    - Adiciona recomendações e insights
+    - Pode chamar LLM múltiplas vezes para diferentes aspectos
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com analysis_result preenchido
+
+    Integração com LLM: Issue #4
     """
-    # TODO: Implement LLM integration
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar integração com LLM
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Generate the final markdown report from analysis results.
-    
-    This node:
-    - Calls the formatter tool (Issue #4)
-    - Structures output in markdown format
-    - Includes summary, critical events, recommendations, metrics
-    - Populates the report field
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with report populated
-        
-    Implementation & Tool: Issue #3 & #4
+    Gera o relatório markdown final a partir dos resultados de análise.
+
+    Este nó:
+    - Chama a ferramenta formatador (Issue #4)
+    - Estrutura saída em formato markdown
+    - Inclui resumo, eventos críticos, recomendações, métricas
+    - Popula o campo report
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com report preenchido
+
+    Implementação e ferramenta: Issue #3 & #4
     """
-    # TODO: Implement report formatting logic
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar lógica de formatação de relatório
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
 
 
 def error_handling_node(state: LogAnalysisState) -> LogAnalysisState:
     """
-    Handle errors encountered during execution.
-    
-    This node:
-    - Is called on error transitions
-    - Logs error details
-    - Sets is_valid to False
-    - Populates error_message
-    - Can also be called as a fallback node
-    
-    Args:
-        state: Current execution state
-        
-    Returns:
-        Updated state with error details
-        
-    Implementation: Issue #3
+    Trata erros encontrados durante a execução.
+
+    Este nó:
+    - É chamado em transições de erro
+    - Registra detalhes do erro
+    - Define is_valid como False
+    - Popula error_message
+    - Pode também ser chamado como nó fallback
+
+    Argumentos:
+        state: Estado atual de execução
+
+    Retorno:
+        Estado atualizado com detalhes do erro
+
+    Implementação: Issue #3
     """
-    # TODO: Implement error handling
-    # For now, return state as-is (placeholder)
+    # TODO: Implementar tratamento de erros
+    # Por enquanto, retorna estado conforme está (placeholder)
     return state
