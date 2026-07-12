@@ -9,7 +9,6 @@ Implementação:
 - Issue #4: Integrar ferramentas LLM e formatação
 """
 
-import os
 from datetime import datetime
 
 from src.loganalyzer.models import LogAnalysisState
@@ -40,7 +39,7 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
 
     # Atualiza estado com resultado de validação
     state["is_valid"] = is_valid
-    
+
     if not is_valid:
         state["error_message"] = message
     else:
@@ -212,8 +211,34 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
     Integração com LLM: Issue #4
     """
-    # TODO: Implementar integração com LLM
-    # Por enquanto, retorna estado conforme está (placeholder)
+    # Verifica se análise anterior passou
+    if not state.get("is_valid", False):
+        state["error_message"] = "Pulando interpretação LLM - análise anterior falhou"
+        return state
+
+    try:
+        # Importa função de análise com LLM
+        from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
+
+        # Chama LLM com contexto de análise
+        analysis_result = analyze_with_llm(
+            errors_found=state.get("errors_found", []),
+            warnings_found=state.get("warnings_found", []),
+            critical_events=state.get("critical_events", []),
+            parsed_events=state.get("parsed_events", []),
+        )
+
+        # Popula resultado no estado
+        state["analysis_result"] = analysis_result
+
+        # Atualiza metadados
+        state["metadata"]["llm_analysis_timestamp"] = datetime.now().isoformat()
+        state["metadata"]["llm_analysis_status"] = "concluída com sucesso"
+
+    except Exception as e:
+        state["is_valid"] = False
+        state["error_message"] = f"Erro ao interpretar com LLM: {str(e)}"
+
     return state
 
 
@@ -235,8 +260,30 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
 
     Implementação e ferramenta: Issue #3 & #4
     """
-    # TODO: Implementar lógica de formatação de relatório
-    # Por enquanto, retorna estado conforme está (placeholder)
+    try:
+        # Importa ferramenta de formatação
+        from src.loganalyzer.tools.formatter import format_report
+
+        # Formata relatório usando ferramenta
+        report = format_report(
+            analysis_result=state.get("analysis_result", {}),
+            errors_found=state.get("errors_found", []),
+            warnings_found=state.get("warnings_found", []),
+            critical_events=state.get("critical_events", []),
+            metadata=state.get("metadata", {}),
+        )
+
+        # Popula relatório no estado
+        state["report"] = report
+
+        # Atualiza metadados
+        state["metadata"]["report_generation_timestamp"] = datetime.now().isoformat()
+        state["metadata"]["report_status"] = "gerado com sucesso"
+
+    except Exception as e:
+        state["is_valid"] = False
+        state["error_message"] = f"Erro ao gerar relatório: {str(e)}"
+
     return state
 
 
