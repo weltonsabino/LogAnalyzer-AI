@@ -137,7 +137,7 @@ Tratamento de erro: error_handling → END (todas as etapas podem transicionar)
 
 ### Subtarefas
 
-- [ ] Implementar validate_input_node
+- [x] Implementar validate_input_node
   - Verificar se file_path existe
   - Validar permissões de leitura
   - Verificar se arquivo é legível
