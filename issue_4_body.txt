@@ -1,0 +1,48 @@
+[STORY] Implementar análise e formatação de relatório - CONCLUÍDA
+
+## Objetivo
+
+Completar análise de logs e gerar relatório estruturado com LLM.
+
+## Tarefas Concluídas
+
+- [x] Criar formatter.py - Formatacao markdown estruturada (357 linhas)
+- [x] Criar llm_interpreter.py - Integracao OpenAI GPT-4-turbo + fallback heuristico (270 linhas)
+- [x] Implementar interpret_with_llm_node - Analise inteligente com LLM
+- [x] Implementar generate_report_node - Geracao de relatorio final
+- [x] Integrar com LangChain e OpenAI
+- [x] Teste manual: arquivo de log > analise > relatorio
+- [x] Validar saida estruturada
+
+## Recursos Implementados
+
+Formatter (357 linhas)
+- Relatorio markdown com resumo executivo
+- Metricas: total eventos, erros, avisos, criticos
+- Secoes: eventos criticos, erros, avisos
+- Insights e recomendacoes do LLM
+- Metadados de execucao completos
+
+LLM Interpreter (270 linhas)
+- Integracao com OpenAI GPT-4-turbo
+- Fallback automatico com analise heuristica
+- Parsing robusto de resposta JSON
+- Contexto estruturado para LLM
+- Gera: insights, recomendacoes, causas raiz
+
+Nos Implementados
+- interpret_with_llm_node: Analise inteligente
+- generate_report_node: Formatacao final
+
+## Aceitacao
+
+- Relatorio contem: total eventos, erros, avisos, principais problemas, recomendacoes
+- Formato claro em markdown
+- Sem hardcoding - analise real do LLM
+- Fallback quando LLM nao disponivel
+- 13 testes especificos - PASSANDO
+- Total: 45/45 testes do projeto - PASSANDO
+
+## Status
+
+CONCLUIDA - Implementacao, testes e validacao completos
