@@ -174,7 +174,7 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 
 ---
 
-## Task #6: Documentação Completa
+## Task #13: Documentação Completa
 
 **Status:** Ready  
 **Descrição:** Finalizar documentação do projeto
@@ -201,7 +201,7 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 
 ---
 
-## Task #7: Testes Completos
+## Task #14: Testes Completos
 
 **Status:** Ready  
 **Descrição:** Completar cobertura de testes
@@ -224,7 +224,7 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 
 ---
 
-## Task #8: Finalização e Release
+## Task #15: Finalização e Release
 
 **Status:** Ready  
 **Descrição:** Validação final e preparação para entrega
@@ -266,9 +266,9 @@ Task 2 (Architecture) ← Requisito para todas as próximas
   ├→ Task 3 (Node Logic) ✅
   │   ├→ Task 4 (Tools & LLM) ✅
   │   │   ├→ Task 5 (CLI) ✅
-  │   │   ├→ Task 6 (Docs) → Ready
-  │   │   └→ Task 7 (Tests) → 45/45 testes ✅
-  │   └→ Task 8 (Release) → Ready
+  │   │   ├→ Task 13 (Docs) → Ready
+  │   │   └→ Task 14 (Tests) → 45/45 testes ✅
+  │   └→ Task 15 (Release) → Ready
 ```
 
 ---
@@ -276,9 +276,9 @@ Task 2 (Architecture) ← Requisito para todas as próximas
 ## Próximos Passos
 
 1. **Completo:** Tasks #3-5 (Node Logic, Tools, CLI) ✅
-2. **Próximo:** Task #6 - Documentação Completa
-3. **Depois:** Task #7 - Testes Avançados + CI/CD
-4. **Final:** Task #8 - Release para Entrega
+2. **Próximo:** Task #13 - Documentação Completa
+3. **Depois:** Task #14 - Testes Avançados + CI/CD
+4. **Final:** Task #15 - Release para Entrega
 
 ---
 
