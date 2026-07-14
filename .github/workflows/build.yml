@@ -1,0 +1,79 @@
+# Workflow de Build - Valida que o projeto compila/instala corretamente
+
+name: Build
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    
+    steps:
+    # Checkout do código
+    - uses: actions/checkout@v3
+    
+    # Setup Python
+    - name: Configurar Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    # Cache de dependências
+    - name: Cache pip
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    # Instalar dependências
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    # Validar importações
+    - name: Validar importações do projeto
+      run: |
+        python -c "import src.loganalyzer; print('✅ Importações válidas')"
+    
+    # Verificar estrutura
+    - name: Verificar estrutura do projeto
+      run: |
+        python -c "
+        import os
+        paths = [
+          'src/loganalyzer/main.py',
+          'src/loganalyzer/agent.py',
+          'src/loganalyzer/models.py',
+          'src/loganalyzer/nodes.py',
+          'src/loganalyzer/tools/',
+          'src/loganalyzer/analysis/',
+          'tests/',
+        ]
+        for p in paths:
+          if os.path.exists(p):
+            print(f'✅ {p}')
+          else:
+            print(f'❌ {p}')
+            exit(1)
+        "
+    
+    # Teste de execução da CLI
+    - name: Testar CLI help
+      run: |
+        python -m src.loganalyzer.main --help
+      continue-on-error: true
+    
+    # Status final
+    - name: Build status
+      run: echo "✅ Build completado com sucesso"
