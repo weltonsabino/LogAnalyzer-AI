@@ -4,6 +4,7 @@ Ferramenta de detecção de padrões para o LogAnalyzer AI.
 Fornece função para analisar eventos de log e identificar padrões, erros e críticos.
 """
 
+import re
 from typing import List, Dict, Any
 from collections import defaultdict
 
@@ -74,8 +75,6 @@ def _get_message_pattern(message: str) -> str:
     Retorno:
         Padrão simplificado da mensagem
     """
-    import re
-
     # Remove números (IDs, portas, etc)
     pattern = re.sub(r'\d+', 'NUM', message)
 
@@ -103,7 +102,7 @@ def _detect_critical_events(
 
     Argumentos:
         errors: Lista de erros
-        warnings: Lista de avisos
+        warnings: Lista de avisos (não usado atualmente)
         errors_by_message: Erros agrupados por padrão de mensagem
 
     Retorno:

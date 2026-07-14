@@ -31,10 +31,10 @@ def read_log_file(file_path: str) -> str:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
         return content
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
-    except PermissionError:
-        raise PermissionError(f"Sem permissão de leitura: {file_path}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Arquivo não encontrado: {file_path}") from e
+    except PermissionError as e:
+        raise PermissionError(f"Sem permissão de leitura: {file_path}") from e
     except UnicodeDecodeError as e:
         raise UnicodeDecodeError(
             e.encoding,
@@ -42,4 +42,4 @@ def read_log_file(file_path: str) -> str:
             e.start,
             e.end,
             f"Erro de encoding ao ler {file_path}: {e.reason}"
-        )
+        ) from e

@@ -45,7 +45,10 @@ def format_report(
     # ============================================
     # Secao: Resumo Executivo
     # ============================================
-    report_lines.extend(_format_summary_section(metadata, errors_found, warnings_found, critical_events))
+    summary = _format_summary_section(
+        metadata, errors_found, warnings_found, critical_events
+    )
+    report_lines.extend(summary)
 
     # ============================================
     # Secao: Eventos Criticos
@@ -146,7 +149,9 @@ def _format_summary_section(
     return lines
 
 
-def _format_critical_section(critical_events: List[Dict[str, Any]]) -> List[str]:
+def _format_critical_section(
+    critical_events: List[Dict[str, Any]]
+) -> List[str]:
     """
     Formata secao de eventos criticos.
 
@@ -160,9 +165,9 @@ def _format_critical_section(critical_events: List[Dict[str, Any]]) -> List[str]
         "",
     ]
 
-    for idx, event in enumerate(critical_events[:10], 1):  # Limita a 10 para não poluir
+    for idx, event in enumerate(critical_events[:10], 1):
         line_num = event.get("line_number", "?")
-        message = event.get("message", "")[:100]  # Limita mensagem a 100 caracteres
+        message = event.get("message", "")[:100]
         reason = event.get("critical_reason", "detectado como crítico")
 
         lines.append(f"{idx}. **Linha {line_num}:** {message}")
@@ -170,7 +175,8 @@ def _format_critical_section(critical_events: List[Dict[str, Any]]) -> List[str]
         lines.append("")
 
     if len(critical_events) > 10:
-        lines.append(f"... e mais {len(critical_events) - 10} evento(s) crítico(s)")
+        remaining = len(critical_events) - 10
+        lines.append(f"... e mais {remaining} evento(s) crítico(s)")
         lines.append("")
 
     return lines
@@ -193,26 +199,34 @@ def _format_errors_section(errors_found: List[Dict[str, Any]]) -> List[str]:
     # Agrupa erros por padrão de mensagem para detecção de padrões
     error_patterns = {}
     for error in errors_found:
-        msg = error.get("message", "")[:80]  # Primeiros 80 caracteres
+        msg = error.get("message", "")[:80]
         if msg not in error_patterns:
             error_patterns[msg] = []
         error_patterns[msg].append(error)
 
     # Exibe padrões únicos
-    for pattern, events in list(error_patterns.items())[:5]:  # Limita a 5 padrões
+    for pattern, events in list(error_patterns.items())[:5]:
         count = len(events)
         lines.append(f"- **({count}x)** {pattern}")
 
     if len(error_patterns) > 5:
         remaining = len(error_patterns) - 5
-        total_remaining_errors = sum(len(e) for e in list(error_patterns.values())[5:])
-        lines.append(f"- ... e {remaining} padrão(ões) adicional(is) ({total_remaining_errors} erro(s))")
+        remaining_events = sum(
+            len(e) for e in list(error_patterns.values())[5:]
+        )
+        msg = (
+            f"- ... e {remaining} padrão(ões) adicional(is) "
+            f"({remaining_events} erro(s))"
+        )
+        lines.append(msg)
 
     lines.append("")
     return lines
 
 
-def _format_warnings_section(warnings_found: List[Dict[str, Any]]) -> List[str]:
+def _format_warnings_section(
+    warnings_found: List[Dict[str, Any]]
+) -> List[str]:
     """
     Formata secao de avisos encontrados.
 
@@ -241,8 +255,14 @@ def _format_warnings_section(warnings_found: List[Dict[str, Any]]) -> List[str]:
 
     if len(warning_patterns) > 5:
         remaining = len(warning_patterns) - 5
-        total_remaining_warnings = sum(len(e) for e in list(warning_patterns.values())[5:])
-        lines.append(f"- ... e {remaining} padrão(ões) adicional(is) ({total_remaining_warnings} aviso(s))")
+        remaining_warnings = sum(
+            len(e) for e in list(warning_patterns.values())[5:]
+        )
+        msg = (
+            f"- ... e {remaining} padrão(ões) adicional(is) "
+            f"({remaining_warnings} aviso(s))"
+        )
+        lines.append(msg)
 
     lines.append("")
     return lines

@@ -4,7 +4,9 @@ Integração com LLM para interpretação inteligente de análise de logs.
 Fornece funções para chamar LLM e gerar insights baseado em análise.
 """
 
+import json
 import os
+import re
 from typing import Dict, Any, List, Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -80,25 +82,24 @@ def analyze_with_llm(
 
     try:
         # Formata contexto com análise
-        context = _format_analysis_context(errors_found, warnings_found, critical_events, parsed_events)
+        ctx = _format_analysis_context(
+            errors_found, warnings_found, critical_events, parsed_events
+        )
 
         # Cria prompt estruturado
         prompt_template = ChatPromptTemplate.from_template(
-            """Analise os seguintes eventos de log e problemas identificados:
-
-{analysis_context}
-
-Forneça uma análise estruturada em JSON com os seguintes campos:
-- insights: lista de insights principais (máximo 5)
-- recommendations: lista de recomendações de ação (máximo 5)
-- root_causes: lista de causas raiz identificadas (máximo 3)
-- summary: resumo geral da análise em uma frase
-
-Responda APENAS com JSON válido, sem markdown ou explicações adicionais."""
+            "Analise os seguintes eventos de log e problemas identificados:\n\n"
+            "{analysis_context}\n\n"
+            "Forneça uma análise estruturada em JSON com os seguintes campos:\n"
+            "- insights: lista de insights principais (máximo 5)\n"
+            "- recommendations: lista de recomendações de ação (máximo 5)\n"
+            "- root_causes: lista de causas raiz identificadas (máximo 3)\n"
+            "- summary: resumo geral da análise em uma frase\n\n"
+            "Responda APENAS com JSON válido, sem markdown ou explicações."
         )
 
         # Formata e invoca LLM
-        formatted_prompt = prompt_template.format(analysis_context=context)
+        formatted_prompt = prompt_template.format(analysis_context=ctx)
         response = llm.invoke(formatted_prompt)
 
         # Extrai conteúdo da resposta
@@ -111,7 +112,9 @@ Responda APENAS com JSON válido, sem markdown ou explicações adicionais."""
     except Exception as e:
         # Se erro ao chamar LLM, retorna análise padrão
         print(f"Aviso: Erro ao chamar LLM: {str(e)}")
-        return _generate_fallback_analysis(errors_found, warnings_found, critical_events)
+        return _generate_fallback_analysis(
+            errors_found, warnings_found, critical_events
+        )
 
 
 def _format_analysis_context(
@@ -184,18 +187,15 @@ def _parse_llm_response(response_text: str) -> Dict[str, Any]:
     Retorno:
         Dicionário com análise parseada
     """
-    import json
-    import re
-
     # Tenta extrair JSON da resposta
     json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
 
     if not json_match:
         # Se não encontrar JSON, retorna estrutura padrão
         return {
-            "insights": ["Análise com LLM não pôde extrair insights estruturados"],
+            "insights": ["Análise com LLM não extraiu insights"],
             "recommendations": ["Revisar eventos críticos manualmente"],
-            "root_causes": ["Análise automática limitada sem JSON estruturado"],
+            "root_causes": ["Análise automática limitada sem JSON"],
             "summary": "Análise concluída com limitações",
         }
 
@@ -204,7 +204,7 @@ def _parse_llm_response(response_text: str) -> Dict[str, Any]:
         json_str = json_match.group(0)
         analysis = json.loads(json_str)
 
-        # Garante que possui os campos obrigatórios
+        # Garante que possui campos obrigatórios
         analysis.setdefault("insights", [])
         analysis.setdefault("recommendations", [])
         analysis.setdefault("root_causes", [])
@@ -240,14 +240,27 @@ def _generate_fallback_analysis(
 
     # Insights baseado em contadores
     if len(critical_events) > 0:
-        insights.append(f"Detectados {len(critical_events)} evento(s) crítico(s) que requerem atenção imediata")
+        msg = (
+            f"Detectados {len(critical_events)} evento(s) crítico(s) "
+            "que requerem atenção imediata"
+        )
+        insights.append(msg)
 
     if len(errors_found) > 10:
-        insights.append(f"Elevada quantidade de erros ({len(errors_found)}) sugere problema sistêmico")
-        root_causes.append("Múltiplos erros podem indicar falha no componente central")
+        msg = (
+            f"Elevada quantidade de erros ({len(errors_found)}) "
+            "sugere problema sistêmico"
+        )
+        insights.append(msg)
+        msg = "Múltiplos erros podem indicar falha no componente central"
+        root_causes.append(msg)
 
     if len(warnings_found) > 20:
-        insights.append(f"Muitos avisos ({len(warnings_found)}) indicam situações anormais")
+        msg = (
+            f"Muitos avisos ({len(warnings_found)}) "
+            "indicam situações anormais"
+        )
+        insights.append(msg)
 
     # Recomendações padrão
     if len(critical_events) > 0:
@@ -262,9 +275,13 @@ def _generate_fallback_analysis(
     recommendations.append("Implementar alertas para eventos críticos futuros")
 
     return {
-        "insights": insights if insights else ["Análise heurística: sem problemas graves detectados"],
+        "insights": insights if insights else [
+            "Análise heurística: sem problemas graves detectados"
+        ],
         "recommendations": recommendations,
-        "root_causes": root_causes if root_causes else ["Análise heurística ativada (LLM não disponível)"],
+        "root_causes": root_causes if root_causes else [
+            "Análise heurística ativada (LLM não disponível)"
+        ],
         "summary": "Análise com modo fallback (sem LLM)",
     }
 

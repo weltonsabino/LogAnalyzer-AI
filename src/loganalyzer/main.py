@@ -11,12 +11,11 @@ import os
 import traceback
 from pathlib import Path
 from typing import Optional
+from src.loganalyzer.agent import create_agent_graph, get_initial_state
+from src.loganalyzer.models import LogAnalysisState
 
 # Adiciona diretório raiz ao path para imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from src.loganalyzer.agent import create_agent_graph, get_initial_state
-from src.loganalyzer.models import LogAnalysisState
 
 
 def main():
