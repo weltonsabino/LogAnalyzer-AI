@@ -168,11 +168,10 @@ def _normalize_level(level: str) -> str:
     # Mapeamento de variações
     if level in ["ERROR", "ERR", "E", "EXCEPTION", "FAIL", "FAILURE", "CRITICAL", "CRIT"]:
         return "ERROR"
-    elif level in ["WARN", "WARNING", "W"]:
+    if level in ["WARN", "WARNING", "W"]:
         return "WARNING"
-    elif level in ["INFO", "I", "INFORMATION"]:
+    if level in ["INFO", "I", "INFORMATION"]:
         return "INFO"
-    elif level in ["DEBUG", "D", "TRACE", "VERBOSE"]:
+    if level in ["DEBUG", "D", "TRACE", "VERBOSE"]:
         return "DEBUG"
-    else:
-        return "UNKNOWN"
+    return "UNKNOWN"

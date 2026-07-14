@@ -10,12 +10,13 @@ Implementação:
 """
 
 from datetime import datetime
-
 from src.loganalyzer.models import LogAnalysisState
 from src.loganalyzer.tools.validators import validate_file_path, validate_file_content
 from src.loganalyzer.tools.file_reader import read_log_file
 from src.loganalyzer.tools.parser import parse_log_content
 from src.loganalyzer.tools.detector import detect_patterns
+from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
+from src.loganalyzer.tools.formatter import format_report
 
 
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
@@ -217,9 +218,6 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         return state
 
     try:
-        # Importa função de análise com LLM
-        from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
-
         # Chama LLM com contexto de análise
         analysis_result = analyze_with_llm(
             errors_found=state.get("errors_found", []),
@@ -261,9 +259,6 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     Implementação e ferramenta: Issue #3 & #4
     """
     try:
-        # Importa ferramenta de formatação
-        from src.loganalyzer.tools.formatter import format_report
-
         # Formata relatório usando ferramenta
         report = format_report(
             analysis_result=state.get("analysis_result", {}),
