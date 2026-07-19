@@ -112,7 +112,7 @@ class TestLLMIntegration:
             if original_key:
                 os.environ["OPENAI_API_KEY"] = original_key
 
-    @patch.dict(os.environ, {"OPENAI_API_KEY": "test-key-123"})
+    @patch.dict(os.environ, {"OPENAI_API_KEY": "test-key-123", "LLM_PROVIDER": "openai"})
     def test_initialize_llm_returns_chat_openai_with_api_key(self):
         """Testa que initialize_llm retorna ChatOpenAI com API key."""
         # Executa inicialização
