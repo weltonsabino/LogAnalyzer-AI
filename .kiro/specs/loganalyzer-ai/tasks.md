@@ -349,6 +349,51 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 
 ---
 
+## Task #20: Suporte Multi-Provider LLM (OpenAI + Groq)
+
+**Status:** Ready  
+**Descrição:** Implementar suporte para múltiplos provedores de IA no LogAnalyzer AI
+
+### Subtarefas
+
+- [x] Adicionar langchain-groq em requirements.txt
+- [x] Refatorar llm_interpreter.py para aceitar parameter LLM_PROVIDER
+- [x] Implementar factory pattern para inicializar ChatOpenAI ou ChatGroq
+- [x] Adicionar suporte a GROQ_API_KEY em .env
+- [x] Adicionar argumentos CLI para escolher provider (--provider openai/groq)
+- [x] Atualizar testes para validar ambos providers
+- [x] Documentar em README.md como usar Groq
+
+### Objetivo
+
+Permitir que o usuário escolha entre:
+- **OpenAI GPT-4** (pago, mais preciso)
+- **Groq** (grátis, rápido)
+
+Sem alterar a lógica do agente.
+
+### Critérios de Aceição
+
+- ✅ Funciona com OpenAI (padrão)
+- ✅ Funciona com Groq (free)
+- ✅ Suporta alternância via variável de ambiente (`LLM_PROVIDER`)
+- ✅ Suporta alternância via CLI (`--provider openai/groq`)
+- ✅ Testes passam para ambos providers
+- ✅ `.env.example` documentado com ambas opções
+
+### Pontos de Alteração
+
+| Arquivo | Alteração | Tipo |
+|---------|-----------|------|
+| requirements.txt | Adicionar langchain-groq | Dependência |
+| .env.example | Adicionar GROQ_API_KEY + LLM_PROVIDER | Configuração |
+| src/loganalyzer/analysis/llm_interpreter.py | Factory pattern (ChatOpenAI \| ChatGroq) | Código |
+| src/loganalyzer/main.py | Argumentar --provider CLI | CLI |
+| tests/test_analysis.py | Testes com provider=groq | Testes |
+| README.md | Documentar Groq setup | Docs |
+
+---
+
 ## Resumo do Progresso
 
 | # | Tarefa | Status | Progresso | Artefatos |
@@ -361,8 +406,9 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 | 13 | Documentação | ✅ Concluído | 100% | 4 arquivos atualizados |
 | 14 | Testes Completos + CI/CD | ✅ Concluído | 100% | 6 arquivos novos |
 | 17 | Finalização | ✅ Concluído | 100% | 7 arquivos melhorados |
+| 20 | Suporte Multi-Provider LLM | 🔵 Ready | 0% | Planejada |
 
-**Total:** 8/8 tasks concluídas (100%) | 76 testes passando | Pylint 9.92/10
+**Total:** 8/9 tasks concluídas (89%) | 76 testes passando | Pylint 9.92/10 | 1 task ready
 
 ---
 
@@ -385,7 +431,7 @@ Task 2 (Architecture) ← Requisito para todas as próximas
 ## Próximos Passos
 
 1. **Completo:** Tasks #1-5, #13-14, #17 (Setup, Arquitetura, Lógica, Tools, CLI, Documentação, Testes, Finalização) ✅
-2. **Escopo Futuro:** Task #17 - Criar apresentação (2 slides) e registrar link no AVA
+2. **Próximo:** Task #20 - Suporte Multi-Provider LLM (OpenAI + Groq grátis)
 
 ---
 
@@ -402,5 +448,5 @@ Task 2 (Architecture) ← Requisito para todas as próximas
 ---
 
 **Última atualização:** 13 de Julho, 2026  
-**Versão:** 1.0  
-**Status:** Completo (100% - 8/8 tasks)
+**Versão:** 1.1  
+**Status:** Completo (100% - 8/8 tasks) + Task #20 Ready

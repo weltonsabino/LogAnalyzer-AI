@@ -218,12 +218,16 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         return state
 
     try:
+        # Obtém provider do estado (padrão: None, lê de ambiente)
+        provider = state.get("llm_provider")
+
         # Chama LLM com contexto de análise
         analysis_result = analyze_with_llm(
             errors_found=state.get("errors_found", []),
             warnings_found=state.get("warnings_found", []),
             critical_events=state.get("critical_events", []),
             parsed_events=state.get("parsed_events", []),
+            provider=provider,
         )
 
         # Popula resultado no estado
@@ -232,6 +236,7 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         # Atualiza metadados
         state["metadata"]["llm_analysis_timestamp"] = datetime.now().isoformat()
         state["metadata"]["llm_analysis_status"] = "concluída com sucesso"
+        state["metadata"]["llm_provider"] = provider or "openai (padrão)"
 
     except Exception as e:
         state["is_valid"] = False

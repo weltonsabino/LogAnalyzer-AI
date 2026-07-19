@@ -25,6 +25,7 @@ class LogAnalysisState(TypedDict):
         analysis_result (dict): Resultados da análise estruturada do agente
         report (str): Relatório final formatado em markdown
         metadata (dict): Metadados adicionais (timestamps, info de processamento)
+        llm_provider (str): Provedor LLM a usar (openai ou groq). Padrão: openai
         is_valid (bool): Se a entrada e processamento são válidos
         error_message (Optional[str]): Descrição do erro se algo deu errado
     """
@@ -45,5 +46,6 @@ class LogAnalysisState(TypedDict):
 
     # Metadados e status
     metadata: Dict[str, Any]
+    llm_provider: Optional[str]
     is_valid: bool
     error_message: Optional[str]

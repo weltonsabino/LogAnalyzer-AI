@@ -373,4 +373,3 @@ def _format_metadata_section(metadata: Dict[str, Any]) -> List[str]:
     ])
 
     return lines
-

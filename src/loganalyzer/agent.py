@@ -5,6 +5,7 @@ Define a estrutura principal do grafo de agente usando LangGraph,
 incluindo nós, arestas e fluxo de execução para automação de análise de logs.
 """
 
+from typing import Optional
 from langgraph.graph import StateGraph, END
 
 from src.loganalyzer.models import LogAnalysisState
@@ -98,12 +99,13 @@ def create_agent_graph() -> StateGraph:
     return agent
 
 
-def get_initial_state(file_path: str) -> LogAnalysisState:
+def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnalysisState:
     """
     Cria estado inicial para execução do agente.
 
     Argumentos:
         file_path: Caminho do arquivo de log a analisar
+        provider: Provedor LLM (openai ou groq). Sobrescreve LLM_PROVIDER env.
 
     Retorno:
         LogAnalysisState inicial pronto para execução do agente
@@ -122,6 +124,7 @@ def get_initial_state(file_path: str) -> LogAnalysisState:
             "version": "0.0.1",
             "agent_name": "LogAnalyzer AI",
         },
+        llm_provider=provider,
         is_valid=True,
         error_message=None,
     )
