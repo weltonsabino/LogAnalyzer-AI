@@ -310,7 +310,6 @@ LogAnalyzer-AI/
 ├── docs/
 │   ├── PROJECT_REQUIREMENTS.md      # Pré-requisitos
 │   ├── ARCHITECTURE.md              # Design detalhado
-│   ├── prompts.md                   # Prompts utilizados
 │   └── prompts/                     # Histórico de prompts
 │
 ├── examples/
@@ -357,7 +356,7 @@ LogAnalyzer-AI/
 
 - **[Arquitetura Detalhada](docs/ARCHITECTURE.md)** — Diagrama do StateGraph, descrição de cada nó, fluxo de dados
 - **[Pré-requisitos do Projeto](docs/PROJECT_REQUIREMENTS.md)** — Critérios de avaliação e diretrizes
-- **[Prompts Utilizados](docs/prompts.md)** — Histórico de decisões e prompts
+- **[Prompts Utilizados](docs/prompts/)** — Histórico de decisões e prompts
 - **[Saída de Exemplo](examples/sample_output.md)** — Demonstração de output real
 
 ---
@@ -391,7 +390,7 @@ Este é um projeto de estudo para disciplina "IA para Desenvolvedores [T2]".
 - [x] Ferramenta integrada e funcional (read_file)
 - [x] README.md completo
 - [x] docs/ARCHITECTURE.md documentado
-- [x] docs/prompts.md preenchido
+- [x] docs/prompts/ com histórico de prompts
 - [x] examples/sample_output.md com saída real
 - [x] 85 testes passando (100% de conformidade)
 - [x] Commits semânticos (30+ commits)
@@ -455,5 +454,5 @@ pytest tests/ -v
 ---
 
 **Versão:** 1.0  
-**Última atualização:** 14 de Julho, 2026  
+**Última atualização:** 20 de Julho, 2026  
 **Status:** ✅ Completo e Funcional (Apresentação Incluída)
