@@ -34,6 +34,16 @@ Demonstrar o uso de agentes LangGraph em um caso real de análise de logs, com c
 
 ---
 
+## 📊 Apresentação
+
+**[Clique aqui para visualizar a apresentação interativa](docs/Apresentacao/Apresentação_LogAnalyzer_ai.html)** 🎬
+
+A apresentação contém 2 slides com:
+- **Slide 1:** Problema e Solução — O gargalo tradicional vs. a resolução inteligente com agentes
+- **Slide 2:** Arquitetura e Métricas — Diagrama do StateGraph interativo, nós funcionais e métricas de qualidade
+
+---
+
 ## 🚀 Instalação e Setup
 
 ### 1. Pré-requisitos
@@ -383,10 +393,10 @@ Este é um projeto de estudo para disciplina "IA para Desenvolvedores [T2]".
 - [x] docs/ARCHITECTURE.md documentado
 - [x] docs/prompts.md preenchido
 - [x] examples/sample_output.md com saída real
-- [x] 45 testes passando
-- [x] Commits semânticos
+- [x] 85 testes passando (100% de conformidade)
+- [x] Commits semânticos (30+ commits)
 - [x] Sem credenciais versionadas
-- [ ] Apresentação (2 slides)
+- [x] Apresentação (2 slides interativos em HTML)
 
 ---
 
@@ -445,5 +455,5 @@ pytest tests/ -v
 ---
 
 **Versão:** 1.0  
-**Última atualização:** 13 de Julho, 2026  
-**Status:** ✅ Completo e Funcional
+**Última atualização:** 14 de Julho, 2026  
+**Status:** ✅ Completo e Funcional (Apresentação Incluída)
