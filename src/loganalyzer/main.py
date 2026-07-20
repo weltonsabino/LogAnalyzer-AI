@@ -12,11 +12,17 @@ import traceback
 from pathlib import Path
 from typing import Optional
 
-# Adiciona diretório raiz ao path para imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Configure UTF-8 encoding for output
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8')
 
 from src.loganalyzer.agent import create_agent_graph, get_initial_state
 from src.loganalyzer.models import LogAnalysisState
+
+# Adiciona diretório raiz ao path para imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 def main():
@@ -63,6 +69,14 @@ Exemplos de uso:
         help="Mostra informações detalhadas de execução"
     )
 
+    parser.add_argument(
+        "--provider",
+        type=str,
+        choices=["openai", "groq"],
+        default=None,
+        help="Provedor LLM a usar (padrão: openai). Sobrescreve variável LLM_PROVIDER"
+    )
+
     # Parseia argumentos
     args = parser.parse_args()
 
@@ -72,6 +86,7 @@ Exemplos de uso:
         output_path=args.output,
         output_json=args.json,
         verbose=args.verbose,
+        provider=args.provider,
     )
 
     sys.exit(exit_code)
@@ -82,6 +97,7 @@ def analyze_log_file(
     output_path: Optional[str] = None,
     output_json: bool = False,
     verbose: bool = False,
+    provider: Optional[str] = None,
 ) -> int:
     """
     Analisa arquivo de log usando o agente LogAnalyzer.
@@ -91,6 +107,7 @@ def analyze_log_file(
         output_path: Caminho para salvar relatório (opcional)
         output_json: Se True, retorna JSON em vez de markdown
         verbose: Se True, mostra informações detalhadas
+        provider: Provedor LLM (openai ou groq). Sobrescreve LLM_PROVIDER env.
 
     Retorno:
         Código de saída (0 = sucesso, 1 = erro)
@@ -112,8 +129,8 @@ def analyze_log_file(
         # Cria agente
         agent = create_agent_graph()
 
-        # Cria estado inicial
-        initial_state = get_initial_state(file_path)
+        # Cria estado inicial com provider
+        initial_state = get_initial_state(file_path, provider=provider)
 
         # Executa agente
         if verbose:

@@ -4,40 +4,76 @@ Integração com LLM para interpretação inteligente de análise de logs.
 Fornece funções para chamar LLM e gerar insights baseado em análise.
 """
 
+import json
 import os
-from typing import Dict, Any, List, Optional
+import re
+from typing import Dict, Any, List, Optional, Union
 from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
 
-def initialize_llm() -> Optional[ChatOpenAI]:
+def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI, ChatGroq]]:
     """
-    Inicializa cliente OpenAI para LLM.
+    Inicializa cliente LLM com suporte a múltiplos provedores.
 
     Esta função:
-    - Verifica se OPENAI_API_KEY está configurada
-    - Cria instância ChatOpenAI com modelo GPT-4 ou GPT-3.5
-    - Retorna None se API não estiver configurada
+    - Lê provider da variável de ambiente LLM_PROVIDER (padrão: openai)
+    - Valida chaves de API apropriadas (OPENAI_API_KEY ou GROQ_API_KEY)
+    - Cria instância do provider selecionado
+    - Retorna None se nenhuma chave estiver configurada
+
+    Argumentos:
+        provider: Provedor LLM (openai ou groq). Se None, lê de LLM_PROVIDER env.
 
     Retorno:
-        Instância ChatOpenAI ou None se não configurado
+        Instância ChatOpenAI, ChatGroq ou None se não configurado
     """
-    # Tenta ler chave de API do ambiente
-    api_key = os.getenv("OPENAI_API_KEY")
+    # Determina provedor a usar
+    if provider is None:
+        # Lê do ambiente, padrão: openai
+        provider = os.getenv("LLM_PROVIDER", "openai").lower()
 
-    if not api_key:
-        # API não configurada, retorna None
+    # Factory pattern: cria instância baseado no provedor
+    if provider == "groq":
+        # Inicializa com Groq (grátis)
+        api_key = os.getenv("GROQ_API_KEY")
+
+        if not api_key:
+            # Chave Groq não configurada, retorna None
+            return None
+
+        # Cria instância do Groq
+        llm = ChatGroq(
+            api_key=api_key,
+            model="mixtral-8x7b-32768",  # Modelo Groq disponível
+            temperature=0.3,  # Mesma temperatura para consistência
+            max_tokens=1000,  # Mesmo limite de tokens
+        )
+
+        return llm
+
+    elif provider == "openai":
+        # Inicializa com OpenAI (GPT-4)
+        api_key = os.getenv("OPENAI_API_KEY")
+
+        if not api_key:
+            # API não configurada, retorna None
+            return None
+
+        # Cria instância do OpenAI
+        llm = ChatOpenAI(
+            api_key=api_key,
+            model="gpt-4-turbo-preview",  # Usa GPT-4
+            temperature=0.3,  # Baixa temperatura para respostas consistentes
+            max_tokens=1000,  # Limita tokens para respostas concisas
+        )
+
+        return llm
+
+    else:
+        # Provedor desconhecido, retorna None
         return None
-
-    # Cria instância do LLM
-    llm = ChatOpenAI(
-        api_key=api_key,
-        model="gpt-4-turbo-preview",  # Usa GPT-4 se disponível
-        temperature=0.3,  # Baixa temperatura para respostas consistentes
-        max_tokens=1000,  # Limita tokens para respostas concisas
-    )
-
-    return llm
 
 
 def analyze_with_llm(
@@ -45,12 +81,13 @@ def analyze_with_llm(
     warnings_found: List[Dict[str, Any]],
     critical_events: List[Dict[str, Any]],
     parsed_events: List[Dict[str, Any]],
+    provider: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Usa LLM para gerar insights e recomendações baseado na análise.
 
     Esta função:
-    - Inicializa LLM (se disponível)
+    - Inicializa LLM (se disponível) com provider selecionado
     - Formata contexto com eventos identificados
     - Chama LLM com prompt estruturado
     - Extrai insights, recomendações e causas raiz
@@ -61,6 +98,7 @@ def analyze_with_llm(
         warnings_found: Lista de avisos identificados
         critical_events: Lista de eventos críticos
         parsed_events: Lista completa de eventos parseados
+        provider: Provedor LLM (openai ou groq). Padrão: None (lê de env)
 
     Retorno:
         Dicionário contendo:
@@ -71,8 +109,8 @@ def analyze_with_llm(
             "summary": resumo geral da análise
         }
     """
-    # Tenta inicializar LLM
-    llm = initialize_llm()
+    # Tenta inicializar LLM com provider especificado
+    llm = initialize_llm(provider=provider)
 
     # Se LLM não estiver disponível, retorna análise padrão
     if not llm:
@@ -80,25 +118,24 @@ def analyze_with_llm(
 
     try:
         # Formata contexto com análise
-        context = _format_analysis_context(errors_found, warnings_found, critical_events, parsed_events)
+        ctx = _format_analysis_context(
+            errors_found, warnings_found, critical_events, parsed_events
+        )
 
         # Cria prompt estruturado
         prompt_template = ChatPromptTemplate.from_template(
-            """Analise os seguintes eventos de log e problemas identificados:
-
-{analysis_context}
-
-Forneça uma análise estruturada em JSON com os seguintes campos:
-- insights: lista de insights principais (máximo 5)
-- recommendations: lista de recomendações de ação (máximo 5)
-- root_causes: lista de causas raiz identificadas (máximo 3)
-- summary: resumo geral da análise em uma frase
-
-Responda APENAS com JSON válido, sem markdown ou explicações adicionais."""
+            "Analise os seguintes eventos de log e problemas identificados:\n\n"
+            "{analysis_context}\n\n"
+            "Forneça uma análise estruturada em JSON com os seguintes campos:\n"
+            "- insights: lista de insights principais (máximo 5)\n"
+            "- recommendations: lista de recomendações de ação (máximo 5)\n"
+            "- root_causes: lista de causas raiz identificadas (máximo 3)\n"
+            "- summary: resumo geral da análise em uma frase\n\n"
+            "Responda APENAS com JSON válido, sem markdown ou explicações."
         )
 
         # Formata e invoca LLM
-        formatted_prompt = prompt_template.format(analysis_context=context)
+        formatted_prompt = prompt_template.format(analysis_context=ctx)
         response = llm.invoke(formatted_prompt)
 
         # Extrai conteúdo da resposta
@@ -108,10 +145,12 @@ Responda APENAS com JSON válido, sem markdown ou explicações adicionais."""
         analysis_result = _parse_llm_response(response_text)
         return analysis_result
 
-    except Exception as e:
+    except (ValueError, AttributeError, TypeError) as e:
         # Se erro ao chamar LLM, retorna análise padrão
         print(f"Aviso: Erro ao chamar LLM: {str(e)}")
-        return _generate_fallback_analysis(errors_found, warnings_found, critical_events)
+        return _generate_fallback_analysis(
+            errors_found, warnings_found, critical_events
+        )
 
 
 def _format_analysis_context(
@@ -184,18 +223,15 @@ def _parse_llm_response(response_text: str) -> Dict[str, Any]:
     Retorno:
         Dicionário com análise parseada
     """
-    import json
-    import re
-
     # Tenta extrair JSON da resposta
     json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
 
     if not json_match:
         # Se não encontrar JSON, retorna estrutura padrão
         return {
-            "insights": ["Análise com LLM não pôde extrair insights estruturados"],
+            "insights": ["Análise com LLM não extraiu insights"],
             "recommendations": ["Revisar eventos críticos manualmente"],
-            "root_causes": ["Análise automática limitada sem JSON estruturado"],
+            "root_causes": ["Análise automática limitada sem JSON"],
             "summary": "Análise concluída com limitações",
         }
 
@@ -204,7 +240,7 @@ def _parse_llm_response(response_text: str) -> Dict[str, Any]:
         json_str = json_match.group(0)
         analysis = json.loads(json_str)
 
-        # Garante que possui os campos obrigatórios
+        # Garante que possui campos obrigatórios
         analysis.setdefault("insights", [])
         analysis.setdefault("recommendations", [])
         analysis.setdefault("root_causes", [])
@@ -240,14 +276,27 @@ def _generate_fallback_analysis(
 
     # Insights baseado em contadores
     if len(critical_events) > 0:
-        insights.append(f"Detectados {len(critical_events)} evento(s) crítico(s) que requerem atenção imediata")
+        msg = (
+            f"Detectados {len(critical_events)} evento(s) crítico(s) "
+            "que requerem atenção imediata"
+        )
+        insights.append(msg)
 
     if len(errors_found) > 10:
-        insights.append(f"Elevada quantidade de erros ({len(errors_found)}) sugere problema sistêmico")
-        root_causes.append("Múltiplos erros podem indicar falha no componente central")
+        msg = (
+            f"Elevada quantidade de erros ({len(errors_found)}) "
+            "sugere problema sistêmico"
+        )
+        insights.append(msg)
+        msg = "Múltiplos erros podem indicar falha no componente central"
+        root_causes.append(msg)
 
     if len(warnings_found) > 20:
-        insights.append(f"Muitos avisos ({len(warnings_found)}) indicam situações anormais")
+        msg = (
+            f"Muitos avisos ({len(warnings_found)}) "
+            "indicam situações anormais"
+        )
+        insights.append(msg)
 
     # Recomendações padrão
     if len(critical_events) > 0:
@@ -262,9 +311,12 @@ def _generate_fallback_analysis(
     recommendations.append("Implementar alertas para eventos críticos futuros")
 
     return {
-        "insights": insights if insights else ["Análise heurística: sem problemas graves detectados"],
+        "insights": insights if insights else [
+            "Análise heurística: sem problemas graves detectados"
+        ],
         "recommendations": recommendations,
-        "root_causes": root_causes if root_causes else ["Análise heurística ativada (LLM não disponível)"],
+        "root_causes": root_causes if root_causes else [
+            "Análise heurística ativada (LLM não disponível)"
+        ],
         "summary": "Análise com modo fallback (sem LLM)",
     }
-
