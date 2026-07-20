@@ -278,7 +278,7 @@ class LogAnalysisState(TypedDict):
 Eventos Críticos
      │
      ▼
-Prompt Estruturado (veja docs/prompts.md)
+Prompt Estruturado (veja docs/prompts/)
      │
      ▼
 GPT-4 Turbo
@@ -353,7 +353,7 @@ Quando `OPENAI_API_KEY` não está configurada ou chamada falha:
 - **LangGraph:** https://python.langchain.com/docs/langgraph/
 - **OpenAI API:** https://platform.openai.com/docs/
 - **Exemplo de Saída:** `examples/sample_output.md`
-- **Prompts Utilizados:** `docs/prompts.md`
+- **Prompts Utilizados:** `docs/prompts/`
 
 ---
 
