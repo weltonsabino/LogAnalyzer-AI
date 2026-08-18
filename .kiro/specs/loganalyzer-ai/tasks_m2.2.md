@@ -1,0 +1,474 @@
+﻿# Tasks - Projeto Final M2.2 - LogAnalyzer AI
+
+**Status:** Ready for Implementation  
+**Data:** 18 de Agosto, 2026  
+**Entrega:** 31/08/2026 às 15h  
+**Total de Tasks:** 17  
+**Esforço Estimado (COM IA):** ~22 horas
+
+---
+
+## Task #27: Documentar Estratégia de Continuação (Mini-Projeto → Final M2.2)
+
+**Status:** ✅ CONCLUÍDO  
+**Prioridade:** P0 - Crítico  
+**Esforço:** 30min  
+**Descrição:** Documentar decisão de continuar mini-projeto e mapeamento de reaproveitamento
+**Parent Issue:** #26 (EPIC)
+**Data de Conclusão:** 18/08/2026
+**Referência de Execução:** `docs/prompts/2026-08-18_task-27-EXECUTION.md`
+
+### Subtarefas
+
+- [x] Criar `docs/M2.2_CONTINUACAO_ESTRATEGIA.md` (novo arquivo)
+- [x] Criar `docs/M2.2_REQUISITOS_MAPEAMENTO.md` (novo arquivo)
+- [x] Criar `docs/M2.1_SCORE_FINAL.md` (novo arquivo)
+- [x] Atualizar README.md com seção "Versão e Evolução"
+
+### Critérios de Aceição
+
+- ✅ 3 documentos criados
+- ✅ Mapeamento completo de 15 requisitos
+- ✅ Commits semânticos
+
+### Artefatos Criados
+
+1. **docs/M2.2_CONTINUACAO_ESTRATEGIA.md** - Estratégia de continuação com 10 fases
+2. **docs/M2.2_REQUISITOS_MAPEAMENTO.md** - Mapeamento de 15 requisitos vs implementação
+3. **docs/M2.1_SCORE_FINAL.md** - Score final do mini-projeto (9.5/10)
+4. **README.md** - Seção "📌 Versão e Evolução" adicionada
+5. **Branch:** `feature/continuacao-m2.2-20082026` (criada e com 1 commit)
+
+### Decisões Tomadas
+
+- ✅ Mini-projeto M2.1 validado como base reutilizável
+- ✅ 60% dos requisitos finais já atendidos
+- ✅ Arquitetura LangGraph consolidada
+- ✅ Decisão: CONTINUAR mini-projeto com expansão
+
+### Próxima Task
+
+Task #28 (Corrigir LangGraph Error Handling)
+
+---
+
+## Task #28: Corrigir LangGraph - Error Handling com Arestas Condicionais
+
+**Status:** A Fazer  
+**Prioridade:** P0 - Bloqueador  
+**Esforço:** 1h  
+**Descrição:** Implementar arestas condicionais para redirecionar erros ao nó error_handling (Feedback M2.1)
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Implementar 4 funções de roteamento em `src/loganalyzer/agent.py`
+- [ ] Adicionar arestas condicionais ao grafo
+- [ ] Atualizar nodes para setarem flags de erro
+- [ ] Implementar 5+ testes de cenários de erro
+- [ ] Atualizar ARCHITECTURE.md e README.md
+
+### Critérios de Aceição
+
+- ✅ Arestas condicionais implementadas
+- ✅ Error handling acionado quando estado indica falha
+- ✅ 5+ testes passando
+- ✅ Documentação atualizada
+- ✅ Score LangGraph sobe de 0.5 → 1.0 (esperado)
+
+### Próxima Task
+
+Task #29 (Setup Kanban + Branch Projeto Final)
+
+---
+
+## Task #29: Setup Kanban + Branch Projeto Final
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 15min  
+**Descrição:** Preparar GitHub Project Kanban
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar GitHub Project no formato Kanban
+- [ ] Configurar colunas
+
+### Próxima Task
+
+Task #30 (LangGraph Avançado - Ramificação + Paralelização)
+
+---
+
+## Task #30: LangGraph Avançado (Ramificação + Paralelização)
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1h  
+**Descrição:** Implementar ramificação condicional e paralelização no StateGraph
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Implementar `route_by_severity()` em `src/loganalyzer/agent.py`
+- [ ] Implementar `analyze_patterns_node_parallel()` em `src/loganalyzer/nodes.py`
+- [ ] Adicionar condição de parada explícita
+- [ ] Escrever 8+ testes
+
+### Próxima Task
+
+Task #31 (Segundo Cenário de Uso)
+
+---
+
+## Task #31: Segundo Cenário de Uso (Risco/Falha)
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1h  
+**Descrição:** Implementar cenário de uso demonstrando comportamento com falhas/anomalias
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar `tests/test_scenario_failure.py`
+- [ ] Criar fixtures em `tests/fixtures/failure_logs/`
+- [ ] Documentar cenários no README.md
+- [ ] Validar saída estruturada
+
+### Próxima Task
+
+Task #32 (Segurança Adversarial)
+
+---
+
+## Task #32: Segurança Avançada (Adversarial + Autonomy)
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1.5h  
+**Descrição:** Implementar limites de autonomia e testar cenários adversariais
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar `src/loganalyzer/governance.py`
+- [ ] Criar `tests/test_adversarial_security.py`
+- [ ] Integrar governance no agent
+- [ ] Documentar no README
+
+### Próxima Task
+
+Task #33 (Observabilidade Avançada)
+
+---
+
+## Task #33: Observabilidade Avançada (2+ Sinais)
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1.5h  
+**Descrição:** Implementar 2+ sinais de observabilidade correlacionados
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar `src/loganalyzer/observability.py`
+- [ ] Integrar TraceCollector no agent
+- [ ] Adicionar retry + timeout em `file_reader.py`
+- [ ] Implementar 5+ testes
+
+### Próxima Task
+
+Task #34 (QA com IA)
+
+---
+
+## Task #34: QA com IA - Code Review + E2E
+
+**Status:** A Fazer  
+**Prioridade:** P2 - Alta  
+**Esforço:** 2h  
+**Descrição:** Usar IA para análise de código e testes E2E gerados
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Documentar Code Review com IA em `docs/qa/code_review_with_ai.md`
+- [ ] Implementar `tests/test_e2e_generated_by_ai.py`
+- [ ] Priorizar testes por risco
+- [ ] Documentar no README
+
+### Próxima Task
+
+Task #35 (DevOps + Anomalias)
+
+---
+
+## Task #35: DevOps Inteligente + Anomalias
+
+**Status:** A Fazer  
+**Prioridade:** P2 - Alta  
+**Esforço:** 2h  
+**Descrição:** Implementar análise inteligente de logs e detecção de anomalias
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Documentar análise de logs com IA em `docs/devops/intelligent_log_analysis.md`
+- [ ] Criar `src/loganalyzer/devops/anomaly_detector.py`
+- [ ] Implementar 4+ testes
+- [ ] Documentar no README
+
+### Próxima Task
+
+Task #36 (Low-Code Make.com)
+
+---
+
+## Task #36: Low-Code Integration (Make.com)
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 2h  
+**Descrição:** Integrar automação low-code com Make.com webhook
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar fluxo Make.com webhook
+- [ ] Implementar `src/loganalyzer/integrations/make_webhook.py`
+- [ ] Integrar no agent
+- [ ] Implementar 3+ testes
+- [ ] Documentar em `docs/low-code/make-integration.md`
+
+### Próxima Task
+
+Task #37 (Documentação Expandida)
+
+---
+
+## Task #37: Documentação Expandida
+
+**Status:** A Fazer  
+**Prioridade:** P2 - Alta  
+**Esforço:** 1h  
+**Descrição:** Expandir README.md com todas as 8 seções obrigatórias
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Adicionar 8 seções no README
+- [ ] Adicionar exemplos de entrada/saída
+- [ ] Validar todos os links
+
+### Próxima Task
+
+Task #38 (Ciclos de Refinamento)
+
+---
+
+## Task #38: Ciclos de Refinamento + Limitações
+
+**Status:** A Fazer  
+**Prioridade:** P2 - Alta  
+**Esforço:** 30min  
+**Descrição:** Documentar ciclos de refinamento e limitações da solução
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar `docs/REFINEMENTS.md`
+- [ ] Documentar 2+ ciclos de refinamento
+- [ ] Documentar limitações e possibilidades de evolução
+
+### Próxima Task
+
+Task #39 (Kanban Completo)
+
+---
+
+## Task #39: GitHub Project Kanban Completo
+
+**Status:** A Fazer  
+**Prioridade:** P3 - Média  
+**Esforço:** 30min  
+**Descrição:** Manter Kanban atualizado com todos os cards e rastreabilidade
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Criar 20+ cards no Kanban
+- [ ] Mover cards conforme implementação
+- [ ] Associar cards a commits/PRs
+- [ ] Validar rastreabilidade
+
+### Próxima Task
+
+Task #40 (Testes + Validação)
+
+---
+
+## Task #40: Testes Finais + Validação de Qualidade
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1h  
+**Descrição:** Validar qualidade de código e testes antes da entrega
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Executar pylint (target: ≥9.8/10)
+- [ ] Executar pytest (target: ≥95 testes, ≥95% cobertura)
+- [ ] Executar flake8 (target: 0 errors)
+- [ ] Validar 15 critérios de avaliação
+- [ ] Teste end-to-end final
+
+### Próxima Task
+
+Task #41 (Vídeo Demonstrativo)
+
+---
+
+## Task #41: Vídeo Demonstrativo
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1.5h  
+**Descrição:** Gravar e publicar vídeo de demonstração no YouTube
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Planejar roteiro
+- [ ] Gravar vídeo (1080p)
+- [ ] Editar vídeo (≤12min)
+- [ ] Publicar no YouTube
+
+### Próxima Task
+
+Task #42 (Final Checks)
+
+---
+
+## Task #42: Final Checks + Submissão
+
+**Status:** A Fazer  
+**Prioridade:** P1 - Crítico  
+**Esforço:** 1h  
+**Descrição:** Validação final antes da submissão no AVA
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Checklist de 15 critérios de avaliação
+- [ ] Último code review
+- [ ] Confirmar todos os links
+- [ ] Preparar merges finais (feature → develop → main)
+
+### Próxima Task
+
+Task #43 (Opcional: ChatOps)
+
+---
+
+## Task #43: Slack/GitHub Notifications (Opcional - Low-Code)
+
+**Status:** A Fazer  
+**Prioridade:** P3 - Opcional  
+**Esforço:** 30min  
+**Descrição:** Estender Make.com com notificações avançadas (se tempo permitir)
+**Parent Issue:** #26 (EPIC)
+
+### Subtarefas
+
+- [ ] Estender Make.com webhook com Slack
+- [ ] Adicionar GitHub Integration
+- [ ] Testar fluxo completo
+- [ ] Documentar ChatOps
+
+---
+
+## 📊 Resumo Executivo (COM IA)
+
+| # | Task | Área | Esforço | P | Status |
+|---|------|------|---------|---|--------|
+| 27 | Documentar Continuação | Docs | 30min | P0 | ✅ CONCLUÍDO |
+| 28 | Corrigir Error Handling | Arquitetura | 1h | P0 | A Fazer |
+| 29 | Setup Kanban | Planejamento | 15min | P1 | A Fazer |
+| 30 | LangGraph Avançado | Arquitetura | 1h | P1 | A Fazer |
+| 31 | 2º Cenário | Funcionalidade | 1h | P1 | A Fazer |
+| 32 | Segurança Adversarial | Segurança | 1.5h | P1 | A Fazer |
+| 33 | Observabilidade | Observabilidade | 1.5h | P1 | A Fazer |
+| 34 | QA com IA | QA | 2h | P2 | A Fazer |
+| 35 | DevOps + Anomalias | DevOps | 2h | P2 | A Fazer |
+| 36 | Low-Code Make | Integração | 2h | P1 | A Fazer |
+| 37 | Documentação | Docs | 1h | P2 | A Fazer |
+| 38 | Refinamentos | Docs | 30min | P2 | A Fazer |
+| 39 | Kanban Completo | Rastreabilidade | 30min | P3 | A Fazer |
+| 40 | Testes + Qualidade | QA | 1h | P1 | A Fazer |
+| 41 | Vídeo Demonstrativo | Apresentação | 1.5h | P1 | A Fazer |
+| 42 | Final Checks | Validação | 1h | P1 | A Fazer |
+| 43 | ChatOps (Opt) | Integração | 30min | P3 | A Fazer |
+
+**Total Estimado (COM IA):** ~22 horas  
+**Concluído:** 0.5h (Task #27)  
+**Restante:** ~21.5 horas  
+**Disponível:** ~55 horas (11 dias)  
+**Margem:** ~33.5 horas para iteração, refinamento e improvisos ✅
+
+---
+
+## 🎯 Estratégia de Execução
+
+### Fase 1: Bloqueadores (3h15min) — EM PROGRESSO
+- Task #27 (30min): ✅ **CONCLUÍDO** - Documentação de continuação
+- Task #28 (1h): ⏳ **PRÓXIMA** - Corrigir error handling (P0 BLOQUEADOR)
+- Task #29 (15min): A Fazer - Setup Kanban
+- **Resultado esperado:** Projeto pronto para evolução
+
+### Fase 2: MVP Expandido (7h)
+- Task #30 (1h): A Fazer - Ramificação + paralelização
+- Task #31 (1h): A Fazer - 2º cenário
+- Task #32 (1.5h): A Fazer - Segurança
+- Task #33 (1.5h): A Fazer - Observabilidade
+- Task #36 (2h): A Fazer - Low-code
+- **Resultado esperado:** Sistema robusto e resiliente
+
+### Fase 3: Qualidade + Documentação (8h)
+- Task #34 (2h): A Fazer - QA com IA
+- Task #35 (2h): A Fazer - DevOps inteligente
+- Task #37 (1h): A Fazer - Documentação
+- Task #38 (30min): A Fazer - Refinamentos
+- Task #40 (1h): A Fazer - Testes finais
+- **Resultado esperado:** Código pronto para produção
+
+### Fase 4: Apresentação (2h45min)
+- Task #41 (1.5h): A Fazer - Vídeo
+- Task #42 (1h): A Fazer - Final checks
+- Task #43 (30min): A Fazer - ChatOps (opcional)
+- **Resultado esperado:** Pronto para submissão
+
+---
+
+## ⚡ Se Tempo Faltar
+
+**Mínimo (12h) - P1 apenas:**
+1. Task #20-21 (bloqueadores)
+2. Task #23-26 (arquitetura essencial)
+3. Task #29 (low-code)
+4. Task #33-35 (qualidade + vídeo)
+
+**Simplificações possíveis:**
+- Task #27: Reduzir para 1 test E2E
+- Task #28: Usar heurística simples
+- Task #32: Agrupar mais cards
+- Task #36: Pular ChatOps
+
+---
+
+**Última atualização:** 18 de Agosto, 2026  
+**Versão:** 2.0 - COM IA  
+**Status:** 🟢 Pronto para execução rápida
