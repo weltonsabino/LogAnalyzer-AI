@@ -44,6 +44,41 @@ A apresentação contém 2 slides com:
 
 ---
 
+## 📌 Versão e Evolução
+
+### Mini-Projeto M2.1 (Concluído ✅)
+
+- **Data de conclusão:** 14/07/2026
+- **Status:** ✅ Completo (76/85 testes, Pylint 9.83/10)
+- **Score:** 9.5/10
+- **Repositório:** Branch `main` com tag `v1.0.0`
+- **Referência:** [`docs/M2.1_SCORE_FINAL.md`](docs/M2.1_SCORE_FINAL.md)
+
+### Projeto Final M2.2 (Em Progresso 🔄)
+
+- **Data de início:** 20/08/2026
+- **Data prevista:** 31/08/2026
+- **Estratégia:** Continuação e expansão do mini-projeto
+- **Referência:** [`docs/M2.2_CONTINUACAO_ESTRATEGIA.md`](docs/M2.2_CONTINUACAO_ESTRATEGIA.md)
+- **Mapeamento de requisitos:** [`docs/M2.2_REQUISITOS_MAPEAMENTO.md`](docs/M2.2_REQUISITOS_MAPEAMENTO.md)
+
+### Linha do Tempo
+
+```
+07/07 - 14/07/2026: Mini-Projeto M2.1
+       ✅ Concluído (Score: 9.5/10)
+
+20/08 - 31/08/2026: Projeto Final M2.2
+       🔄 Em progresso (17 tasks mapeadas)
+       
+       Phase 1 (3h):    Bloqueadores (Task #27-#29)
+       Phase 2 (7h):    Features (Task #30-#33, #36)
+       Phase 3 (8h):    Qualidade (Task #34-#35, #37-#38, #40)
+       Phase 4 (2.75h): Apresentação (Task #41-#43)
+```
+
+---
+
 ## 🚀 Instalação e Setup
 
 ### 1. Pré-requisitos
