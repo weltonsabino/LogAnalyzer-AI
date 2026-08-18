@@ -56,7 +56,7 @@ A apresentação contém 2 slides com:
 
 ### Projeto Final M2.2 (Em Progresso 🔄)
 
-- **Data de início:** 20/08/2026
+- **Data de início:** 17/08/2026
 - **Data prevista:** 31/08/2026
 - **Estratégia:** Continuação e expansão do mini-projeto
 - **Referência:** [`docs/M2.2_CONTINUACAO_ESTRATEGIA.md`](docs/M2.2_CONTINUACAO_ESTRATEGIA.md)
@@ -68,7 +68,7 @@ A apresentação contém 2 slides com:
 07/07 - 14/07/2026: Mini-Projeto M2.1
        ✅ Concluído (Score: 9.5/10)
 
-20/08 - 31/08/2026: Projeto Final M2.2
+17/08 - 31/08/2026: Projeto Final M2.2
        🔄 Em progresso (17 tasks mapeadas)
        
        Phase 1 (3h):    Bloqueadores (Task #27-#29)
@@ -488,6 +488,5 @@ pytest tests/ -v
 
 ---
 
-**Versão:** 1.0  
-**Última atualização:** 20 de Julho, 2026  
+**Última atualização:** 18 de Agosto, 2026  
 **Status:** ✅ Completo e Funcional (Apresentação Incluída)
