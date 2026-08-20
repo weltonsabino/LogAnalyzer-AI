@@ -29,20 +29,31 @@ class TestConditionalEdgesValidation:
 
     def test_validation_success_proceeds_to_read_file(self):
         """Testa que validação bem-sucedida prossegue para read_file."""
-        # Prepara arquivo de teste válido
-        test_file = "examples/sample.log"
+        # Cria arquivo temporário para teste
+        import tempfile
+        
+        # Cria arquivo temporário com conteúdo
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as f:
+            f.write("2026-08-20 10:00:00 INFO Test log entry\n")
+            temp_file = f.name
+        
+        try:
+            state = get_initial_state(file_path=temp_file)
 
-        state = get_initial_state(file_path=test_file)
+            # Cria e executa agente
+            graph = create_agent_graph()
+            result = graph.invoke(state)
 
-        # Cria e executa agente
-        graph = create_agent_graph()
-        result = graph.invoke(state)
-
-        # Valida que prosseguiu além de validação
-        assert result.get("is_valid") is True
-        assert result.get("validation_error") is None
-        # Se foi além de validação, deve ter lido arquivo
-        assert len(result.get("file_content", "")) > 0
+            # Valida que prosseguiu além de validação
+            assert result.get("is_valid") is True
+            assert result.get("validation_error") is None
+            # Se foi além de validação, deve ter lido arquivo
+            assert len(result.get("file_content", "")) > 0
+        finally:
+            # Limpa arquivo temporário
+            import os as os_module
+            if os_module.path.exists(temp_file):
+                os_module.remove(temp_file)
 
 
 class TestConditionalEdgesParsing:
@@ -65,19 +76,31 @@ class TestConditionalEdgesParsing:
 
     def test_parsing_success_proceeds_to_analyze_patterns(self):
         """Testa que parsing bem-sucedido prossegue para analyze_patterns."""
-        # Prepara arquivo com logs estruturados
-        test_file = "examples/sample.log"
+        # Cria arquivo temporário para teste
+        import tempfile
+        
+        # Cria arquivo temporário com log estruturado
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as f:
+            f.write("2026-08-20 10:00:00 ERROR Database connection failed\n")
+            f.write("2026-08-20 10:00:01 WARNING Retry attempt 1\n")
+            temp_file = f.name
+        
+        try:
+            state = get_initial_state(file_path=temp_file)
 
-        state = get_initial_state(file_path=test_file)
+            # Cria e executa agente
+            graph = create_agent_graph()
+            result = graph.invoke(state)
 
-        # Cria e executa agente
-        graph = create_agent_graph()
-        result = graph.invoke(state)
-
-        # Se parsing foi bem-sucedido, deve ter eventos analisados
-        if result.get("is_valid") is True:
-            assert len(result.get("parsed_events", [])) >= 0
-            assert result.get("parsing_error") is None
+            # Se parsing foi bem-sucedido, deve ter eventos analisados
+            if result.get("is_valid") is True:
+                assert len(result.get("parsed_events", [])) >= 0
+                assert result.get("parsing_error") is None
+        finally:
+            # Limpa arquivo temporário
+            import os as os_module
+            if os_module.path.exists(temp_file):
+                os_module.remove(temp_file)
 
 
 class TestConditionalEdgesDetection:
@@ -100,19 +123,32 @@ class TestConditionalEdgesDetection:
 
     def test_detection_success_proceeds_to_interpret(self):
         """Testa que detecção bem-sucedida prossegue para interpret_with_llm."""
-        # Prepara arquivo com logs
-        test_file = "examples/sample.log"
+        # Cria arquivo temporário para teste
+        import tempfile
+        
+        # Cria arquivo com múltiplos níveis de severidade
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as f:
+            f.write("2026-08-20 10:00:00 INFO Service started\n")
+            f.write("2026-08-20 10:00:01 ERROR Connection timeout\n")
+            f.write("2026-08-20 10:00:02 CRITICAL System failure\n")
+            temp_file = f.name
+        
+        try:
+            state = get_initial_state(file_path=temp_file)
 
-        state = get_initial_state(file_path=test_file)
+            # Cria e executa agente
+            graph = create_agent_graph()
+            result = graph.invoke(state)
 
-        # Cria e executa agente
-        graph = create_agent_graph()
-        result = graph.invoke(state)
-
-        # Se detecção foi bem-sucedida, deve ter análise
-        if result.get("is_valid") is True and result.get("detection_error") is None:
-            assert result.get("errors_found") is not None or \
-                   result.get("warnings_found") is not None
+            # Se detecção foi bem-sucedida, deve ter análise
+            if result.get("is_valid") is True and result.get("detection_error") is None:
+                assert result.get("errors_found") is not None or \
+                       result.get("warnings_found") is not None
+        finally:
+            # Limpa arquivo temporário
+            import os as os_module
+            if os_module.path.exists(temp_file):
+                os_module.remove(temp_file)
 
 
 class TestConditionalEdgesAnalysis:
@@ -137,19 +173,32 @@ class TestConditionalEdgesAnalysis:
 
     def test_analysis_success_proceeds_to_generate_report(self):
         """Testa que análise bem-sucedida prossegue para generate_report."""
-        # Prepara arquivo com logs
-        test_file = "examples/sample.log"
+        # Cria arquivo temporário para teste
+        import tempfile
+        
+        # Cria arquivo com logs para análise completa
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as f:
+            f.write("2026-08-20 10:00:00 INFO Application started\n")
+            f.write("2026-08-20 10:00:01 WARNING Memory usage high\n")
+            f.write("2026-08-20 10:00:02 ERROR Failed to connect to database\n")
+            temp_file = f.name
+        
+        try:
+            state = get_initial_state(file_path=temp_file)
 
-        state = get_initial_state(file_path=test_file)
+            # Cria e executa agente
+            graph = create_agent_graph()
+            result = graph.invoke(state)
 
-        # Cria e executa agente
-        graph = create_agent_graph()
-        result = graph.invoke(state)
-
-        # Se análise foi bem-sucedida, deve ter relatório
-        if result.get("is_valid") is True and result.get("analysis_error") is None:
-            assert result.get("report") is not None or \
-                   result.get("analysis_result") is not None
+            # Se análise foi bem-sucedida, deve ter relatório
+            if result.get("is_valid") is True and result.get("analysis_error") is None:
+                assert result.get("report") is not None or \
+                       result.get("analysis_result") is not None
+        finally:
+            # Limpa arquivo temporário
+            import os as os_module
+            if os_module.path.exists(temp_file):
+                os_module.remove(temp_file)
 
 
 class TestErrorHandlerNode:
