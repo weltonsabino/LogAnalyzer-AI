@@ -20,35 +20,110 @@ from src.loganalyzer.nodes import (
 )
 
 
+# ============================================
+# FUNÇÕES DE ROTEAMENTO CONDICIONAL
+# ============================================
+
+def route_after_validation(state: LogAnalysisState) -> str:
+    """
+    Roteia para error_handling se validação falhar.
+
+    Argumentos:
+        state: Estado atual do grafo
+
+    Retorno:
+        "error_handling" se há erro de validação, "read_file" caso contrário
+    """
+    # Verifica se há erro de validação
+    if state.get("validation_error"):
+        return "error_handling"
+    return "read_file"
+
+
+def route_after_parsing(state: LogAnalysisState) -> str:
+    """
+    Roteia para error_handling se parsing falhar.
+
+    Argumentos:
+        state: Estado atual do grafo
+
+    Retorno:
+        "error_handling" se há erro de parsing, "analyze_patterns" caso contrário
+    """
+    # Verifica se há erro de parsing
+    if state.get("parsing_error"):
+        return "error_handling"
+    return "analyze_patterns"
+
+
+def route_after_detection(state: LogAnalysisState) -> str:
+    """
+    Roteia para error_handling se detecção de padrões falhar.
+
+    Argumentos:
+        state: Estado atual do grafo
+
+    Retorno:
+        "error_handling" se há erro de detecção, "interpret_with_llm" caso contrário
+    """
+    # Verifica se há erro de detecção
+    if state.get("detection_error"):
+        return "error_handling"
+    return "interpret_with_llm"
+
+
+def route_after_analysis(state: LogAnalysisState) -> str:
+    """
+    Roteia para error_handling se análise IA falhar.
+
+    Argumentos:
+        state: Estado atual do grafo
+
+    Retorno:
+        "error_handling" se há erro de análise, "generate_report" caso contrário
+    """
+    # Verifica se há erro de análise
+    if state.get("analysis_error"):
+        return "error_handling"
+    return "generate_report"
+
+
 def create_agent_graph() -> StateGraph:
     """
     Cria e retorna o StateGraph configurado para LogAnalyzer AI.
 
-    Estrutura do grafo:
+    Estrutura do grafo com arestas condicionais:
     ```
     INÍCIO
       ↓
-    [validate_input] ──(inválido)──→ [error_handling] → FIM
-      ↓ (válido)
-    [read_file] ──(erro)──→ [error_handling] → FIM
-      ↓ (sucesso)
-    [parse_events] ──(erro)──→ [error_handling] → FIM
-      ↓ (sucesso)
-    [analyze_patterns] ──(erro)──→ [error_handling] → FIM
-      ↓ (sucesso)
-    [interpret_with_llm] ──(erro)──→ [error_handling] → FIM
-      ↓ (sucesso)
+    [validate_input]
+      ├─(validation_error)──→ [error_handling] → FIM
+      └─(sucesso)──→ [read_file]
+      ↓ (sempre sucesso)
+    [parse_events]
+      ├─(parsing_error)──→ [error_handling] → FIM
+      └─(sucesso)──→ [analyze_patterns]
+      ↓
+    [analyze_patterns]
+      ├─(detection_error)──→ [error_handling] → FIM
+      └─(sucesso)──→ [interpret_with_llm]
+      ↓
+    [interpret_with_llm]
+      ├─(analysis_error)──→ [error_handling] → FIM
+      └─(sucesso)──→ [generate_report]
+      ↓
     [generate_report]
       ↓
     FIM
     ```
 
     Retorno:
-        StateGraph: Grafo configurado pronto para execução
+        StateGraph: Grafo configurado com arestas condicionais para error handling
 
     Nota:
-        Arestas condicionais (transições if-else) serão adicionadas em Issue #3
-        quando a lógica dos nós estiver completamente implementada.
+        As arestas condicionais roteiam para error_handling baseado em flags
+        específicas (validation_error, parsing_error, detection_error, analysis_error)
+        definidas pelos nós correspondentes no estado.
     """
 
     # Inicializa o grafo com LogAnalysisState
@@ -78,17 +153,57 @@ def create_agent_graph() -> StateGraph:
     # 3. ADICIONA ARESTAS (Conexões entre nós)
     # ============================================
 
-    # Caminho feliz: Progressão linear pelo pipeline
-    graph.add_edge("validate_input", "read_file")
+    # Aresta condicional após validação
+    # Se há erro de validação → error_handling, senão → read_file
+    graph.add_conditional_edges(
+        "validate_input",
+        route_after_validation,
+        {
+            "error_handling": "error_handling",
+            "read_file": "read_file"
+        }
+    )
+
+    # Aresta direta: read_file para parse_events (sem erro esperado)
     graph.add_edge("read_file", "parse_events")
-    graph.add_edge("parse_events", "analyze_patterns")
-    graph.add_edge("analyze_patterns", "interpret_with_llm")
-    graph.add_edge("interpret_with_llm", "generate_report")
+
+    # Aresta condicional após parsing
+    # Se há erro de parsing → error_handling, senão → analyze_patterns
+    graph.add_conditional_edges(
+        "parse_events",
+        route_after_parsing,
+        {
+            "error_handling": "error_handling",
+            "analyze_patterns": "analyze_patterns"
+        }
+    )
+
+    # Aresta condicional após detecção de padrões
+    # Se há erro de detecção → error_handling, senão → interpret_with_llm
+    graph.add_conditional_edges(
+        "analyze_patterns",
+        route_after_detection,
+        {
+            "error_handling": "error_handling",
+            "interpret_with_llm": "interpret_with_llm"
+        }
+    )
+
+    # Aresta condicional após análise IA
+    # Se há erro de análise → error_handling, senão → generate_report
+    graph.add_conditional_edges(
+        "interpret_with_llm",
+        route_after_analysis,
+        {
+            "error_handling": "error_handling",
+            "generate_report": "generate_report"
+        }
+    )
+
+    # Aresta final: generate_report para END
     graph.add_edge("generate_report", END)
 
-    # Caminhos de erro: Qualquer etapa pode transicionar para error_handling
-    # Nota: Arestas condicionais baseadas em state.is_valid ou flags de erro
-    # serão implementadas em Issue #3 quando lógica dos nós estiver pronta
+    # Aresta final: error_handling para END
     graph.add_edge("error_handling", END)
 
     # ============================================
@@ -127,4 +242,8 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
         llm_provider=provider,
         is_valid=True,
         error_message=None,
+        validation_error=None,
+        parsing_error=None,
+        detection_error=None,
+        analysis_error=None,
     )

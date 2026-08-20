@@ -196,6 +196,56 @@ LLM_PROVIDER=openai python -m src.loganalyzer.main seu.log # OpenAI
 python -m src.loganalyzer.main seu.log                     # OpenAI
 ```
 
+### Error Handling
+
+O agente implementa tratamento robusto de erros através de arestas condicionais no StateGraph. Qualquer problema em qualquer etapa é capturado e processado graciosamente.
+
+#### Cenários Cobertos
+
+- **Validação:** Arquivo não existe, sem permissão, encoding inválido
+- **Parsing:** Formato de log inválido, estrutura corrompida, arquivo vazio
+- **Detecção:** Sem padrões encontrados, análise de padrão falha
+- **IA:** Timeout da API, chave inválida, resposta inválida
+
+#### Exemplo de Resposta de Erro
+
+Se um arquivo não existir:
+```bash
+$ python -m src.loganalyzer.main /arquivo/inexistente.log
+```
+
+Saída:
+```
+✗ Erro ao processar arquivo
+  Detalhes: Arquivo não encontrado: /arquivo/inexistente.log
+  Timestamp: 2026-08-20 10:30:45
+```
+
+#### Fluxo Interno
+
+```
+┌─────────────────────────┐
+│   Execução Normal       │
+│ ✓ validate_input       │
+│ ✓ read_file            │
+│ ✓ parse_events         │
+│ ✓ analyze_patterns     │
+│ ✓ interpret_with_llm   │
+│ ✓ generate_report      │
+└─────────────────────────┘
+
+vs.
+
+┌──────────────────────────┐
+│   Com Erro (ex: parsing) │
+│ ✓ validate_input        │
+│ ✓ read_file             │
+│ ✗ parse_events [ERROR]  │
+│ → error_handling        │
+│ → Saída consistente     │
+└──────────────────────────┘
+```
+
 ### Executar Exemplo
 ```bash
 # Processa sample.log incluído no projeto

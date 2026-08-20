@@ -124,6 +124,164 @@ class LogAnalysisState(TypedDict):
 
 ---
 
+## Arestas Condicionais (Roteamento Inteligente)
+
+### Overview
+O grafo utiliza arestas condicionais para redirecionar automaticamente para error_handling quando qualquer nó detecta uma falha. Isso melhora a robustez do sistema e garante que erros não causem travamentos.
+
+### 4 Rotas Condicionais Implementadas
+
+#### 1. **validate_input → error_handling | read_file**
+- **Condição:** `state.get("validation_error")`
+- **Acionado em:** Arquivo inválido, sem permissão, encoding incorreto
+- **Flag:** `validation_error: Optional[str]`
+- **Comportamento:** Se erro, vai direto para error_handling; senão, vai para read_file
+
+#### 2. **parse_events → error_handling | analyze_patterns**
+- **Condição:** `state.get("parsing_error")`
+- **Acionado em:** Formato de log não reconhecido, parsing falha
+- **Flag:** `parsing_error: Optional[str]`
+- **Comportamento:** Se erro, redireciona; senão, continua normalmente
+
+#### 3. **analyze_patterns → error_handling | interpret_with_llm**
+- **Condição:** `state.get("detection_error")`
+- **Acionado em:** Sem padrões detectados, análise de padrão falha
+- **Flag:** `detection_error: Optional[str]`
+- **Comportamento:** Se erro, redireciona; senão, continua
+
+#### 4. **interpret_with_llm → error_handling | generate_report**
+- **Condição:** `state.get("analysis_error")`
+- **Acionado em:** Timeout IA, falha de API, resposta inválida
+- **Flag:** `analysis_error: Optional[str]`
+- **Comportamento:** Se erro, redireciona; senão, gera relatório
+
+### Implementação das Funções de Roteamento
+
+**Em `src/loganalyzer/agent.py`:**
+
+```python
+def route_after_validation(state: LogAnalysisState) -> str:
+    """Roteia para error_handling se validação falhar."""
+    if state.get("validation_error"):
+        return "error_handling"
+    return "read_file"
+
+def route_after_parsing(state: LogAnalysisState) -> str:
+    """Roteia para error_handling se parsing falhar."""
+    if state.get("parsing_error"):
+        return "error_handling"
+    return "analyze_patterns"
+
+def route_after_detection(state: LogAnalysisState) -> str:
+    """Roteia para error_handling se detecção falhar."""
+    if state.get("detection_error"):
+        return "error_handling"
+    return "interpret_with_llm"
+
+def route_after_analysis(state: LogAnalysisState) -> str:
+    """Roteia para error_handling se análise IA falhar."""
+    if state.get("analysis_error"):
+        return "error_handling"
+    return "generate_report"
+```
+
+### Adição das Arestas Condicionais
+
+**No método `create_agent_graph()`, seção "ADICIONA ARESTAS":**
+
+```python
+# Aresta condicional após validação
+graph.add_conditional_edges(
+    "validate_input",
+    route_after_validation,
+    {
+        "error_handling": "error_handling",
+        "read_file": "read_file"
+    }
+)
+
+# Aresta condicional após parsing
+graph.add_conditional_edges(
+    "parse_events",
+    route_after_parsing,
+    {
+        "error_handling": "error_handling",
+        "analyze_patterns": "analyze_patterns"
+    }
+)
+
+# Aresta condicional após detecção
+graph.add_conditional_edges(
+    "analyze_patterns",
+    route_after_detection,
+    {
+        "error_handling": "error_handling",
+        "interpret_with_llm": "interpret_with_llm"
+    }
+)
+
+# Aresta condicional após análise
+graph.add_conditional_edges(
+    "interpret_with_llm",
+    route_after_analysis,
+    {
+        "error_handling": "error_handling",
+        "generate_report": "generate_report"
+    }
+)
+```
+
+### Fluxo Normal vs Fluxo com Erro
+
+**Caminho de Sucesso:**
+```
+validate_input [✓] → read_file [✓] → parse_events [✓] → 
+analyze_patterns [✓] → interpret_with_llm [✓] → generate_report [✓] → END
+```
+
+**Caminho com Erro (exemplo: parsing falha):**
+```
+validate_input [✓] → read_file [✓] → parse_events [ERROR] → 
+[route_after_parsing retorna "error_handling"] → error_handling → END
+```
+
+**Caminho com Erro Inicial:**
+```
+validate_input [ERROR] → 
+[route_after_validation retorna "error_handling"] → error_handling → END
+```
+
+### Campos de Erro no Estado
+
+Os 4 novos campos no `LogAnalysisState` permitem roteamento granular:
+
+```python
+class LogAnalysisState(TypedDict):
+    # ... campos anteriores ...
+    
+    # Flags de erro específicas por etapa (para roteamento condicional)
+    validation_error: Optional[str]  # Erro na validação
+    parsing_error: Optional[str]     # Erro no parsing
+    detection_error: Optional[str]   # Erro na detecção de padrões
+    analysis_error: Optional[str]    # Erro na análise IA
+```
+
+Cada nó seta o campo correspondente quando ocorre erro:
+- `validate_input_node` seta `validation_error`
+- `parse_events_node` seta `parsing_error`
+- `analyze_patterns_node` seta `detection_error`
+- `interpret_with_llm_node` seta `analysis_error`
+
+### Benefícios da Implementação
+
+1. **Robustez:** Erros não causam travamento
+2. **Rastreabilidade:** Fácil identificar em qual etapa ocorreu erro
+3. **Granularidade:** Cada etapa tem seu próprio tipo de erro
+4. **Extensibilidade:** Fácil adicionar novas condições
+5. **Manutenibilidade:** Lógica de roteamento é explícita
+
+---
+
 ## Detalhamento dos Nós
 
 ### 1. **validate_input_node** (Validação)

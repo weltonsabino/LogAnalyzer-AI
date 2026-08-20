@@ -28,6 +28,10 @@ class LogAnalysisState(TypedDict):
         llm_provider (str): Provedor LLM a usar (openai ou groq). Padrão: openai
         is_valid (bool): Se a entrada e processamento são válidos
         error_message (Optional[str]): Descrição do erro se algo deu errado
+        validation_error (Optional[str]): Erro específico de validação
+        parsing_error (Optional[str]): Erro específico de parsing
+        detection_error (Optional[str]): Erro específico de detecção de padrões
+        analysis_error (Optional[str]): Erro específico de análise IA
     """
 
     # Entrada e conteúdo do arquivo
@@ -49,3 +53,9 @@ class LogAnalysisState(TypedDict):
     llm_provider: Optional[str]
     is_valid: bool
     error_message: Optional[str]
+
+    # Flags de erro específicas por etapa (para roteamento condicional)
+    validation_error: Optional[str]
+    parsing_error: Optional[str]
+    detection_error: Optional[str]
+    analysis_error: Optional[str]
