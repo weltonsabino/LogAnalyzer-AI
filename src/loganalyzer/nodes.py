@@ -26,7 +26,7 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     Este nó:
     - Verifica se file_path foi fornecido
     - Valida se arquivo existe e é legível (verificações básicas)
-    - Define flag is_valid
+    - Define flag is_valid e validation_error
     - Popula metadata com timestamp de validação
 
     Argumentos:
@@ -43,8 +43,10 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
 
     if not is_valid:
         state["error_message"] = message
+        state["validation_error"] = message
     else:
         state["error_message"] = None
+        state["validation_error"] = None
 
     # Popula metadata com timestamp de validação
     state["metadata"]["validation_timestamp"] = datetime.now().isoformat()
@@ -112,7 +114,7 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
     Este nó:
     - Chama a ferramenta parser
     - Extrai eventos do conteúdo bruto do log
-    - Popula lista parsed_events
+    - Popula lista parsed_events e flag parsing_error
     - Trata vários formatos de log (JSON, texto plano, customizado)
 
     Argumentos:
@@ -134,17 +136,22 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
         # Valida que eventos foram extraídos
         if not events:
             state["is_valid"] = False
-            state["error_message"] = "Nenhum evento foi parseado do arquivo"
+            error_msg = "Nenhum evento foi parseado do arquivo"
+            state["error_message"] = error_msg
+            state["parsing_error"] = error_msg
             return state
 
         # Popula eventos no estado
         state["parsed_events"] = events
+        state["parsing_error"] = None
         state["metadata"]["parsed_events_count"] = len(events)
         state["metadata"]["parse_timestamp"] = datetime.now().isoformat()
 
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao parsear log: {str(e)}"
+        error_msg = f"Erro ao parsear log: {str(e)}"
+        state["error_message"] = error_msg
+        state["parsing_error"] = error_msg
 
     return state
 
@@ -156,7 +163,7 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
     Este nó:
     - Chama a ferramenta detector
     - Identifica erros, avisos, eventos críticos
-    - Agrupa eventos similares
+    - Agrupa eventos similares e seta flag detection_error se falhar
     - Usa regex e heurísticas para detecção de padrões
     - Popula listas errors_found, warnings_found, critical_events
 
@@ -180,6 +187,7 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         state["errors_found"] = analysis.get("errors", [])
         state["warnings_found"] = analysis.get("warnings", [])
         state["critical_events"] = analysis.get("critical", [])
+        state["detection_error"] = None
 
         # Atualiza metadados
         state["metadata"]["errors_count"] = len(state["errors_found"])
@@ -189,7 +197,9 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
 
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao analisar padrões: {str(e)}"
+        error_msg = f"Erro ao analisar padrões: {str(e)}"
+        state["error_message"] = error_msg
+        state["detection_error"] = error_msg
 
     return state
 
@@ -200,7 +210,7 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
     Este nó:
     - Chama LangChain/LLM com contexto de análise
-    - Gera analysis_result estruturado
+    - Gera analysis_result estruturado com flag analysis_error se falhar
     - Adiciona recomendações e insights
     - Pode chamar LLM múltiplas vezes para diferentes aspectos
 
@@ -232,6 +242,7 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
         # Popula resultado no estado
         state["analysis_result"] = analysis_result
+        state["analysis_error"] = None
 
         # Atualiza metadados
         state["metadata"]["llm_analysis_timestamp"] = datetime.now().isoformat()
@@ -240,7 +251,9 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao interpretar com LLM: {str(e)}"
+        error_msg = f"Erro ao interpretar com LLM: {str(e)}"
+        state["error_message"] = error_msg
+        state["analysis_error"] = error_msg
 
     return state
 

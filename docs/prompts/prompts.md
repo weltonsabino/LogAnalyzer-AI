@@ -25,6 +25,7 @@
 | 11 | 2026-07-14 02:30 | W. Sabino | Suporte multi-provider (impl) | 🔨 Implementação |
 | 12 | 2026-07-14 03:45 | W. Sabino | Suporte multi-provider (final) | ✨ Conclusão |
 | 13 | 2026-08-17 17:30 | W. Sabino | Análise + Planejamento Projeto Final M2.2 | 📊 Evolução |
+| 14 | 2026-08-20 14:00 | W. Sabino | Task #28: Error Handling com Arestas Condicionais | 🔄 Implementação |
 
 ---
 
@@ -203,9 +204,9 @@ Validação final e estatísticas
 
 | Métrica | Valor |
 |---------|-------|
-| Total de prompts | 12 |
-| Período | 7 dias |
-| Prompts/dia (média) | 1.7 |
+| Total de prompts | 14 |
+| Período | 11 dias (20 de julho - 20 de agosto) |
+| Prompts/dia (média) | 1.3 |
 | Responsáveis | 2 (Welton, W. Sabino) |
 
 ### Implementação
@@ -289,9 +290,9 @@ docs/prompts/
 
 ---
 
-**Última atualização:** 20 de Julho, 2026  
+**Última atualização:** 20 de Agosto, 2026  
 **Status:** ✅ Completo — Pronto para avaliação  
-**Próximo:** Revisão final e entrega em 20/07/2026 às 22h
+**Próximo:** Task #29 (Setup Kanban)
 
 
 
@@ -363,4 +364,122 @@ Este prompt consolidou toda a estratégia de evolução do mini-projeto para pro
 **Status:** ✅ ANÁLISE E PLANEJAMENTO COMPLETO
 
 Referência completa: `docs/prompts/2026-08-17_análise-e-planejamento-projeto-final-m2.2.md`
+
+
+---
+
+## 🔄 Prompt #14: Task #28 — Error Handling com Arestas Condicionais
+
+**Data:** 2026-08-20 14:00:00  
+**Responsável:** Welton Sabino  
+**Fase:** 🔄 Implementação | 📊 Projeto Final M2.2
+
+### Contexto
+
+Primeira tarefa de implementação do Projeto Final M2.2. Task bloqueadora (P0) que resolve feedback crítico do mini-projeto M2.1: erro_handling node existe mas nunca é acionado. Score LangGraph esperado: 0.5 → 1.0.
+
+### Objetivo
+
+Implementar arestas condicionais no StateGraph para roteamento inteligente de erros, permitindo que qualquer falha seja capturada e processada graciosamente pelo nó error_handling.
+
+### Entregas
+
+**1. Campos de Erro no Estado**
+- ✅ `validation_error: Optional[str]`
+- ✅ `parsing_error: Optional[str]`
+- ✅ `detection_error: Optional[str]`
+- ✅ `analysis_error: Optional[str]`
+
+Adicionados em `src/loganalyzer/models.py`
+
+**2. Funções de Roteamento (4)**
+- ✅ `route_after_validation()` — Roteia se há validation_error
+- ✅ `route_after_parsing()` — Roteia se há parsing_error
+- ✅ `route_after_detection()` — Roteia se há detection_error
+- ✅ `route_after_analysis()` — Roteia se há analysis_error
+
+Implementadas em `src/loganalyzer/agent.py` (linhas 24-89)
+
+**3. Arestas Condicionais (4)**
+- ✅ `validate_input` → [condicional] → `error_handling` ou `read_file`
+- ✅ `parse_events` → [condicional] → `error_handling` ou `analyze_patterns`
+- ✅ `analyze_patterns` → [condicional] → `error_handling` ou `interpret_with_llm`
+- ✅ `interpret_with_llm` → [condicional] → `error_handling` ou `generate_report`
+
+Adicionadas em `src/loganalyzer/agent.py` (linhas 157-215)
+
+**4. Nós Atualizados (4)**
+- ✅ `validate_input_node()` → Seta `validation_error` se erro
+- ✅ `parse_events_node()` → Seta `parsing_error` se erro
+- ✅ `analyze_patterns_node()` → Seta `detection_error` se erro
+- ✅ `interpret_with_llm_node()` → Seta `analysis_error` se erro
+
+Modificados em `src/loganalyzer/nodes.py`
+
+**5. Testes Completos (13 testes)**
+- ✅ 2 testes de validação (roteamento + sucesso)
+- ✅ 2 testes de parsing (roteamento + sucesso)
+- ✅ 2 testes de detecção (roteamento + sucesso)
+- ✅ 2 testes de análise (roteamento + sucesso)
+- ✅ 3 testes de error_handler (sumário, is_valid, metadata)
+- ✅ 2 testes de propagação de flags
+
+Arquivo: `tests/test_error_handling.py` (288 linhas)
+
+**6. Documentação**
+- ✅ `ARCHITECTURE.md`: +Seção "Arestas Condicionais" (~150 linhas)
+- ✅ `README.md`: +Seção "Error Handling" com exemplos
+- ✅ Docstrings completas em português
+
+### Fluxo de Funcionamento
+
+**Caminho Sucesso:**
+```
+validate_input [✓] → read_file [✓] → parse_events [✓] 
+→ analyze_patterns [✓] → interpret_with_llm [✓] → generate_report [✓] → END
+```
+
+**Caminho com Erro (ex: parsing falha):**
+```
+validate_input [✓] → read_file [✓] → parse_events [ERROR] 
+→ route_after_parsing retorna "error_handling" 
+→ error_handling [processa erro] → END
+```
+
+### Critérios de Aceição
+
+| Critério | Status |
+|----------|--------|
+| ✅ 4 funções de roteamento | ATENDE |
+| ✅ 4 arestas condicionais | ATENDE |
+| ✅ 4 nós com flags de erro | ATENDE |
+| ✅ 13 testes (> 5+) | ATENDE |
+| ✅ ARCHITECTURE.md atualizado | ATENDE |
+| ✅ README.md atualizado | ATENDE |
+| ✅ Score LangGraph: 0.5 → 1.0 | ESPERADO |
+
+### Impacto
+
+- **Robustez:** Erros não causam mais travamento ou comportamento indefinido
+- **Rastreabilidade:** Cada tipo de erro é capturado em sua etapa específica
+- **Manutenibilidade:** Lógica de roteamento centralizada e fácil de estender
+- **Score:** +0.5 pontos esperados no mini-projeto (0.5 → 1.0)
+
+### Estatísticas Finais
+
+| Métrica | Valor |
+|---------|-------|
+| Arquivos modificados | 6 |
+| Arquivos novos | 1 |
+| Funções adicionadas | 4 |
+| Arestas adicionadas | 4 |
+| Campos de erro | 4 |
+| Testes criados | 13 |
+| Linhas de código | ~700+ |
+| Remoções | 0 (apenas adições) |
+
+**Status:** ✅ IMPLEMENTAÇÃO COMPLETA E VALIDADA
+
+Referência: `docs/prompts/2026-08-20_task-28-corrigir-error-handling.md`  
+Resumo de Execução: `docs/prompts/2026-08-20_task-28-EXECUTION_SUMMARY.md`
 
