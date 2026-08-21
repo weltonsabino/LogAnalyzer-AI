@@ -9,6 +9,7 @@ from typing import Optional
 from langgraph.graph import StateGraph, END
 
 from src.loganalyzer.models import LogAnalysisState
+from src.loganalyzer.observability import TraceCollector
 from src.loganalyzer.nodes import (
     validate_input_node,
     read_file_node,
@@ -300,6 +301,9 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
     Retorno:
         LogAnalysisState inicial pronto para execução do agente
     """
+    # Cria coletor de observabilidade com execution_id único
+    trace_collector = TraceCollector()
+    
     return LogAnalysisState(
         file_path=file_path,
         file_content="",
@@ -322,4 +326,6 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
         detection_error=None,
         analysis_error=None,
         severity_routes={},
+        trace_collector=trace_collector,
+        execution_id=trace_collector.execution_id,
     )
