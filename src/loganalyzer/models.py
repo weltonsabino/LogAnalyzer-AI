@@ -32,6 +32,7 @@ class LogAnalysisState(TypedDict):
         parsing_error (Optional[str]): Erro específico de parsing
         detection_error (Optional[str]): Erro específico de detecção de padrões
         analysis_error (Optional[str]): Erro específico de análise IA
+        severity_routes (dict): Contagem de eventos por severidade {HIGH: N, MEDIUM: N, LOW: N}
     """
 
     # Entrada e conteúdo do arquivo
@@ -59,3 +60,6 @@ class LogAnalysisState(TypedDict):
     parsing_error: Optional[str]
     detection_error: Optional[str]
     analysis_error: Optional[str]
+
+    # Roteamento por severidade
+    severity_routes: Dict[str, int]

@@ -366,6 +366,63 @@ Veja `examples/sample_output.md` para saída completa.
 
 ---
 
+## 🎯 Análise Inteligente por Severidade (Task #30)
+
+O agente agora roteia automaticamente o processamento com base na severidade dos eventos encontrados:
+
+### Roteamento Automático
+
+```
+eventos parseados
+    ↓
+route_by_severity()  ← Função condicional
+    ├─ Se CRITICAL/ERROR → Nó especializado para HIGH severity
+    ├─ Se WARNING        → Nó especializado para MEDIUM severity  
+    └─ Se INFO/DEBUG     → Nó especializado para LOW severity
+    ↓
+Análise LLM especializada
+```
+
+### Três Tipos de Análise
+
+| Nível | Trigger | LLM Focus | Urgência |
+|-------|---------|-----------|----------|
+| **HIGH** | CRITICAL, ERROR | Recuperação de incidentes | IMEDIATA |
+| **MEDIUM** | WARNING | Prevenção proativa | NORMAL |
+| **LOW** | INFO, DEBUG, TRACE | Insights e otimização | BAIXA |
+
+### Exemplo: Log com Multiple Severidades
+
+**Input:** Log com erros, avisos e info misturados
+```
+ERROR: Connection lost to database
+WARNING: Retrying connection attempt 2/5
+INFO: Successfully reconnected
+```
+
+**Processamento:** 
+1. Parser extrai 3 eventos
+2. Detector identifica: 1 ERROR (HIGH), 1 WARNING (MEDIUM), 1 INFO (LOW)
+3. `route_by_severity()` prioriza → **rota HIGH**
+4. `analyze_high_severity_node()` processa com foco em incidentes
+5. LLM gera recomendações urgentes
+
+**Output:** `severity_level: "HIGH"`, `urgency: "IMEDIATA"` com recomendações de ação
+
+### Rastreabilidade
+
+Campo `severity_routes` armazena contagem:
+```python
+# Estado após processamento
+state["severity_routes"] = {
+    "HIGH": 1,    # Eventos críticos/erro
+    "MEDIUM": 1,  # Eventos warning
+    "LOW": 1      # Eventos info/debug
+}
+```
+
+---
+
 ## 🏗️ Estrutura do Projeto
 
 ```

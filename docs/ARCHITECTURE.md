@@ -487,6 +487,118 @@ Quando `OPENAI_API_KEY` não está configurada ou chamada falha:
 
 ---
 
+## Ramificação Condicional por Severidade (Task #30)
+
+### Contexto
+
+Após análise de padrões, o agente agora roteia para processamento especializado baseado na severidade máxima dos eventos detectados.
+
+### Função de Roteamento
+
+```python
+def route_by_severity(state: LogAnalysisState) -> str:
+    """
+    Roteia análise com base na severidade dos eventos.
+    
+    Retorna:
+        - "analyze_high_severity": Se há CRITICAL ou ERROR
+        - "analyze_medium_severity": Se há WARNING
+        - "analyze_low_severity": Se há INFO, DEBUG, TRACE
+    """
+```
+
+### Três Caminhos de Análise Especializados
+
+#### 1. **Alta Severidade** (CRITICAL, ERROR)
+- **Processamento:** Foco em incidentes críticos
+- **LLM Context:** Instruções para recuperação de falhas
+- **Saída:** `severity_level = "HIGH"`, `urgency = "IMEDIATA"`
+- **Nó:** `analyze_high_severity_node()`
+
+#### 2. **Severidade Média** (WARNING)
+- **Processamento:** Análise balanceada preventiva
+- **LLM Context:** Instruções padrão
+- **Saída:** `severity_level = "MEDIUM"`, `urgency = "NORMAL"`
+- **Nó:** `analyze_medium_severity_node()`
+
+#### 3. **Baixa Severidade** (INFO, DEBUG, TRACE)
+- **Processamento:** Análise simplificada com insights
+- **LLM Context:** Foco em otimização
+- **Saída:** `severity_level = "LOW"`, `urgency = "BAIXA"`
+- **Nó:** `analyze_low_severity_node()`
+
+### Diagrama de Roteamento
+
+```
+parse_events
+      │
+      ▼
+analyze_patterns
+      │
+      ▼
+route_by_severity (função condicional)
+      │
+    ┌─┼─┐
+    │ │ │
+┌───▼─┴─┴─────────────────────────────────────┐
+│   Ramificação Condicional (3 caminhos)      │
+│  ┌──────────────────────────────────────┐   │
+│  │ Se há CRITICAL/ERROR:                │   │
+│  │   → analyze_high_severity            │   │
+│  ├──────────────────────────────────────┤   │
+│  │ Elif há WARNING:                     │   │
+│  │   → analyze_medium_severity          │   │
+│  ├──────────────────────────────────────┤   │
+│  │ Else (INFO/DEBUG/TRACE):             │   │
+│  │   → analyze_low_severity             │   │
+│  └──────────────────────────────────────┘   │
+└────────────────────────────────────────────┘
+      │
+      │ (3 nós convergem)
+      │
+      ▼
+interpret_with_llm
+      │
+      ▼
+generate_report
+      │
+      ▼
+FIM
+```
+
+### Campo de Rastreabilidade
+
+Um novo campo foi adicionado ao `LogAnalysisState`:
+
+```python
+severity_routes: Dict[str, int]
+# Exemplo: {"HIGH": 2, "MEDIUM": 1, "LOW": 5}
+# Armazena contagem de eventos por nível de severidade
+```
+
+### Análise Paralela (Task #30)
+
+Adicionalmente, foi implementado um nó de análise paralela que pode processar múltiplos aspectos simultaneamente:
+
+```python
+async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Analisa padrões em paralelo usando asyncio.gather()
+    
+    Processa em paralelo:
+        - Padrões recorrentes
+        - Frequência por severidade
+        - Anomalias em timestamps
+    """
+```
+
+**Resultado:** Campo `analysis_result["parallel_patterns"]` com:
+- `recurrent_patterns`: Mensagens que aparecem múltiplas vezes
+- `frequency_by_level`: Contagem de eventos por nível
+- `anomalies`: Detecta timestamps fora de ordem
+
+---
+
 ## Limitações Conhecidas
 
 1. **Parsing:** Suporta principalmente formatos baseados em texto
@@ -515,6 +627,6 @@ Quando `OPENAI_API_KEY` não está configurada ou chamada falha:
 
 ---
 
-**Status:** ✅ Implementado e Funcional  
-**Última atualização:** 13 de Julho, 2026  
-**Versão:** 1.0
+**Status:** ✅ Implementado e Funcional (Inclui Task #30: Ramificação + Paralelização)  
+**Última atualização:** 20 de Agosto, 2026  
+**Versão:** 2.0
