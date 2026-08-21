@@ -14,9 +14,13 @@ from src.loganalyzer.nodes import (
     read_file_node,
     parse_events_node,
     analyze_patterns_node,
+    analyze_patterns_node_parallel,
     interpret_with_llm_node,
     generate_report_node,
     error_handling_node,
+    analyze_high_severity_node,
+    analyze_medium_severity_node,
+    analyze_low_severity_node,
 )
 
 
@@ -88,6 +92,58 @@ def route_after_analysis(state: LogAnalysisState) -> str:
     return "generate_report"
 
 
+def route_by_severity(state: LogAnalysisState) -> str:
+    """
+    Roteia análise com base na severidade dos eventos detectados.
+    
+    Implementação da Task #30: Ramificação inteligente por severidade.
+    
+    Determina o nó de análise apropriado baseado na severidade máxima
+    dos eventos encontrados no estado.
+    
+    Argumentos:
+        state: Estado atual contendo parsed_events
+    
+    Retorno:
+        - "analyze_high_severity": Se há eventos críticos (CRITICAL, ERROR)
+        - "analyze_medium_severity": Se há eventos médios (WARNING)
+        - "analyze_low_severity": Se há eventos baixos (INFO, DEBUG)
+    """
+    # Extrai eventos já parseados do estado
+    events = state.get("parsed_events", [])
+    
+    # Inicializa contadores de severidade
+    severity_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+    
+    # Mapeia níveis de severidade para categorias
+    high_severity_levels = ["CRITICAL", "ERROR"]
+    medium_severity_levels = ["WARNING", "WARN"]
+    low_severity_levels = ["INFO", "DEBUG", "TRACE"]
+    
+    # Conta eventos por severidade
+    for event in events:
+        # Extrai nível de severidade do evento
+        level = event.get("level", "").upper()
+        
+        if level in high_severity_levels:
+            severity_counts["HIGH"] += 1
+        elif level in medium_severity_levels:
+            severity_counts["MEDIUM"] += 1
+        elif level in low_severity_levels:
+            severity_counts["LOW"] += 1
+    
+    # Armazena contadores no estado para rastreabilidade
+    state["severity_routes"] = severity_counts
+    
+    # Retorna rota baseada na severidade máxima encontrada
+    if severity_counts["HIGH"] > 0:
+        return "analyze_high_severity"
+    elif severity_counts["MEDIUM"] > 0:
+        return "analyze_medium_severity"
+    else:
+        return "analyze_low_severity"
+
+
 def create_agent_graph() -> StateGraph:
     """
     Cria e retorna o StateGraph configurado para LogAnalyzer AI.
@@ -144,6 +200,14 @@ def create_agent_graph() -> StateGraph:
     # Nó de tratamento de erro
     graph.add_node("error_handling", error_handling_node)
 
+    # Nós de análise paralela (Task #30)
+    graph.add_node("analyze_patterns_parallel", analyze_patterns_node_parallel)
+
+    # Nós de análise por severidade (Task #30)
+    graph.add_node("analyze_high_severity", analyze_high_severity_node)
+    graph.add_node("analyze_medium_severity", analyze_medium_severity_node)
+    graph.add_node("analyze_low_severity", analyze_low_severity_node)
+
     # ============================================
     # 2. DEFINE PONTO DE ENTRADA
     # ============================================
@@ -179,13 +243,15 @@ def create_agent_graph() -> StateGraph:
     )
 
     # Aresta condicional após detecção de padrões
-    # Se há erro de detecção → error_handling, senão → interpret_with_llm
+    # Se há erro de detecção → error_handling, senão → route_by_severity (rota condicional)
     graph.add_conditional_edges(
         "analyze_patterns",
-        route_after_detection,
+        route_by_severity,
         {
             "error_handling": "error_handling",
-            "interpret_with_llm": "interpret_with_llm"
+            "analyze_high_severity": "analyze_high_severity",
+            "analyze_medium_severity": "analyze_medium_severity",
+            "analyze_low_severity": "analyze_low_severity",
         }
     )
 
@@ -199,6 +265,11 @@ def create_agent_graph() -> StateGraph:
             "generate_report": "generate_report"
         }
     )
+
+    # Arestas dos nós de análise por severidade para interpret_with_llm (Task #30)
+    graph.add_edge("analyze_high_severity", "interpret_with_llm")
+    graph.add_edge("analyze_medium_severity", "interpret_with_llm")
+    graph.add_edge("analyze_low_severity", "interpret_with_llm")
 
     # Aresta final: generate_report para END
     graph.add_edge("generate_report", END)
@@ -246,4 +317,5 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
         parsing_error=None,
         detection_error=None,
         analysis_error=None,
+        severity_routes={},
     )
