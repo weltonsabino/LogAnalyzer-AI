@@ -423,6 +423,74 @@ state["severity_routes"] = {
 
 ---
 
+## 📋 Cenários de Teste (Task #31)
+
+LogAnalyzer AI foi validado com múltiplos cenários de teste para demonstrar robustez em diferentes contextos:
+
+### Cenário 1: Operação Normal
+
+- **Arquivo:** `examples/sample.log` (47 linhas)
+- **Tipo:** Aplicação rodando normalmente com alguns avisos
+- **Severidade:** LOW/MEDIUM (sem eventos críticos)
+- **Output:** `examples/sample_output.md`
+- **Teste:** Testes padrão do suite
+
+**Reproduzir:**
+```bash
+python -m src.loganalyzer.main examples/sample.log
+```
+
+### Cenário 2: Degradação e Falha (NOVO)
+
+- **Arquivo:** `tests/fixtures/failure_logs/scenario_failure.log` (43 linhas)
+- **Tipo:** Cascata de falhas — database → cache → memory → crash
+- **Severidade:** HIGH (6 CRITICAL events, 15 ERROR events)
+- **Output:** `docs/examples/scenario_failure_output.md`
+- **Testes:** `tests/test_scenario_failure.py` (9 testes)
+
+**Padrão:**
+```
+T=0s: Startup normal (INFO)
+T=5s: Database lento (WARNING)
+T=10s: Cache falha (ERROR)
+T=30s: Memory crescente (WARNING)
+T=50s: Pool esgotado (CRITICAL)
+T=60s: Ambos database falham (CRITICAL)
+T=70s: Out of memory (CRITICAL)
+T=80s: Shutdown + restart falha (CRITICAL)
+```
+
+**Reproduzir:**
+```bash
+# Executar análise
+python -m src.loganalyzer.main tests/fixtures/failure_logs/scenario_failure.log
+
+# Executar testes
+pytest tests/test_scenario_failure.py -v
+
+# Com cobertura
+pytest tests/test_scenario_failure.py --cov=src.loganalyzer
+```
+
+**Documentação Completa:**
+- 📖 `docs/examples/scenario_failure.md` — Descrição, fluxo, análise esperada
+- 📊 `docs/examples/scenario_failure_output.md` — Saída real da análise
+
+### Comparação de Cenários
+
+| Aspecto | Normal | Falha |
+|---------|--------|-------|
+| Eventos | 47 | 43 |
+| CRITICAL | 0 | 6 |
+| ERROR | 0 | 15 |
+| WARNING | 9 | 13 |
+| INFO | 38 | 9 |
+| Severity Routing | LOW/MEDIUM | HIGH (IMEDIATA) |
+| Analysis Focus | Otimizações | Recuperação |
+| Recomendações | Preventivas | Urgentes |
+
+---
+
 ## 🏗️ Estrutura do Projeto
 
 ```

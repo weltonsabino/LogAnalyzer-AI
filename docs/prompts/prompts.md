@@ -3,7 +3,7 @@
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
 **Período:** 07/07/2026 — 20/08/2026  
-**Total de Prompts:** 15  
+**Total de Prompts:** 16  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -27,6 +27,7 @@
 | 13 | 2026-08-17 17:30 | W. Sabino | Análise + Planejamento Projeto Final M2.2 | 📊 Evolução |
 | 14 | 2026-08-20 14:00 | W. Sabino | Task #28: Error Handling com Arestas Condicionais | 🔄 Implementação |
 | 15 | 2026-08-20 20:08 | W. Sabino | Task #30: LangGraph Avançado - Ramificação + Paralelização | 🚀 Arquitetura |
+| 16 | 2026-08-20 21:30 | W. Sabino | Task #31: Segundo Cenário de Uso (Risco/Falha) | 📋 Testes |
 
 
 ---
@@ -498,4 +499,18 @@ Implementar roteamento inteligente por severidade e análise paralela de padrõe
 **Status:** ✅ PROMPT ESTRUTURADO E VALIDADO
 
 Referência: `docs/prompts/2026-08-20_task-30-langgraph-avancado.md`
+
+
+---
+
+## 📊 Prompt #16: Task #31 — Segundo Cenário de Uso (Risco/Falha)
+
+**Data:** 2026-08-20 21:30  
+**Responsável:** Welton Sabino
+
+Criar segundo cenário de teste completo demonstrando LogAnalyzer AI processando logs com degradação progressiva, falhas críticas e anomalias. Inclui: arquivo `scenario_failure.log` (50+ linhas), 6+ testes, documentação em `docs/examples/scenario_failure.md`, output exemplo, e integração com README.md. **NÃO fazer commits ou branches** — operações git manuais.
+
+**Status:** ✅ PROMPT ESTRUTURADO E VALIDADO
+
+Referência: `docs/prompts/2026-08-20_task-31-segundo-cenario-uso.md`
 
