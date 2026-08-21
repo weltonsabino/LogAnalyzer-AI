@@ -18,6 +18,7 @@ from src.loganalyzer.tools.parser import parse_log_content
 from src.loganalyzer.tools.detector import detect_patterns
 from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
 from src.loganalyzer.tools.formatter import format_report
+from src.loganalyzer.governance import GovernancePolicy, AutonomyLevel
 
 
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
@@ -25,10 +26,11 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     Valida o caminho do arquivo de log e prepara para leitura.
 
     Este nó:
+    - Aplica validação de governança (segurança adversarial)
     - Verifica se file_path foi fornecido
     - Valida se arquivo existe e é legível (verificações básicas)
     - Define flag is_valid e validation_error
-    - Popula metadata com timestamp de validação
+    - Popula metadata com timestamp de validação e status de governança
 
     Argumentos:
         state: Estado atual de execução
@@ -36,8 +38,30 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     Retorno:
         Estado atualizado com resultados de validação
     """
+    # Inicializa política de governança (nível ANALYZE = padrão)
+    policy = GovernancePolicy(autonomy_level=AutonomyLevel.ANALYZE)
+    file_path = state.get("file_path", "")
+
+    # Validação de governança (adversarial) — executa ANTES de tudo
+    governance_safe, governance_msg = policy.validate_file_path(file_path)
+    state["metadata"]["governance_check_timestamp"] = datetime.now().isoformat()
+
+    if not governance_safe:
+        # Entrada adversarial detectada — bloqueia imediatamente
+        state["is_valid"] = False
+        state["error_message"] = f"Bloqueado por governança: {governance_msg}"
+        state["validation_error"] = f"Bloqueado por governança: {governance_msg}"
+        state["metadata"]["governance_status"] = "bloqueado"
+        state["metadata"]["governance_reason"] = governance_msg
+        state["metadata"]["validation_timestamp"] = datetime.now().isoformat()
+        state["metadata"]["validation_message"] = governance_msg
+        return state
+
+    # Governança aprovada — prossegue com validação padrão
+    state["metadata"]["governance_status"] = "aprovado"
+
     # Valida arquivo usando ferramenta
-    is_valid, message = validate_file_path(state.get("file_path", ""))
+    is_valid, message = validate_file_path(file_path)
 
     # Atualiza estado com resultado de validação
     state["is_valid"] = is_valid

@@ -2,8 +2,8 @@
 
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
-**Período:** 07/07/2026 — 20/08/2026  
-**Total de Prompts:** 16  
+**Período:** 07/07/2026 — 21/08/2026  
+**Total de Prompts:** 17  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -28,6 +28,7 @@
 | 14 | 2026-08-20 14:00 | W. Sabino | Task #28: Error Handling com Arestas Condicionais | 🔄 Implementação |
 | 15 | 2026-08-20 20:08 | W. Sabino | Task #30: LangGraph Avançado - Ramificação + Paralelização | 🚀 Arquitetura |
 | 16 | 2026-08-20 21:30 | W. Sabino | Task #31: Segundo Cenário de Uso (Risco/Falha) | 📋 Testes |
+| 17 | 2026-08-21 00:20 | W. Sabino | Task #32: Segurança Adversarial + Limites de Autonomia | 🔒 Segurança |
 
 
 ---
@@ -514,3 +515,17 @@ Criar segundo cenário de teste completo demonstrando LogAnalyzer AI processando
 
 Referência: `docs/prompts/2026-08-20_task-31-segundo-cenario-uso.md`
 
+
+
+---
+
+## 🔒 Prompt #17: Task #32 — Segurança Adversarial + Limites de Autonomia
+
+**Data:** 2026-08-21 00:20  
+**Responsável:** Welton Sabino
+
+Implementar módulo de governança (`src/loganalyzer/governance.py`) com AutonomyLevel (READ_ONLY, ANALYZE, RECOMMEND, EXECUTE), GovernancePolicy e InputValidator. Criar testes adversariais (`tests/test_adversarial_security.py`) com 10+ cenários: prompt injection, path traversal, command injection, dados externos, limites de autonomia e aprovação humana. Integrar validação no `validate_input_node`. Documentar no README.md. **NÃO fazer commits ou branches** — operações git manuais.
+
+**Status:** ⏳ AGUARDANDO EXECUÇÃO
+
+Referência: `docs/prompts/2026-08-21_task-32-seguranca-adversarial.md`
