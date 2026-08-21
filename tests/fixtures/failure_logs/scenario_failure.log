@@ -1,0 +1,51 @@
+2026-08-20 14:00:00 INFO Application starting on port 8080
+2026-08-20 14:00:01 INFO Loading database configuration from /etc/app/db.conf
+2026-08-20 14:00:02 INFO Initializing connection pool with 10 workers
+2026-08-20 14:00:03 INFO Cache provider: Redis 6.2.1
+2026-08-20 14:00:04 INFO Starting health check routine every 30 seconds
+2026-08-20 14:00:05 WARNING Database connection slow: 2500ms (threshold: 1000ms)
+2026-08-20 14:00:06 INFO Retrying database connection (1/3)
+2026-08-20 14:00:08 INFO Database connection established successfully
+2026-08-20 14:00:09 INFO Loading API routes from configuration
+2026-08-20 14:00:10 ERROR Failed to connect to cache: Connection refused at localhost:6379
+2026-08-20 14:00:11 WARNING Retrying cache connection (1/3)
+2026-08-20 14:00:13 ERROR Cache connection failed again: timeout after 2000ms
+2026-08-20 14:00:14 WARNING Running without cache - performance degraded
+2026-08-20 14:00:15 INFO Application ready to accept requests
+2026-08-20 14:00:18 WARNING Thread pool utilization at 75% (threshold: 70%)
+2026-08-20 14:00:19 WARNING Request queue growing: 12 pending requests
+2026-08-20 14:00:20 INFO Received request from client 192.168.1.100
+2026-08-20 14:00:21 INFO Processing user query from session ABC123
+2026-08-20 14:00:25 WARNING Response time: 4200ms (threshold: 1000ms)
+2026-08-20 14:00:30 WARNING Memory usage at 72% (threshold: 80%)
+2026-08-20 14:00:35 WARNING Database query slow: 3500ms for large dataset
+2026-08-20 14:00:40 ERROR Memory pressure detected: 85% usage
+2026-08-20 14:00:41 ERROR Starting garbage collection - request processing delayed
+2026-08-20 14:00:45 WARNING Incoming requests queued: 45 pending
+2026-08-20 14:00:50 CRITICAL Database connection pool exhausted - 10/10 active
+2026-08-20 14:00:51 CRITICAL New requests being rejected - connection timeout
+2026-08-20 14:00:52 ERROR Failover database activated at 10.0.1.50
+2026-08-20 14:00:55 ERROR Failover connection attempt 1: Connection refused
+2026-08-20 14:00:58 ERROR Failover connection attempt 2: Connection timeout
+2026-08-20 14:01:00 CRITICAL Both primary and failover databases unreachable
+2026-08-20 14:01:01 ERROR Circuit breaker opened - halting database operations
+2026-08-20 14:01:02 ERROR All 45 pending requests rejected
+2026-08-20 14:01:03 CRITICAL Service health check failed
+2026-08-20 14:01:04 CRITICAL Memory usage critical: 95%
+2026-08-20 14:01:05 ERROR Out of memory exception in request handler
+2026-08-20 14:01:06 ERROR Stack trace: java.lang.OutOfMemoryError: heap space
+2026-08-20 14:01:07 CRITICAL Emergency shutdown initiated - recovery impossible
+2026-08-20 14:01:08 ERROR Closing all connections
+2026-08-20 14:01:09 ERROR Flushing pending operations
+2026-08-20 14:01:10 CRITICAL Service terminated abnormally
+2026-08-20 14:01:11 INFO Crash dump saved to /var/log/app/crash_2026-08-20_14-01-11.dump
+2026-08-20 14:01:12 INFO Attempting automatic restart
+2026-08-20 14:01:15 INFO Application restarting...
+2026-08-20 14:01:16 WARNING Max restart attempts: 3/3 reached
+2026-08-20 14:01:17 ERROR Unable to restart - database still unreachable
+2026-08-20 14:01:18 CRITICAL Service permanently down - manual intervention required
+2026-08-20 14:01:19 INFO Alerting operations team
+2026-08-20 14:01:20 INFO Alert sent to oncall@company.com
+2026-08-20 14:01:21 INFO Incident ID: INC-2026-0820-001
+2026-08-20 14:01:22 INFO Awaiting manual recovery
+2026-08-20 14:01:23 CRITICAL System unrecoverable - all services terminated

@@ -15,6 +15,7 @@ from src.loganalyzer.nodes import (
     parse_events_node,
     analyze_patterns_node,
     analyze_patterns_node_parallel,
+    analyze_patterns_parallel_sync,
     interpret_with_llm_node,
     generate_report_node,
     error_handling_node,
@@ -201,7 +202,7 @@ def create_agent_graph() -> StateGraph:
     graph.add_node("error_handling", error_handling_node)
 
     # Nós de análise paralela (Task #30)
-    graph.add_node("analyze_patterns_parallel", analyze_patterns_node_parallel)
+    graph.add_node("analyze_patterns_parallel", analyze_patterns_parallel_sync)
 
     # Nós de análise por severidade (Task #30)
     graph.add_node("analyze_high_severity", analyze_high_severity_node)
@@ -266,10 +267,13 @@ def create_agent_graph() -> StateGraph:
         }
     )
 
-    # Arestas dos nós de análise por severidade para interpret_with_llm (Task #30)
-    graph.add_edge("analyze_high_severity", "interpret_with_llm")
-    graph.add_edge("analyze_medium_severity", "interpret_with_llm")
-    graph.add_edge("analyze_low_severity", "interpret_with_llm")
+    # Arestas dos nós de análise por severidade para análise paralela (Task #30)
+    graph.add_edge("analyze_high_severity", "analyze_patterns_parallel")
+    graph.add_edge("analyze_medium_severity", "analyze_patterns_parallel")
+    graph.add_edge("analyze_low_severity", "analyze_patterns_parallel")
+
+    # Aresta da análise paralela para interpretação LLM
+    graph.add_edge("analyze_patterns_parallel", "interpret_with_llm")
 
     # Aresta final: generate_report para END
     graph.add_edge("generate_report", END)
