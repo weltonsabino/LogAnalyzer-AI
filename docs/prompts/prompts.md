@@ -3,7 +3,7 @@
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
 **Período:** 07/07/2026 — 21/08/2026  
-**Total de Prompts:** 17  
+**Total de Prompts:** 18  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -29,6 +29,7 @@
 | 15 | 2026-08-20 20:08 | W. Sabino | Task #30: LangGraph Avançado - Ramificação + Paralelização | 🚀 Arquitetura |
 | 16 | 2026-08-20 21:30 | W. Sabino | Task #31: Segundo Cenário de Uso (Risco/Falha) | 📋 Testes |
 | 17 | 2026-08-21 00:20 | W. Sabino | Task #32: Segurança Adversarial + Limites de Autonomia | 🔒 Segurança |
+| 18 | 2026-08-21 10:11 | W. Sabino | Task #33: Observabilidade Avançada (2+ Sinais) | 📊 Observabilidade |
 
 
 ---
@@ -529,3 +530,17 @@ Implementar módulo de governança (`src/loganalyzer/governance.py`) com Autonom
 **Status:** ⏳ AGUARDANDO EXECUÇÃO
 
 Referência: `docs/prompts/2026-08-21_task-32-seguranca-adversarial.md`
+
+
+---
+
+## 📊 Prompt #18: Task #33 — Observabilidade Avançada (2+ Sinais)
+
+**Data:** 2026-08-21 10:11  
+**Responsável:** Welton Sabino
+
+Implementar módulo de observabilidade (`src/loganalyzer/observability.py`) com TraceCollector centralizado, execution_id único (UUID), decorator @ObservabilityMiddleware para instrumentar nós. Adicionar retry com backoff exponencial (@with_retry) e timeout (@with_timeout=30s) em `file_reader.py`. Criar testes (`tests/test_observability.py`) com 7+ testes: initialization, add_trace, correlation, timeout, retry. Atualizar README.md e ARCHITECTURE.md com seção de observabilidade. **NÃO fazer commits ou branches** — operações git manuais.
+
+**Status:** 📋 PRONTO PARA IMPLEMENTAÇÃO
+
+Referência: `docs/prompts/2026-08-21_task-33-observabilidade-avancada.md`

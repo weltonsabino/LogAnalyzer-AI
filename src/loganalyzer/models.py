@@ -5,7 +5,10 @@ Define o estado compartilhado (LogAnalysisState) usado pelo StateGraph
 para manter informações durante a execução do agente.
 """
 
-from typing import TypedDict, Optional, List, Dict, Any
+from typing import TypedDict, Optional, List, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from loganalyzer.observability import TraceCollector
 
 
 class LogAnalysisState(TypedDict):
@@ -33,6 +36,8 @@ class LogAnalysisState(TypedDict):
         detection_error (Optional[str]): Erro específico de detecção de padrões
         analysis_error (Optional[str]): Erro específico de análise IA
         severity_routes (dict): Contagem de eventos por severidade {HIGH: N, MEDIUM: N, LOW: N}
+        trace_collector (Optional[TraceCollector]): Coletor de traces para observabilidade
+        execution_id (str): ID único de execução para correlação de traces
     """
 
     # Entrada e conteúdo do arquivo
@@ -63,3 +68,7 @@ class LogAnalysisState(TypedDict):
 
     # Roteamento por severidade
     severity_routes: Dict[str, int]
+
+    # Observabilidade e rastreamento
+    trace_collector: Optional[Any]  # TraceCollector type
+    execution_id: str

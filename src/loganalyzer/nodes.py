@@ -19,6 +19,7 @@ from src.loganalyzer.tools.detector import detect_patterns
 from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
 from src.loganalyzer.tools.formatter import format_report
 from src.loganalyzer.governance import GovernancePolicy, AutonomyLevel
+from src.loganalyzer.observability import observability_middleware
 
 
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:

@@ -271,6 +271,141 @@ print(result["report"])
 
 ---
 
+## 📊 Observabilidade Avançada
+
+A partir da **Task #33**, o LogAnalyzer AI implementa **2+ sinais de observabilidade correlacionados** para rastreamento completo de execução.
+
+### Sinais de Observabilidade Implementados
+
+#### Sinal 1: Logs Estruturados com TraceCollector
+```python
+from src.loganalyzer.observability import TraceCollector
+
+# Criar coletor com execution_id único
+collector = TraceCollector()
+
+# Adicionar traces
+collector.add_trace(
+    node_name="parse_events",
+    event_type="node_start",
+    data={"events_count": 150}
+)
+
+# Recuperar todos os traces
+traces = collector.get_traces()
+```
+
+#### Sinal 2: Correlação com execution_id
+Todos os traces de uma execução compartilham o mesmo `execution_id` (UUID), permitindo rastreamento end-to-end:
+
+```python
+# Sumário correlacionado
+summary = collector.get_correlation_summary()
+
+# Resultado:
+{
+    "execution_id": "a1b2c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c",
+    "trace_count": 42,
+    "duration_seconds": 3.245,
+    "event_counts": {
+        "node_start": 8,
+        "node_end": 7,
+        "error": 1,
+        "warning": 2
+    },
+    "status": "OK"
+}
+```
+
+#### Sinal 3: Timing com Spans (Bônus)
+Decorador `@observability_middleware` registra duração de cada nó:
+
+```python
+@observability_middleware(collector=collector)
+def my_node(state):
+    # Duração será registrada automaticamente
+    result = process_data(state)
+    return result
+
+# Trace registra:
+{
+    "event_type": "node_end",
+    "data": {
+        "duration_seconds": 1.234,
+        "success": True
+    }
+}
+```
+
+### Decoradores de Resiliência
+
+#### @with_timeout(seconds=30)
+Limita tempo de execução de funções:
+
+```python
+from src.loganalyzer.observability import with_timeout
+
+@with_timeout(seconds=30)
+def read_large_file(file_path):
+    return read_log_file(file_path)
+
+# Lança TimeoutError se exceder 30s
+```
+
+#### @with_retry(max_attempts=3, backoff=1.5)
+Retry automático com backoff exponencial:
+
+```python
+from src.loganalyzer.observability import with_retry
+
+@with_retry(max_attempts=3, backoff=1.5)
+def read_log_file(file_path):
+    # Tenta até 3 vezes com espera exponencial
+    # Apenas para erros transientes (timeout, permission, OSError)
+    return open(file_path).read()
+```
+
+### Integração com Agent
+
+O TraceCollector é integrado automaticamente:
+
+```python
+from src.loganalyzer.agent import get_initial_state
+
+# Estado inicial já inclui TraceCollector
+state = get_initial_state(file_path="/path/to/log.txt")
+
+# Acessar collector dentro do agente
+collector = state["trace_collector"]
+execution_id = state["execution_id"]
+```
+
+### Exemplo Completo
+
+```python
+from src.loganalyzer.observability import TraceCollector, observability_middleware
+
+# 1. Criar coletor
+collector = TraceCollector()
+print(f"Execution ID: {collector.execution_id}")
+
+# 2. Instrumentar função
+@observability_middleware(collector=collector)
+def analyze_logs(file_content):
+    return process_events(file_content)
+
+# 3. Executar
+result = analyze_logs(content)
+
+# 4. Obter resumo correlacionado
+summary = collector.get_correlation_summary()
+print(f"Status: {summary['status']}")
+print(f"Duração: {summary['duration_seconds']}s")
+print(f"Traces: {summary['trace_count']}")
+```
+
+---
+
 ## 🧪 Testes
 
 ### Executar Todos os Testes
