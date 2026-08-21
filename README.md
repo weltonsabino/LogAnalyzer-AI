@@ -542,6 +542,63 @@ LogAnalyzer-AI/
 - ✅ **`.env.example`:** Sem valores reais, apenas template
 - ✅ **Validações:** Implementadas em cada etapa
 - ✅ **Encoding:** UTF-8 padrão com fallback
+- ✅ **Governança:** Limites de autonomia e validação adversarial
+
+### Governança e Limites de Autonomia (Task #32)
+
+O LogAnalyzer AI implementa um sistema de governança que controla o nível de autonomia do agente e bloqueia entradas maliciosas antes de qualquer processamento.
+
+#### Níveis de Autonomia
+
+| Nível | Permissões | Aprovação Humana |
+|-------|-----------|-----------------|
+| `READ_ONLY` | Apenas leitura de arquivos | Não |
+| `ANALYZE` (padrão) | Leitura + análise + detecção de padrões | Não |
+| `RECOMMEND` | Análise + geração de relatório + recomendações | Não |
+| `EXECUTE` | Todas as ações, incluindo escrita/deleção | **Sim** |
+
+O agente opera no nível **ANALYZE** por padrão — pode ler e analisar logs, mas nunca executa ações destrutivas.
+
+#### Proteção Contra Entradas Adversariais
+
+O `InputValidator` detecta e bloqueia automaticamente:
+
+| Tipo de Ataque | Exemplo | Resultado |
+|---------------|---------|-----------|
+| Prompt Injection | `"; DROP logs; --"` | ❌ Bloqueado |
+| Path Traversal | `../../etc/passwd` | ❌ Bloqueado |
+| Command Injection | `$(rm -rf /)` | ❌ Bloqueado |
+| Null Byte | `file.log%00.exe` | ❌ Bloqueado |
+| Override de Regras | `SYSTEM: ignore rules` | ❌ Bloqueado |
+| Arquivo legítimo | `app.log` | ✅ Aprovado |
+
+#### Exemplo: Entrada Maliciosa Bloqueada
+
+```python
+from src.loganalyzer.agent import create_agent_graph, get_initial_state
+
+agent = create_agent_graph()
+state = get_initial_state("../../etc/passwd")
+result = agent.invoke(state)
+
+print(result["is_valid"])        # False
+print(result["error_message"])   # "Bloqueado por governança: Path traversal detectado..."
+print(result["metadata"]["governance_status"])  # "bloqueado"
+```
+
+#### Integração no Pipeline
+
+A validação de governança é a **primeira etapa** do nó `validate_input`:
+
+```
+file_path recebido
+    ↓
+[GovernancePolicy.validate_file_path()]  ← Bloqueia adversarial
+    ↓ (se aprovado)
+[validate_file_path()]  ← Verifica existência do arquivo
+    ↓
+Processamento normal
+```
 
 ### Como Configurar API Key (Seguro)
 

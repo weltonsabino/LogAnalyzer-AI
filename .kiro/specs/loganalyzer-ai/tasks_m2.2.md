@@ -196,10 +196,10 @@ Task #32 (Segurança Adversarial)
 
 ### Subtarefas
 
-- [ ] Criar `src/loganalyzer/governance.py`
-- [ ] Criar `tests/test_adversarial_security.py`
-- [ ] Integrar governance no agent
-- [ ] Documentar no README
+- [x] Criar `src/loganalyzer/governance.py`
+- [x] Criar `tests/test_adversarial_security.py`
+- [x] Integrar governance no agent
+- [x] Documentar no README
 
 ### Próxima Task
 
