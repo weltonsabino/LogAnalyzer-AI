@@ -274,6 +274,26 @@ def _generate_fallback_analysis(
     recommendations = []
     root_causes = []
 
+    # Identifica componentes afetados nas mensagens dos eventos
+    all_events = errors_found + warnings_found + critical_events
+    all_messages = " ".join(
+        event.get("message", "") for event in all_events
+    ).lower()
+
+    # Detecta componentes mencionados
+    affected_components = []
+    component_keywords = {
+        "database": ["database", "db", "sql", "connection pool"],
+        "cache": ["cache", "redis", "memcached"],
+        "memory": ["memory", "heap", "out of memory", "oom"],
+        "connection": ["connection", "timeout", "refused"],
+        "network": ["network", "dns", "socket"],
+    }
+
+    for component, keywords in component_keywords.items():
+        if any(kw in all_messages for kw in keywords):
+            affected_components.append(component)
+
     # Insights baseado em contadores
     if len(critical_events) > 0:
         msg = (
@@ -282,19 +302,30 @@ def _generate_fallback_analysis(
         )
         insights.append(msg)
 
-    if len(errors_found) > 10:
+    if len(errors_found) > 5:
         msg = (
             f"Elevada quantidade de erros ({len(errors_found)}) "
             "sugere problema sistêmico"
         )
         insights.append(msg)
-        msg = "Múltiplos erros podem indicar falha no componente central"
-        root_causes.append(msg)
 
-    if len(warnings_found) > 20:
+    if affected_components:
+        msg = (
+            f"Componentes afetados identificados: "
+            f"{', '.join(affected_components)}"
+        )
+        insights.append(msg)
+        root_causes.append(
+            f"Falha nos componentes: {', '.join(affected_components)}"
+        )
+
+    if len(errors_found) > 10:
+        root_causes.append("Múltiplos erros indicam falha no componente central")
+
+    if len(warnings_found) > 5:
         msg = (
             f"Muitos avisos ({len(warnings_found)}) "
-            "indicam situações anormais"
+            "indicam degradação progressiva"
         )
         insights.append(msg)
 

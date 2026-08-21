@@ -196,6 +196,20 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         state["metadata"]["critical_count"] = len(state["critical_events"])
         state["metadata"]["analysis_timestamp"] = datetime.now().isoformat()
 
+        # Calcula rotas de severidade para rastreabilidade
+        severity_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+        high_levels = ["CRITICAL", "ERROR"]
+        medium_levels = ["WARNING", "WARN"]
+        for event in events:
+            level = event.get("level", "").upper()
+            if level in high_levels:
+                severity_counts["HIGH"] += 1
+            elif level in medium_levels:
+                severity_counts["MEDIUM"] += 1
+            else:
+                severity_counts["LOW"] += 1
+        state["severity_routes"] = severity_counts
+
     except Exception as e:
         state["is_valid"] = False
         error_msg = f"Erro ao analisar padrões: {str(e)}"
@@ -303,6 +317,22 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
     return state
 
 
+def analyze_patterns_parallel_sync(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Wrapper síncrono para análise paralela de padrões.
+    
+    Executa a corrotina analyze_patterns_node_parallel usando asyncio.run(),
+    permitindo integração no grafo síncrono.
+    
+    Argumentos:
+        state: Estado atual contendo parsed_events
+    
+    Retorno:
+        Estado atualizado com patterns analisados em paralelo
+    """
+    return asyncio.run(analyze_patterns_node_parallel(state))
+
+
 def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
     """
     Usa LLM para interpretar a análise e gerar insights.
@@ -339,7 +369,12 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
             provider=provider,
         )
 
-        # Popula resultado no estado
+        # Merge com análise existente (preserva dados de severity/parallel)
+        existing_analysis = state.get("analysis_result", {})
+        # LLM result como base, preservando campos existentes que não vêm do LLM
+        for key, value in existing_analysis.items():
+            if key not in analysis_result:
+                analysis_result[key] = value
         state["analysis_result"] = analysis_result
         state["analysis_error"] = None
 

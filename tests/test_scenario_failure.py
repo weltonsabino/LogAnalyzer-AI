@@ -5,9 +5,13 @@ Valida processamento de logs com degradação progressiva, falhas críticas
 e anomalias, demonstrando comportamento realista do LogAnalyzer AI.
 """
 
+import os
 import pytest
 from src.loganalyzer.models import LogAnalysisState
 from src.loganalyzer.agent import create_agent_graph, get_initial_state
+
+# Raiz do projeto (resolve independente do cwd)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # ============================================
@@ -16,8 +20,8 @@ from src.loganalyzer.agent import create_agent_graph, get_initial_state
 
 @pytest.fixture
 def failure_log_path():
-    """Caminho do log de cenário de falha"""
-    return "tests/fixtures/failure_logs/scenario_failure.log"
+    """Caminho absoluto do log de cenário de falha"""
+    return os.path.join(PROJECT_ROOT, "tests", "fixtures", "failure_logs", "scenario_failure.log")
 
 
 # ============================================
