@@ -2,8 +2,8 @@
 
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
-**Período:** 07/07/2026 — 21/08/2026  
-**Total de Prompts:** 18  
+**Período:** 07/07/2026 — 24/08/2026  
+**Total de Prompts:** 19  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -30,6 +30,7 @@
 | 16 | 2026-08-20 21:30 | W. Sabino | Task #31: Segundo Cenário de Uso (Risco/Falha) | 📋 Testes |
 | 17 | 2026-08-21 00:20 | W. Sabino | Task #32: Segurança Adversarial + Limites de Autonomia | 🔒 Segurança |
 | 18 | 2026-08-21 10:11 | W. Sabino | Task #33: Observabilidade Avançada (2+ Sinais) | 📊 Observabilidade |
+| 19 | 2026-08-24 19:09 | W. Sabino | Task #34: QA com IA (Code Review + E2E) | ✅ Testes |
 
 
 ---
@@ -544,3 +545,25 @@ Implementar módulo de observabilidade (`src/loganalyzer/observability.py`) com 
 **Status:** 📋 PRONTO PARA IMPLEMENTAÇÃO
 
 Referência: `docs/prompts/2026-08-21_task-33-observabilidade-avancada.md`
+
+
+---
+
+## 📊 Prompt #19: Task #34 — QA com IA (Code Review + E2E)
+
+**Data:** 2026-08-24 19:09:00  
+**Responsável:** Welton Sabino
+
+Implementar QA com IA para análise estática de código e geração automática de testes E2E que cobrem gaps de cobertura.
+
+**Entregas:**
+- Documentação: `docs/qa/code_review_with_ai.md` (200 linhas)
+- Priorização: `docs/qa/risk_prioritization.md` (150 linhas)
+- Testes E2E: `tests/test_e2e_generated_by_ai.py` (8 testes)
+- README: Seção "🤖 QA com IA" adicionada
+
+**8 Cenários E2E:** Sucesso | Erro Validação | Timeout | Retry | Observabilidade | Segurança | Autonomia | Multi-Provider
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
+
+Referência: `docs/prompts/2026-08-24_task-34-qa-com-ia.md`

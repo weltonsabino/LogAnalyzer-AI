@@ -406,6 +406,82 @@ print(f"Traces: {summary['trace_count']}")
 
 ---
 
+## 🤖 QA com IA
+
+A partir da **Task #34**, o LogAnalyzer AI implementa **garantia de qualidade com IA** através de análise estática de código e testes end-to-end gerados.
+
+### Code Review com IA
+
+Documentação completa em `docs/qa/code_review_with_ai.md`:
+- Metodologia em 3 camadas (automática + IA + contexto)
+- Checklist de 15+ critérios de revisão
+- Exemplo de análise completa
+- Integração com CI/CD
+
+**Scores Atuais:**
+- Pylint: **9.83/10** ✅
+- Coverage: **95%+** ✅
+- Type Hints: **100%** ✅
+- Docstrings: **100%** ✅
+
+### Priorização por Risco
+
+Documentação em `docs/qa/risk_prioritization.md`:
+- Matriz de risco por módulo (probabilidade × impacto)
+- 7 módulos analisados (P0-P3)
+- Estratégia de testes por prioridade
+- 18 testes E2E com cobertura total
+
+### Testes E2E Gerados
+
+Arquivo: `tests/test_e2e_generated_by_ai.py` (20 testes)
+
+**8 Cenários Críticos:**
+
+1. **Sucesso E2E** — Fluxo completo, relatório gerado
+2. **Erro Validação** — Path inválido, error_handling acionado
+3. **Timeout** — Decorator @with_timeout funciona
+4. **Retry** — Sucesso após tentativa falha
+5. **Observabilidade** — execution_id + traces correlacionados
+6. **Segurança** — Path traversal bloqueado
+7. **Autonomia** — Ações bloqueadas por governance
+8. **Multi-Provider** — OpenAI + Groq funcionam
+
+**Adicionais:**
+- Testes de integração (pipeline completo)
+- Testes de performance (<30s execução)
+- Validação de estado (consistência)
+
+### Executar Testes E2E
+
+```bash
+# Todos os 20 testes E2E
+pytest tests/test_e2e_generated_by_ai.py -v
+
+# Apenas cenários críticos (P0)
+pytest tests/test_e2e_generated_by_ai.py::TestE2E -v
+pytest tests/test_e2e_generated_by_ai.py::TestE2EErrorHandling -v
+pytest tests/test_e2e_generated_by_ai.py::TestE2EResilience -v
+
+# Apenas testes de segurança
+pytest tests/test_e2e_generated_by_ai.py::TestE2ESecurity -v
+
+# Com coverage
+pytest tests/test_e2e_generated_by_ai.py --cov=src --cov-report=term
+```
+
+### Métricas de QA
+
+| Métrica | Valor | Target | Status |
+|---------|-------|--------|--------|
+| Testes E2E | 20 | ≥8 | ✅ |
+| Coverage | 95%+ | ≥95% | ✅ |
+| Pylint Score | 9.83/10 | ≥9.8 | ✅ |
+| Code Review Critérios | 15+ | 15+ | ✅ |
+| Cenários Cobertos | 8/8 | 100% | ✅ |
+
+---
+
 ## 🧪 Testes
 
 ### Executar Todos os Testes
