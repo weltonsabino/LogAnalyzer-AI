@@ -3,7 +3,7 @@
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
 **Período:** 07/07/2026 — 24/08/2026  
-**Total de Prompts:** 19  
+**Total de Prompts:** 20  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -31,6 +31,7 @@
 | 17 | 2026-08-21 00:20 | W. Sabino | Task #32: Segurança Adversarial + Limites de Autonomia | 🔒 Segurança |
 | 18 | 2026-08-21 10:11 | W. Sabino | Task #33: Observabilidade Avançada (2+ Sinais) | 📊 Observabilidade |
 | 19 | 2026-08-24 19:09 | W. Sabino | Task #34: QA com IA (Code Review + E2E) | ✅ Testes |
+| 20 | 2026-08-24 21:22 | W. Sabino | Task #35: DevOps Inteligente + Anomalias | 🔧 DevOps |
 
 
 ---
@@ -567,3 +568,29 @@ Implementar QA com IA para análise estática de código e geração automática
 **Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
 
 Referência: `docs/prompts/2026-08-24_task-34-qa-com-ia.md`
+
+
+---
+
+## 🔧 Prompt #20: Task #35 — DevOps Inteligente + Deteccao de Anomalias
+
+**Data:** 2026-08-24 21:22:00  
+**Responsável:** Welton Sabino
+
+Implementar analise inteligente de logs e deteccao de anomalias com heuristicas, integrando ao pipeline existente do LogAnalyzer AI.
+
+**Entregas:**
+- Documentacao: `docs/devops/intelligent_log_analysis.md` (~150 linhas)
+- Modulo: `src/loganalyzer/devops/anomaly_detector.py` (classe AnomalyDetector)
+- Package: `src/loganalyzer/devops/__init__.py`
+- Testes: `tests/test_devops_anomaly.py` (6+ testes)
+
+**Funcionalidades AnomalyDetector:**
+- `detect_error_spike()` — Janela deslizante, baseline vs atual, >2x = anomalia
+- `detect_recurring_pattern()` — Agrupa erros identicos, 3+ = recorrente
+- `estimate_risk()` — Severidade (low/medium/high/critical) + tendencia
+- `analyze()` — Orquestra deteccao + risco
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTACAO
+
+Referencia: `docs/prompts/2026-08-24_task-35-devops-inteligente-anomalias.md`
