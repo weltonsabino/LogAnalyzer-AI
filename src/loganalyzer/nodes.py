@@ -22,6 +22,21 @@ from src.loganalyzer.governance import GovernancePolicy, AutonomyLevel
 from src.loganalyzer.observability import observability_middleware
 
 
+def _emit_trace(state: LogAnalysisState, node_name: str, event_type: str, data: dict) -> None:
+    """
+    Emite trace no TraceCollector do estado, se disponível.
+
+    Argumentos:
+        state: Estado contendo trace_collector
+        node_name: Nome do nó que gerou o trace
+        event_type: Tipo do evento (node_start, node_end, error)
+        data: Dados adicionais do trace
+    """
+    collector = state.get("trace_collector")
+    if collector is not None:
+        collector.add_trace(node_name, event_type, data)
+
+
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     """
     Valida o caminho do arquivo de log e prepara para leitura.
@@ -42,6 +57,9 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     # Inicializa política de governança (nível ANALYZE = padrão)
     policy = GovernancePolicy(autonomy_level=AutonomyLevel.ANALYZE)
     file_path = state.get("file_path", "")
+
+    # Registra início do nó na observabilidade
+    _emit_trace(state, "validate_input", "node_start", {"file_path": file_path})
 
     # Validação de governança (adversarial) — executa ANTES de tudo
     governance_safe, governance_msg = policy.validate_file_path(file_path)
@@ -78,6 +96,9 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     state["metadata"]["validation_timestamp"] = datetime.now().isoformat()
     state["metadata"]["validation_message"] = message
 
+    # Registra fim do nó na observabilidade
+    _emit_trace(state, "validate_input", "node_end", {"is_valid": state["is_valid"]})
+
     return state
 
 
@@ -100,6 +121,9 @@ def read_file_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando leitura - validação anterior falhou"
         return state
+
+    # Registra início do nó
+    _emit_trace(state, "read_file", "node_start", {"file_path": state.get("file_path", "")})
 
     try:
         # Lê arquivo usando ferramenta
@@ -130,6 +154,9 @@ def read_file_node(state: LogAnalysisState) -> LogAnalysisState:
         state["is_valid"] = False
         state["error_message"] = f"Erro ao ler arquivo: {str(e)}"
 
+    # Registra fim do nó
+    _emit_trace(state, "read_file", "node_end", {"is_valid": state["is_valid"]})
+
     return state
 
 
@@ -153,6 +180,9 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando parsing - leitura anterior falhou"
         return state
+
+    # Registra início do nó
+    _emit_trace(state, "parse_events", "node_start", {})
 
     try:
         # Faz parsing do conteúdo
@@ -179,6 +209,11 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = error_msg
         state["parsing_error"] = error_msg
 
+    # Registra fim do nó
+    _emit_trace(state, "parse_events", "node_end", {
+        "events_count": len(state.get("parsed_events", []))
+    })
+
     return state
 
 
@@ -203,6 +238,9 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando análise - parsing anterior falhou"
         return state
+
+    # Registra início do nó
+    _emit_trace(state, "analyze_patterns", "node_start", {})
 
     try:
         # Detecta padrões nos eventos
@@ -240,6 +278,11 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         error_msg = f"Erro ao analisar padrões: {str(e)}"
         state["error_message"] = error_msg
         state["detection_error"] = error_msg
+
+    # Registra fim do nó
+    _emit_trace(state, "analyze_patterns", "node_end", {
+        "is_valid": state["is_valid"]
+    })
 
     return state
 
@@ -381,6 +424,9 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = "Pulando interpretação LLM - análise anterior falhou"
         return state
 
+    # Registra início do nó
+    _emit_trace(state, "interpret_with_llm", "node_start", {})
+
     try:
         # Obtém provider do estado (padrão: None, lê de ambiente)
         provider = state.get("llm_provider")
@@ -414,6 +460,11 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = error_msg
         state["analysis_error"] = error_msg
 
+    # Registra fim do nó
+    _emit_trace(state, "interpret_with_llm", "node_end", {
+        "is_valid": state["is_valid"]
+    })
+
     return state
 
 
@@ -436,6 +487,9 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     Implementação e ferramenta: Issue #3 & #4
     """
     try:
+        # Registra início do nó
+        _emit_trace(state, "generate_report", "node_start", {})
+
         # Formata relatório usando ferramenta
         report = format_report(
             analysis_result=state.get("analysis_result", {}),
@@ -455,6 +509,11 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     except Exception as e:
         state["is_valid"] = False
         state["error_message"] = f"Erro ao gerar relatório: {str(e)}"
+
+    # Registra fim do nó
+    _emit_trace(state, "generate_report", "node_end", {
+        "report_length": len(state.get("report", ""))
+    })
 
     return state
 

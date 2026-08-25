@@ -24,7 +24,9 @@ from src.loganalyzer.tools.file_reader import read_log_file
 @pytest.fixture
 def sample_log_path():
     """Retorna caminho do arquivo de log de exemplo."""
-    return "examples/sample.log"
+    # Resolve caminho absoluto a partir da raiz do projeto
+    project_root = Path(__file__).parent.parent
+    return str(project_root / "examples" / "sample.log")
 
 
 @pytest.fixture
@@ -268,10 +270,10 @@ class TestE2ESecurity:
         malicious_path = "../../../etc/passwd"
         
         validator = InputValidator()
-        is_valid = validator.validate_file_path(malicious_path)
+        is_safe, message = validator.validate_file_path(malicious_path)
         
         # Deve ser bloqueado
-        assert is_valid is False, "Path traversal deve ser bloqueado"
+        assert is_safe is False, "Path traversal deve ser bloqueado"
     
     def test_e2e_input_validation_safe_path(self):
         """
@@ -282,11 +284,11 @@ class TestE2ESecurity:
         validator = InputValidator()
         
         # Caminhos válidos
-        is_valid = validator.validate_file_path("examples/sample.log")
-        assert is_valid is True
+        is_safe, message = validator.validate_file_path("examples/sample.log")
+        assert is_safe is True
         
-        is_valid = validator.validate_file_path("tests/fixtures/sample.log")
-        assert is_valid is True
+        is_safe, message = validator.validate_file_path("tests/fixtures/sample.log")
+        assert is_safe is True
 
 
 # ============================================================================
@@ -300,30 +302,30 @@ class TestE2EGovernance:
         """
         Teste 13: Autonomy level READ_ONLY bloqueia ANALYZE.
         
-        Esperado: Policy nega ANALYZE quando autonomy=READ_ONLY.
+        Esperado: Policy nega analyze quando autonomy=READ_ONLY.
         """
         policy = GovernancePolicy(autonomy_level=AutonomyLevel.READ_ONLY)
         
-        # READ_ONLY não pode ANALYZE
-        can_analyze = policy.check_permission("ANALYZE")
-        assert can_analyze is False, "READ_ONLY não deve permitir ANALYZE"
+        # READ_ONLY não pode analyze
+        can_analyze = policy.can_execute_action("analyze")
+        assert can_analyze is False, "READ_ONLY não deve permitir analyze"
         
-        # Mas pode READ
-        can_read = policy.check_permission("READ")
-        assert can_read is True, "READ_ONLY deve permitir READ"
+        # Mas pode read_file
+        can_read = policy.can_execute_action("read_file")
+        assert can_read is True, "READ_ONLY deve permitir read_file"
     
     def test_e2e_autonomy_execute_allows_all(self):
         """
         Teste 14: Autonomy level EXECUTE permite todas ações.
         
-        Esperado: Policy permite ANALYZE, RECOMMEND, EXECUTE.
+        Esperado: Policy permite analyze, recommend, execute_command.
         """
         policy = GovernancePolicy(autonomy_level=AutonomyLevel.EXECUTE)
         
-        assert policy.check_permission("READ") is True
-        assert policy.check_permission("ANALYZE") is True
-        assert policy.check_permission("RECOMMEND") is True
-        assert policy.check_permission("EXECUTE") is True
+        assert policy.can_execute_action("read_file") is True
+        assert policy.can_execute_action("analyze") is True
+        assert policy.can_execute_action("recommend") is True
+        assert policy.can_execute_action("execute_command") is True
 
 
 # ============================================================================
