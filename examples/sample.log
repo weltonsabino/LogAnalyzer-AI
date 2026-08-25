@@ -1,0 +1,47 @@
+2026-07-12 10:00:01 INFO Application started
+2026-07-12 10:00:02 INFO Loading configuration
+2026-07-12 10:00:03 WARNING Config file not found at /etc/app.conf
+2026-07-12 10:00:04 INFO Using default configuration
+2026-07-12 10:00:05 INFO Connecting to database
+2026-07-12 10:00:06 ERROR Connection timeout - retrying (1/3)
+2026-07-12 10:00:07 ERROR Connection timeout - retrying (2/3)
+2026-07-12 10:00:08 CRITICAL Database connection failed after 3 retries
+2026-07-12 10:00:09 ERROR Service initialization failed: database connection error
+2026-07-12 10:00:10 WARNING Attempting graceful shutdown
+2026-07-12 10:00:11 INFO Shutting down
+2026-07-12 10:00:12 INFO Shutdown complete
+2026-07-12 10:01:00 INFO Application started - retry 1
+2026-07-12 10:01:01 INFO Loading configuration
+2026-07-12 10:01:02 INFO Connecting to database
+2026-07-12 10:01:03 ERROR Connection timeout - retrying (1/3)
+2026-07-12 10:01:04 ERROR Connection timeout - retrying (2/3)
+2026-07-12 10:01:05 ERROR Connection timeout - retrying (3/3)
+2026-07-12 10:01:06 CRITICAL Database connection failed after 3 retries
+2026-07-12 10:01:07 ERROR Service initialization failed: database connection error
+2026-07-12 10:01:08 WARNING Attempting graceful shutdown
+2026-07-12 10:02:00 INFO Application started - retry 2
+2026-07-12 10:02:01 INFO Loading configuration
+2026-07-12 10:02:02 INFO Connecting to database
+2026-07-12 10:02:03 WARNING Connection slow - latency 2500ms
+2026-07-12 10:02:04 INFO Connected to database successfully
+2026-07-12 10:02:05 INFO Starting background worker threads
+2026-07-12 10:02:06 INFO Worker 1 started
+2026-07-12 10:02:07 INFO Worker 2 started
+2026-07-12 10:02:08 INFO Worker 3 started
+2026-07-12 10:02:09 INFO Service ready to accept requests
+2026-07-12 10:05:00 INFO Processing request ID 1001
+2026-07-12 10:05:01 WARNING High memory usage: 87%
+2026-07-12 10:05:02 INFO Request 1001 completed
+2026-07-12 10:08:00 INFO Processing request ID 1002
+2026-07-12 10:08:01 WARNING High memory usage: 92%
+2026-07-12 10:08:02 ERROR Out of memory exception in request handler
+2026-07-12 10:08:03 ERROR Request 1002 failed with error: OutOfMemoryError
+2026-07-12 10:08:04 WARNING Worker 2 crashed due to OOM
+2026-07-12 10:08:05 INFO Restarting Worker 2
+2026-07-12 10:08:06 WARNING Memory pressure high, reducing concurrent operations
+2026-07-12 10:10:00 INFO Processing request ID 1003
+2026-07-12 10:10:01 INFO Request 1003 completed
+2026-07-12 10:15:00 WARNING Cache hit ratio below threshold: 45%
+2026-07-12 10:15:01 INFO Updating cache strategy
+2026-07-12 10:20:00 INFO Health check passed
+2026-07-12 10:25:00 INFO Metrics snapshot: requests=1003, errors=2, avg_response_time=250ms
