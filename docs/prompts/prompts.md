@@ -2,8 +2,8 @@
 
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
-**Período:** 07/07/2026 — 25/08/2026  
-**Total de Prompts:** 22  
+**Período:** 07/07/2026 — 27/08/2026  
+**Total de Prompts:** 23  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -34,6 +34,7 @@
 | 20 | 2026-08-24 21:22 | W. Sabino | Task #35: DevOps Inteligente + Anomalias | 🔧 DevOps |
 | 21 | 2026-08-24 21:51 | W. Sabino | Task #36: Low-Code Integration (n8n Webhook) | 🔗 Integração |
 | 22 | 2026-08-25 20:20 | W. Sabino | Task #36 pt2: Webhook no LangGraph + Segurança | 🔒 Segurança |
+| 23 | 2026-08-27 20:18 | W. Sabino | Task #37: Documentação Expandida (8 seções M2.2) | 📚 Documentação |
 
 
 ---
@@ -213,7 +214,7 @@ Validação final e estatísticas
 
 | Métrica | Valor |
 |---------|-------|
-| Total de prompts | 14 |
+| Total de prompts | 23 |
 | Período | 11 dias (20 de julho - 20 de agosto) |
 | Prompts/dia (média) | 1.3 |
 | Responsáveis | 2 (Welton, W. Sabino) |
@@ -299,9 +300,9 @@ docs/prompts/
 
 ---
 
-**Última atualização:** 20 de Agosto, 2026  
+**Última atualização:** 27 de Agosto, 2026  
 **Status:** ✅ Completo — Pronto para avaliação  
-**Próximo:** Task #29 (Setup Kanban)
+**Próximo:** Task #38 (Refinamentos)
 
 
 
@@ -648,3 +649,38 @@ Integrar webhook como no final do StateGraph e garantir zero credenciais em arqu
 **Status:** ✅ IMPLEMENTADO E VALIDADO (222 testes passando)
 
 Referencia: `docs/prompts/2026-08-25_task-36-integracao-webhook-langgraph-seguranca.md`
+
+
+---
+
+## 📚 Prompt #23: Task #37 — Documentação Expandida (8 Seções M2.2)
+
+**Data:** 2026-08-27 20:18:00  
+**Responsável:** Welton Sabino
+
+Expandir README.md com todas as 8 seções obrigatórias do Projeto Final M2.2, adicionar exemplos de entrada/saída e validar links internos.
+
+**8 Seções Obrigatórias:**
+1. Classificação e Arquitetura (atualizada com ramificação + paralelo)
+2. Cenários de Uso (sucesso + falha com comandos reproduzíveis)
+3. Segurança Avançada (GovernancePolicy + InputValidator + 4 níveis)
+4. Observabilidade (TraceCollector + execution_id + spans)
+5. QA com IA (code review + E2E + métricas)
+6. DevOps Inteligente (AnomalyDetector + CI/CD)
+7. Automação Low-Code (n8n webhook → email)
+8. Análise Crítica e Limitações (refinamentos + evolução futura)
+
+**Subtarefas:**
+- Verificar seções existentes no README
+- Adicionar seção "Análise Crítica e Limitações" (nova)
+- Atualizar diagrama de arquitetura (todos os nós atuais)
+- Adicionar exemplos de entrada/saída para ambos cenários
+- Validar todos os links internos
+- Atualizar métricas (testes, coverage, linter)
+- Atualizar data de última atualização
+
+**Arquivo alvo:** `README.md`
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
+
+Referência: `docs/prompts/2026-08-27_task-37-documentacao-expandida.md`
