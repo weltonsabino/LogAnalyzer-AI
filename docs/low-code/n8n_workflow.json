@@ -1,0 +1,79 @@
+{
+  "name": "LogAnalyzer AI - Webhook to Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "loganalyzer",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook LogAnalyzer",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Formata dados recebidos do LogAnalyzer AI para email\nconst data = items[0].json.body || items[0].json;\n\nconst severityEmoji = {\n  'critical': '🔴',\n  'high': '🟠',\n  'medium': '🟡',\n  'low': '🟢'\n};\n\nconst severity = data.severity || 'low';\nconst emoji = severityEmoji[severity] || '⚪';\n\nconst emailSubject = emoji + ' LogAnalyzer AI - Severidade: ' + severity.toUpperCase();\n\nconst report = data.full_report || data.summary || 'Sem relatorio disponivel';\n\nconst emailBody = '<h2>' + emoji + ' Relatorio LogAnalyzer AI</h2>' +\n  '<p><strong>Data:</strong> ' + (data.timestamp || 'N/A') + '</p>' +\n  '<p><strong>Severidade:</strong> ' + severity.toUpperCase() + '</p>' +\n  '<p><strong>Erros encontrados:</strong> ' + (data.error_count || 0) + '</p>' +\n  '<p><strong>Warnings:</strong> ' + (data.warning_count || 0) + '</p>' +\n  '<hr>' +\n  '<h3>Relatorio Completo</h3>' +\n  '<pre style=\"white-space: pre-wrap; font-size: 12px;\">' + report + '</pre>' +\n  '<hr>' +\n  '<p><em>Gerado automaticamente por LogAnalyzer AI</em></p>';\n\nreturn [{\n  json: {\n    subject: emailSubject,\n    body: emailBody,\n    severity: severity,\n    error_count: data.error_count || 0,\n    timestamp: data.timestamp || '',\n    email_to: data.email_to || '',\n    email_from: data.email_from || ''\n  }\n}];"
+      },
+      "id": "format-email",
+      "name": "Formatar Email",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$json.email_from}}",
+        "toEmail": "={{$json.email_to}}",
+        "subject": "={{$json.subject}}",
+        "text": "",
+        "html": "={{$json.body}}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "credentials": {
+        "smtp": {
+          "id": "CONFIGURE_SEU_SMTP",
+          "name": "SMTP - Configurar"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook LogAnalyzer": {
+      "main": [
+        [
+          {
+            "node": "Formatar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Email": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "loganalyzer-ai-workflow"
+  }
+}

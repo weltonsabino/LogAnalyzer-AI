@@ -1,0 +1,20 @@
+2026-08-25 10:00:01 INFO Application started successfully
+2026-08-25 10:00:02 INFO Loading configuration from /etc/app/config.yml
+2026-08-25 10:00:03 INFO Database connection pool initialized (size: 10)
+2026-08-25 10:00:04 INFO HTTP server listening on port 8080
+2026-08-25 10:00:05 INFO Health check endpoint registered at /health
+2026-08-25 10:01:00 INFO Processing batch job: export_reports
+2026-08-25 10:01:15 WARNING Slow query detected: SELECT * FROM orders (took 3.2s)
+2026-08-25 10:01:30 WARNING Memory usage above 70% threshold (72%)
+2026-08-25 10:02:00 INFO Request processed: GET /api/users (200ms)
+2026-08-25 10:02:15 WARNING Connection pool nearing capacity (8/10 active)
+2026-08-25 10:02:30 INFO Cache hit ratio: 85%
+2026-08-25 10:03:00 WARNING Disk usage above 80% on /var/log (82%)
+2026-08-25 10:03:15 INFO Scheduled backup completed successfully
+2026-08-25 10:03:30 WARNING SSL certificate expires in 15 days
+2026-08-25 10:04:00 INFO User login: admin@company.com
+2026-08-25 10:04:15 WARNING Rate limit approaching for API key ending in ...x7f2
+2026-08-25 10:04:30 INFO Metrics exported to monitoring service
+2026-08-25 10:05:00 INFO Garbage collection completed (freed 128MB)
+2026-08-25 10:05:15 WARNING Response time degradation detected on /api/reports (avg 1.8s)
+2026-08-25 10:05:30 INFO Application running normally - uptime: 5m30s

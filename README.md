@@ -29,7 +29,9 @@ Demonstrar o uso de agentes LangGraph em um caso real de análise de logs, com c
 - **Python** 3.10+
 - **LangGraph** para construção do agente
 - **LangChain** para integrações de IA
-- **OpenAI GPT-4** para análise inteligente (opcional)
+- **OpenAI GPT-4** / **Groq** para análise inteligente (opcional)
+- **n8n** para automação low-code (webhook → email)
+- **Docker** para rodar n8n localmente
 - **Pytest** para testes
 
 ---
@@ -232,6 +234,7 @@ Saída:
 │ ✓ analyze_patterns     │
 │ ✓ interpret_with_llm   │
 │ ✓ generate_report      │
+│ ✓ notify_webhook       │
 └─────────────────────────┘
 
 vs.
@@ -242,6 +245,7 @@ vs.
 │ ✓ read_file             │
 │ ✗ parse_events [ERROR]  │
 │ → error_handling        │
+│ → notify_webhook        │
 │ → Saída consistente     │
 └──────────────────────────┘
 ```
@@ -482,6 +486,79 @@ pytest tests/test_e2e_generated_by_ai.py --cov=src --cov-report=term
 
 ---
 
+## 🔗 Integração Low-Code (n8n)
+
+A partir da **Task #36**, o LogAnalyzer AI integra com **n8n** (plataforma open-source de automação) para enviar notificações automáticas por email ao final de cada análise.
+
+### Fluxo
+
+```
+LogAnalyzer executa análise → notify_webhook_node → POST para n8n → n8n formata → Email enviado
+```
+
+### Como Funciona
+
+O nó `notify_webhook` é o último do pipeline. Roda tanto no caminho de sucesso quanto no de erro:
+- Se webhook configurado → envia payload JSON com severidade, resumo e contagem de erros
+- Se não configurado → skip silencioso (`webhook_status = "skipped"`)
+- Se erro de conexão → captura sem crashar (`webhook_status = "error"`)
+
+### Setup Local (Docker)
+
+```bash
+# Subir n8n
+docker run -d --name n8n -p 5678:5678 n8nio/n8n
+
+# Importar workflow
+# http://localhost:5678 → Import from File → docs/low-code/n8n_workflow.json
+
+# Configurar .env
+N8N_WEBHOOK_URL=http://localhost:5678/webhook/loganalyzer
+N8N_WEBHOOK_ENABLED=true
+```
+
+### Testar
+
+```bash
+python examples/run_with_webhook.py
+```
+
+**Documentação completa:** `docs/low-code/n8n-integration.md`
+
+---
+
+## 🔍 DevOps Inteligente: Detecção de Anomalias
+
+A partir da **Task #35**, o LogAnalyzer AI implementa detecção heurística de anomalias em logs.
+
+### AnomalyDetector
+
+```python
+from src.loganalyzer.devops import AnomalyDetector
+
+detector = AnomalyDetector(window_size=20, spike_threshold=2.0)
+result = detector.analyze(log_lines)
+
+# Resultado:
+# {
+#   "error_spike": {"anomaly": True, "severity": "high", ...},
+#   "recurring_patterns": {"recurring": True, "patterns": [...], ...},
+#   "risk": {"risk_level": "critical", "trend": "increasing", ...}
+# }
+```
+
+### Heurísticas Implementadas
+
+| Detecção | Método | Resultado |
+|----------|--------|-----------|
+| Error Spike | Janela deslizante vs baseline | anomaly: True/False + severity |
+| Padrões Recorrentes | Agrupamento por mensagem | patterns com contagem |
+| Estimativa de Risco | Consolidação de anomalias | risk_level + trend |
+
+**Documentação completa:** `docs/devops/intelligent_log_analysis.md`
+
+---
+
 ## 🧪 Testes
 
 ### Executar Todos os Testes
@@ -507,10 +584,12 @@ pytest tests/ --cov=src --cov-report=html
 ```
 
 ### Status Atual
-- ✅ **85 testes passando** (+9 para multi-provider)
-- ✅ **2 testes skipped** (placeholders)
-- ✅ **Score Linter:** 9.75/10
+- ✅ **222 testes passando**
+- ✅ **Score Linter:** 9.83/10
 - ✅ **Suporte Multi-Provider:** OpenAI + Groq
+- ✅ **Observabilidade:** TraceCollector + retry + timeout
+- ✅ **Segurança:** Governança adversarial + InputValidator
+- ✅ **Low-Code:** n8n webhook integrado ao pipeline
 
 ---
 
@@ -707,41 +786,69 @@ pytest tests/test_scenario_failure.py --cov=src.loganalyzer
 ```
 LogAnalyzer-AI/
 ├── src/loganalyzer/
-│   ├── main.py              # CLI entrypoint
-│   ├── agent.py             # StateGraph principal
-│   ├── models.py            # Modelos (LogAnalysisState)
-│   ├── nodes.py             # 7 nós do fluxo
+│   ├── main.py                 # CLI entrypoint
+│   ├── agent.py                # StateGraph principal
+│   ├── models.py               # Modelos (LogAnalysisState)
+│   ├── nodes.py                # Nós do fluxo (10+ nós)
+│   ├── governance.py           # Governança e limites de autonomia
+│   ├── observability.py        # TraceCollector, timeout, retry
 │   ├── tools/
-│   │   ├── validators.py    # Validação de entrada
-│   │   ├── file_reader.py   # Leitura de arquivo
-│   │   ├── parser.py        # Parsing de eventos
-│   │   ├── detector.py      # Detecção de padrões
-│   │   └── formatter.py     # Formatação de relatório
-│   └── analysis/
-│       ├── llm_interpreter.py  # Integração com IA
-│       └── __init__.py
+│   │   ├── validators.py       # Validação de entrada
+│   │   ├── file_reader.py      # Leitura de arquivo
+│   │   ├── parser.py           # Parsing de eventos
+│   │   ├── detector.py         # Detecção de padrões
+│   │   └── formatter.py        # Formatação de relatório
+│   ├── analysis/
+│   │   └── llm_interpreter.py  # Integração com IA (OpenAI/Groq)
+│   ├── devops/
+│   │   └── anomaly_detector.py # Detecção de anomalias e spikes
+│   └── integrations/
+│       └── webhook.py          # Webhook n8n (low-code)
 │
 ├── tests/
-│   ├── test_agent.py                # Testes do agente
-│   ├── test_tools.py                # Testes de ferramentas
-│   ├── test_analysis.py             # Testes de análise
-│   ├── test_task3_implementation.py # 17 testes (nodes)
-│   └── test_task4_implementation.py # 13 testes (LLM/formatter)
+│   ├── test_agent.py                  # Testes do agente
+│   ├── test_tools.py                  # Testes de ferramentas
+│   ├── test_analysis.py               # Testes de análise (multi-provider)
+│   ├── test_task3_implementation.py   # Testes nodes
+│   ├── test_task4_implementation.py   # Testes LLM/formatter
+│   ├── test_error_handling.py         # Testes arestas condicionais
+│   ├── test_advanced_langgraph.py     # Testes ramificação/severidade
+│   ├── test_observability.py          # Testes TraceCollector/retry
+│   ├── test_adversarial_security.py   # Testes segurança adversarial
+│   ├── test_scenario_failure.py       # Testes cenário de falha
+│   ├── test_e2e_generated_by_ai.py    # Testes E2E gerados por IA
+│   ├── test_devops_anomaly.py         # Testes detecção de anomalias
+│   ├── test_webhook_integration.py    # Testes webhook (mock)
+│   └── fixtures/                      # Dados de teste
 │
 ├── docs/
-│   ├── PROJECT_REQUIREMENTS.md      # Pré-requisitos
-│   ├── ARCHITECTURE.md              # Design detalhado
-│   └── prompts/                     # Histórico de prompts
+│   ├── ARCHITECTURE.md                # Design detalhado
+│   ├── PROJECT_REQUIREMENTS.md        # Pré-requisitos
+│   ├── devops/
+│   │   └── intelligent_log_analysis.md # Análise inteligente de logs
+│   ├── low-code/
+│   │   ├── n8n-integration.md         # Guia de integração n8n
+│   │   └── n8n_workflow.json          # Workflow importável
+│   ├── qa/
+│   │   ├── code_review_with_ai.md     # Code review com IA
+│   │   └── risk_prioritization.md     # Priorização por risco
+│   ├── examples/                      # Cenários de teste documentados
+│   └── prompts/                       # Histórico de prompts (21+)
 │
 ├── examples/
-│   ├── run_example.py               # Script de demonstração
-│   ├── sample.log                   # Log de exemplo
-│   └── sample_output.md             # Saída esperada
+│   ├── run_example.py                 # Script de demonstração básico
+│   ├── run_with_webhook.py            # Demo com webhook n8n
+│   └── sample.log                     # Log de exemplo
 │
-├── requirements.txt                 # Dependências
-├── .env.example                     # Template de configuração
-├── .gitignore                       # Arquivos ignorados
-└── README.md                        # Este arquivo
+├── .github/workflows/
+│   ├── lint.yml                       # Pylint + Flake8
+│   ├── test.yml                       # Pytest + Coverage
+│   └── build.yml                      # Validação de imports
+│
+├── requirements.txt                   # Dependências
+├── .env.example                       # Template de configuração
+├── .gitignore                         # Arquivos ignorados
+└── README.md                          # Este arquivo
 ```
 
 ---
@@ -864,16 +971,21 @@ Este é um projeto de estudo para disciplina "IA para Desenvolvedores [T2]".
 ## ✅ Checklist de Entrega
 
 - [x] Repositório público no GitHub
-- [x] Código do agente implementado (StateGraph com 7 nós)
-- [x] Ferramenta integrada e funcional (read_file)
+- [x] Código do agente implementado (StateGraph com 10+ nós)
+- [x] Ferramentas integradas e funcionais (7 ferramentas)
 - [x] README.md completo
 - [x] docs/ARCHITECTURE.md documentado
-- [x] docs/prompts/ com histórico de prompts
+- [x] docs/prompts/ com histórico de prompts (21+)
 - [x] examples/sample_output.md com saída real
-- [x] 85 testes passando (100% de conformidade)
+- [x] 222 testes passando (100% de conformidade)
 - [x] Commits semânticos (30+ commits)
 - [x] Sem credenciais versionadas
 - [x] Apresentação (2 slides interativos em HTML)
+- [x] Observabilidade (TraceCollector + retry + timeout)
+- [x] Segurança adversarial (GovernancePolicy + InputValidator)
+- [x] Integração low-code (n8n webhook → email)
+- [x] Detecção de anomalias (AnomalyDetector)
+- [x] QA com IA (code review + testes E2E gerados)
 
 ---
 
@@ -910,13 +1022,14 @@ pytest tests/ -v
 
 | Métrica | Valor |
 |---------|-------|
-| Total de Nós | 7 |
-| Total de Ferramentas | 5 |
+| Total de Nós | 10+ (pipeline + severidade + webhook) |
+| Total de Ferramentas | 7 (validators, reader, parser, detector, formatter, anomaly, webhook) |
 | Provedores LLM | 2 (OpenAI + Groq) |
-| Linhas de Código | ~2200 |
-| Testes Unitários | 85 |
-| Cobertura de Testes | ~95% |
-| Score de Linter | 9.75/10 |
+| Linhas de Código | ~3500+ |
+| Testes Unitários | 222 |
+| Cobertura de Testes | ~76% |
+| Score de Linter | 9.83/10 |
+| Integração Low-Code | n8n (webhook → email) |
 
 ---
 
@@ -925,11 +1038,11 @@ pytest tests/ -v
 - **Projeto:** LogAnalyzer AI
 - **Disciplina:** IA para Desenvolvedores [T2]
 - **Instituição:** SCTEC
-- **Prazo:** 20/07/2026 às 22h
+- **Prazo:** 31/08/2026 (Projeto Final M2.2)
 - **Avaliação:** 30% do módulo
 - **Repositório:** [GitHub - weltonsabino/mini-projeto-LogAnalyzer-AI](https://github.com/weltonsabino/mini-projeto-LogAnalyzer-AI)
 
 ---
 
-**Última atualização:** 18 de Agosto, 2026  
-**Status:** ✅ Completo e Funcional (Apresentação Incluída)
+**Última atualização:** 25 de Agosto, 2026  
+**Status:** 🔄 Em Progresso (Projeto Final M2.2)

@@ -718,3 +718,82 @@ def analyze_low_severity_node(state: LogAnalysisState) -> LogAnalysisState:
         state["analysis_error"] = error_msg
     
     return state
+
+
+def notify_webhook_node(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Envia notificacao via webhook ao final da execucao do pipeline.
+
+    Este no:
+    - Le configuracao de variaveis de ambiente (N8N_WEBHOOK_URL, N8N_WEBHOOK_ENABLED)
+    - Se nao configurado, faz skip silencioso sem alterar pipeline
+    - Se configurado, envia resultado da analise via POST HTTP
+    - Registra status em metadata e campo webhook_status
+    - NUNCA crashar o pipeline — erros de webhook sao capturados
+
+    Argumentos:
+        state: Estado atual de execucao (apos generate_report ou error_handling)
+
+    Retorno:
+        Estado atualizado com webhook_status preenchido
+    """
+    import os
+    from src.loganalyzer.integrations.webhook import WebhookIntegration
+
+    # Registra inicio do no
+    _emit_trace(state, "notify_webhook", "node_start", {})
+
+    # Le configuracao de variaveis de ambiente
+    webhook_url = os.getenv("N8N_WEBHOOK_URL", "")
+    webhook_enabled = os.getenv("N8N_WEBHOOK_ENABLED", "false").lower() == "true"
+
+    # Instancia integracao
+    webhook = WebhookIntegration(webhook_url=webhook_url, enabled=webhook_enabled)
+
+    # Verifica se esta configurado
+    if not webhook.is_configured():
+        state["webhook_status"] = "skipped"
+        state["metadata"]["webhook_status"] = "skipped"
+        state["metadata"]["webhook_reason"] = "Webhook nao configurado ou desabilitado"
+        _emit_trace(state, "notify_webhook", "node_end", {"status": "skipped"})
+        return state
+
+    # Tenta enviar notificacao
+    try:
+        # Usa report se disponivel, senao usa error_message como fallback
+        report_content = state.get("report", "")
+        if not report_content:
+            error_msg = state.get("error_message", "Execucao sem relatorio gerado")
+            report_content = f"[ERRO] {error_msg}"
+
+        result = webhook.send_report(
+            report=report_content,
+            analysis={
+                "errors_found": state.get("errors_found", []),
+                "warnings_found": state.get("warnings_found", []),
+                "critical_events": state.get("critical_events", []),
+                "analysis_result": state.get("analysis_result", {}),
+            },
+        )
+
+        if result["success"]:
+            state["webhook_status"] = "sent"
+            state["metadata"]["webhook_status"] = "sent"
+            state["metadata"]["webhook_status_code"] = result["status_code"]
+        else:
+            state["webhook_status"] = "error"
+            state["metadata"]["webhook_status"] = "error"
+            state["metadata"]["webhook_error"] = result["message"]
+
+    except Exception as e:
+        # Captura qualquer erro inesperado sem crashar pipeline
+        state["webhook_status"] = "error"
+        state["metadata"]["webhook_status"] = "error"
+        state["metadata"]["webhook_error"] = f"Erro inesperado: {str(e)}"
+
+    # Registra fim do no
+    _emit_trace(state, "notify_webhook", "node_end", {
+        "status": state.get("webhook_status", "unknown")
+    })
+
+    return state

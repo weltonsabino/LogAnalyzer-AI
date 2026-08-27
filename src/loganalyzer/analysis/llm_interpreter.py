@@ -46,7 +46,7 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
         # Cria instância do Groq
         llm = ChatGroq(
             api_key=api_key,
-            model="mixtral-8x7b-32768",  # Modelo Groq disponível
+            model="openai/gpt-oss-120b",  # Modelo Groq gratuito (120B parametros)
             temperature=0.3,  # Mesma temperatura para consistência
             max_tokens=1000,  # Mesmo limite de tokens
         )
@@ -64,7 +64,7 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
         # Cria instância do OpenAI
         llm = ChatOpenAI(
             api_key=api_key,
-            model="gpt-4-turbo-preview",  # Usa GPT-4
+            model="gpt-4o-mini",  # Modelo OpenAI rapido e acessivel
             temperature=0.3,  # Baixa temperatura para respostas consistentes
             max_tokens=1000,  # Limita tokens para respostas concisas
         )
@@ -145,8 +145,8 @@ def analyze_with_llm(
         analysis_result = _parse_llm_response(response_text)
         return analysis_result
 
-    except (ValueError, AttributeError, TypeError) as e:
-        # Se erro ao chamar LLM, retorna análise padrão
+    except Exception as e:
+        # Se erro ao chamar LLM, retorna análise fallback
         print(f"Aviso: Erro ao chamar LLM: {str(e)}")
         return _generate_fallback_analysis(
             errors_found, warnings_found, critical_events

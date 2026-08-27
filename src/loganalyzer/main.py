@@ -21,6 +21,10 @@ if sys.stderr.encoding != 'utf-8':
 from src.loganalyzer.agent import create_agent_graph, get_initial_state
 from src.loganalyzer.models import LogAnalysisState
 
+# Carrega variaveis de ambiente do .env
+from dotenv import load_dotenv
+load_dotenv()
+
 # Adiciona diretório raiz ao path para imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 

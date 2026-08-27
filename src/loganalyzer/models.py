@@ -72,3 +72,6 @@ class LogAnalysisState(TypedDict):
     # Observabilidade e rastreamento
     trace_collector: Optional[Any]  # TraceCollector type
     execution_id: str
+
+    # Integracao webhook (notificacao low-code)
+    webhook_status: Optional[str]  # "sent", "skipped", "error"

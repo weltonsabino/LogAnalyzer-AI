@@ -54,7 +54,7 @@ Task #28 (Corrigir LangGraph Error Handling)
 
 ## Task #28: Corrigir LangGraph - Error Handling com Arestas Condicionais
 
-**Status:** A Fazer  
+**Status:** ✅ CONCLUÍDO  
 **Prioridade:** P0 - Bloqueador  
 **Esforço:** 1h  
 **Descrição:** Implementar arestas condicionais para redirecionar erros ao nó error_handling (Feedback M2.1)
@@ -188,7 +188,7 @@ Task #32 (Segurança Adversarial)
 
 ## Task #32: Segurança Avançada (Adversarial + Autonomy)
 
-**Status:** A Fazer  
+**Status:** ✅ CONCLUÍDO  
 **Prioridade:** P1 - Crítico  
 **Esforço:** 1.5h  
 **Descrição:** Implementar limites de autonomia e testar cenários adversariais
@@ -356,29 +356,33 @@ Próxima Task: Task #35 (DevOps Inteligente + Anomalias)
 - [x] Documentar análise de logs com IA em `docs/devops/intelligent_log_analysis.md`
 - [x] Criar `src/loganalyzer/devops/anomaly_detector.py`
 - [x] Implementar 4+ testes (13 testes implementados)
-- [ ] Documentar no README
+- [x] Documentar no README
 
 ### Próxima Task
 
-Task #36 (Low-Code Make.com)
+Task #36 (Low-Code n8n)
 
 ---
 
-## Task #36: Low-Code Integration (Make.com)
+## Task #36: Low-Code Integration (n8n)
 
-**Status:** A Fazer  
+**Status:** ✅ CONCLUÍDO  
 **Prioridade:** P1 - Crítico  
 **Esforço:** 2h  
-**Descrição:** Integrar automação low-code com Make.com webhook
+**Descrição:** Integrar automação low-code com n8n webhook (open-source, self-hosted)
 **Parent Issue:** #26 (EPIC)
 
 ### Subtarefas
 
-- [ ] Criar fluxo Make.com webhook
-- [ ] Implementar `src/loganalyzer/integrations/make_webhook.py`
-- [ ] Integrar no agent
-- [ ] Implementar 3+ testes
-- [ ] Documentar em `docs/low-code/make-integration.md`
+- [x] Criar fluxo n8n webhook (workflow JSON importável)
+- [x] Implementar `src/loganalyzer/integrations/webhook.py`
+- [x] Implementar 5+ testes (11 testes com mock)
+- [x] Documentar em `docs/low-code/n8n-integration.md`
+- [x] Criar script de demonstração `examples/run_with_webhook.py`
+- [x] Atualizar `.env.example` com placeholders
+- [x] Integrar nó `notify_webhook_node` no StateGraph (parte 2)
+- [x] Adicionar campo `webhook_status` ao modelo
+- [x] Garantir zero credenciais em arquivos versionados (auditoria)
 
 ### Próxima Task
 
@@ -516,12 +520,12 @@ Task #43 (Opcional: ChatOps)
 **Status:** A Fazer  
 **Prioridade:** P3 - Opcional  
 **Esforço:** 30min  
-**Descrição:** Estender Make.com com notificações avançadas (se tempo permitir)
+**Descrição:** Estender n8n com notificações por email (se tempo permitir)
 **Parent Issue:** #26 (EPIC)
 
 ### Subtarefas
 
-- [ ] Estender Make.com webhook com Slack
+- [ ] Estender n8n workflow com envio de email
 - [ ] Adicionar GitHub Integration
 - [ ] Testar fluxo completo
 - [ ] Documentar ChatOps

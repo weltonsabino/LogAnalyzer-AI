@@ -2,8 +2,8 @@
 
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
-**Período:** 07/07/2026 — 24/08/2026  
-**Total de Prompts:** 20  
+**Período:** 07/07/2026 — 25/08/2026  
+**Total de Prompts:** 22  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -32,6 +32,8 @@
 | 18 | 2026-08-21 10:11 | W. Sabino | Task #33: Observabilidade Avançada (2+ Sinais) | 📊 Observabilidade |
 | 19 | 2026-08-24 19:09 | W. Sabino | Task #34: QA com IA (Code Review + E2E) | ✅ Testes |
 | 20 | 2026-08-24 21:22 | W. Sabino | Task #35: DevOps Inteligente + Anomalias | 🔧 DevOps |
+| 21 | 2026-08-24 21:51 | W. Sabino | Task #36: Low-Code Integration (n8n Webhook) | 🔗 Integração |
+| 22 | 2026-08-25 20:20 | W. Sabino | Task #36 pt2: Webhook no LangGraph + Segurança | 🔒 Segurança |
 
 
 ---
@@ -594,3 +596,55 @@ Implementar analise inteligente de logs e deteccao de anomalias com heuristicas,
 **Status:** ⏳ PRONTO PARA IMPLEMENTACAO
 
 Referencia: `docs/prompts/2026-08-24_task-35-devops-inteligente-anomalias.md`
+
+
+---
+
+## 🔗 Prompt #21: Task #36 — Low-Code Integration (n8n Webhook)
+
+**Data:** 2026-08-24 21:51:00  
+**Responsável:** Welton Sabino
+
+Implementar integracao low-code com n8n (open-source, self-hosted) via webhook HTTP para enviar resultados de analise. Inclui workflow JSON importavel com envio de email.
+
+**Entregas:**
+- Modulo: `src/loganalyzer/integrations/webhook.py` (classe WebhookIntegration)
+- Package: `src/loganalyzer/integrations/__init__.py`
+- Workflow: `docs/low-code/n8n_workflow.json` (3 nos: Webhook → Function → Email)
+- Documentacao: `docs/low-code/n8n-integration.md`
+- Script demo: `examples/run_with_webhook.py`
+- Testes: `tests/test_webhook_integration.py` (7 testes com mock)
+- Config: `.env.example` atualizado (N8N_WEBHOOK_URL, N8N_WEBHOOK_ENABLED)
+
+**Fluxo:** LogAnalyzer executa analise → POST para n8n webhook → n8n formata dados → envia email com resumo
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTACAO
+
+Referencia: `docs/prompts/2026-08-24_task-36-low-code-make-webhook.md`
+
+
+---
+
+## 🔒 Prompt #22: Task #36 pt2 — Webhook no LangGraph + Seguranca
+
+**Data:** 2026-08-25 20:20:00  
+**Responsável:** Welton Sabino
+
+Integrar webhook como no final do StateGraph e garantir zero credenciais em arquivos versionados.
+
+**Entregas:**
+- Nó `notify_webhook_node` em `nodes.py` (último nó do pipeline)
+- Registro no StateGraph (`generate_report → notify_webhook → END` e `error_handling → notify_webhook → END`)
+- Campo `webhook_status: Optional[str]` no modelo
+- 4 testes do nó com mock
+- Auditoria completa: zero credenciais/URLs/tokens nos fontes
+
+**Seguranca confirmada:**
+- `.env` no `.gitignore`
+- `.env.example` só placeholders
+- `n8n_workflow.json` sem dados reais
+- Testes com mock (sem requests reais)
+
+**Status:** ✅ IMPLEMENTADO E VALIDADO (222 testes passando)
+
+Referencia: `docs/prompts/2026-08-25_task-36-integracao-webhook-langgraph-seguranca.md`

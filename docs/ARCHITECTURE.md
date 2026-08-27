@@ -41,7 +41,7 @@ LogAnalyzer AI é um agente inteligente baseado em LangGraph que automatiza a an
                      │
 ┌────────────────────▼────────────────────┐
 │       Modelos de Dados (models.py)      │
-│       LogAnalysisState com 11 campos    │
+│       LogAnalysisState com 19 campos    │
 └─────────────────────────────────────────┘
 ```
 
@@ -563,6 +563,9 @@ interpret_with_llm
 generate_report
       │
       ▼
+notify_webhook
+      │
+      ▼
 FIM
 ```
 
@@ -602,18 +605,20 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
 ## Limitações Conhecidas
 
 1. **Parsing:** Suporta principalmente formatos baseados em texto
-2. **LLM:** Limitado ao GPT-4 Turbo da OpenAI
+2. **LLM:** Suporta OpenAI GPT-4 e Groq (LLaMA/Mixtral)
 3. **Performance:** Logs > 10MB podem ter latência
 4. **Formatos:** JSON logs requerem format específico
+5. **Anomalias:** Detecção heurística (não ML)
+6. **Webhook:** Requer n8n rodando (Docker local ou cloud)
 
 ---
 
 ## Extensões Futuras
 
-1. Suporte a múltiplos provedores LLM
-2. Processamento de logs em stream
-3. Integração com sistemas de alertas
-4. Visualizações gráficas de dados
+1. Processamento de logs em stream
+2. Integração com OpenTelemetry
+3. Dashboard real-time com métricas
+4. Modelo ML para predição de anomalias
 5. Histórico de análises persistidas
 
 ---
@@ -838,7 +843,7 @@ pytest tests/test_observability.py -v
 
 ### Métricas de Qualidade
 
-- ✅ **27 testes** para observabilidade (+85 testes existentes = 112 total)
+- ✅ **27 testes** para observabilidade (+195 testes existentes = 222 total)
 - ✅ **Type hints** em todos os parâmetros
 - ✅ **Docstrings** em português para todas as funções
 - ✅ **Pylint score** ≥ 9.8/10
@@ -862,7 +867,88 @@ pytest tests/test_observability.py -v
 ---
 
 **Status:** ✅ Implementado e Funcional (Task #33)  
-**Última atualização:** 21 de Agosto, 2026  
+**Última atualização:** 25 de Agosto, 2026  
+
+---
+
+## Integração Low-Code: Webhook n8n (Task #36)
+
+### Visão Geral
+
+O nó `notify_webhook` é o último do pipeline. Envia resultado da análise para n8n via POST HTTP, que dispara envio de email com resumo.
+
+### Fluxo no StateGraph
+
+```
+[Sucesso]  generate_report → notify_webhook → END
+[Erro]     error_handling  → notify_webhook → END
+```
+
+Toda execução (sucesso ou erro) passa pelo webhook antes de terminar.
+
+### Comportamento
+
+| Situação | webhook_status | Ação |
+|----------|---------------|------|
+| Variáveis não configuradas | `skipped` | Retorna sem fazer nada |
+| Webhook configurado, POST 200 | `sent` | Payload enviado com sucesso |
+| Erro de conexão/timeout | `error` | Captura, não crashar pipeline |
+
+### Campo no Estado
+
+```python
+webhook_status: Optional[str]  # "sent", "skipped", "error"
+```
+
+### Segurança
+
+- Zero credenciais em arquivos versionados
+- URL do webhook via variável de ambiente (`N8N_WEBHOOK_URL`)
+- `.env` protegido pelo `.gitignore`
+- Testes usam mock (sem requests reais)
+
+### Workflow n8n
+
+Arquivo: `docs/low-code/n8n_workflow.json` (importável)
+
+```
+[Webhook trigger] → [Function: formata HTML] → [Send Email]
+```
+
+---
+
+## DevOps Inteligente: Detecção de Anomalias (Task #35)
+
+### Visão Geral
+
+Módulo `src/loganalyzer/devops/anomaly_detector.py` implementa detecção heurística de anomalias via janela deslizante e agrupamento de padrões.
+
+### Classe AnomalyDetector
+
+```python
+class AnomalyDetector:
+    def detect_error_spike(log_lines) → dict     # Janela deslizante vs baseline
+    def detect_recurring_pattern(log_lines) → dict  # Agrupa mensagens repetidas
+    def estimate_risk(anomalies) → dict           # Severidade + tendência
+    def analyze(log_lines) → dict                 # Orquestra tudo
+```
+
+### Matriz de Risco
+
+| Anomalia Detectada | Risk Level | Trend |
+|-------------------|------------|-------|
+| Spike HIGH (>3x baseline) | critical | increasing |
+| Spike MEDIUM (>2x baseline) | high | increasing |
+| Padrão recorrente (5+ vezes) | medium | stable |
+| Nenhuma | low | stable |
+
+### Testes
+
+Arquivo: `tests/test_devops_anomaly.py` (13 testes)
+
+---
+
+**Última atualização:** 25 de Agosto, 2026
 **Versão:** 3.0
 
 ---
