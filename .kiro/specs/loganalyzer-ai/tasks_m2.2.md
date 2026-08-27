@@ -392,17 +392,32 @@ Task #37 (Documentação Expandida)
 
 ## Task #37: Documentação Expandida
 
-**Status:** A Fazer  
+**Status:** ✅ CONCLUÍDO  
 **Prioridade:** P2 - Alta  
 **Esforço:** 1h  
 **Descrição:** Expandir README.md com todas as 8 seções obrigatórias
 **Parent Issue:** #26 (EPIC)
+**Data de conclusão:** 2026-08-27
 
 ### Subtarefas
 
-- [ ] Adicionar 8 seções no README
-- [ ] Adicionar exemplos de entrada/saída
-- [ ] Validar todos os links
+- [x] Adicionar 8 seções no README
+- [x] Adicionar exemplos de entrada/saída
+- [x] Validar todos os links
+
+### Entregas
+
+- Seção "Arquitetura do Agente" — Diagrama ASCII com 12 nós, tabela de classificação, estado
+- Seção "Cenários de Uso" — 2 cenários (sucesso + falha) com entrada/saída e comandos
+- Seção "Segurança Avançada" — Defense in depth, 4 níveis, 6 ataques, proteção de credenciais
+- Seção "Observabilidade" — 3 sinais + "Como Investigar Problemas"
+- Seção "QA com IA" — Links para documentação expandidos
+- Seção "DevOps Inteligente" — CI/CD (3 workflows) + heurísticas
+- Seção "Low-Code" — Payload JSON, tabela de comportamento, setup Docker
+- Seção "Análise Crítica e Limitações" — Nova: limitações, 3 ciclos, trade-offs, evolução
+- 28 links internos validados (todos OK)
+- Métricas atualizadas (12 nós, 23 prompts, etc.)
+- Checklist expandido para 19 itens M2.2
 
 ### Próxima Task
 
@@ -543,9 +558,9 @@ Task #43 (Opcional: ChatOps)
 | 32 | Segurança Adversarial | Segurança | 1.5h | P1 | ✅ CONCLUÍDO |
 | 33 | Observabilidade | Observabilidade | 1.5h | P1 | ✅ CONCLUÍDO |
 | 34 | QA com IA | QA | 2h | P2 | ✅ CONCLUÍDO |
-| 35 | DevOps + Anomalias | DevOps | 2h | P2 | A Fazer |
-| 36 | Low-Code Make | Integração | 2h | P1 | A Fazer |
-| 37 | Documentação | Docs | 1h | P2 | A Fazer |
+| 35 | DevOps + Anomalias | DevOps | 2h | P2 | ✅ CONCLUÍDO |
+| 36 | Low-Code n8n | Integração | 2h | P1 | ✅ CONCLUÍDO |
+| 37 | Documentação | Docs | 1h | P2 | ✅ CONCLUÍDO |
 | 38 | Refinamentos | Docs | 30min | P2 | A Fazer |
 | 39 | Kanban Completo | Rastreabilidade | 30min | P3 | A Fazer |
 | 40 | Testes + Qualidade | QA | 1h | P1 | A Fazer |
@@ -554,10 +569,10 @@ Task #43 (Opcional: ChatOps)
 | 43 | ChatOps (Opt) | Integração | 30min | P3 | A Fazer |
 
 **Total Estimado (COM IA):** ~21.75 horas  
-**Concluído:** 9.5h (Tasks #27 + #28 + #30 + #31 + #32 + #33 + #34)  
-**Restante:** ~12.25h  
+**Concluído:** 14.5h (Tasks #27 + #28 + #30 + #31 + #32 + #33 + #34 + #35 + #36 + #37)  
+**Restante:** ~7.25h  
 **Disponível:** ~55 horas (11 dias)  
-**Margem:** ~42.75 horas para iteração, refinamento e improvisos ✅
+**Margem:** ~47.75 horas para iteração, refinamento e improvisos ✅
 
 ---
 
@@ -574,16 +589,16 @@ Task #43 (Opcional: ChatOps)
 - Task #31 (1h): ✅ **CONCLUÍDO** - 2º cenário (falha/risco)
 - Task #32 (1.5h): ✅ **CONCLUÍDO** - Segurança adversarial
 - Task #33 (1.5h): ✅ **CONCLUÍDO** - Observabilidade (2+ sinais)
-- Task #36 (2h): A Fazer - Low-code
-- **Resultado esperado:** Sistema robusto e resiliente (80% concluído) ✅
+- Task #36 (2h): ✅ **CONCLUÍDO** - Low-code (n8n webhook)
+- **Resultado esperado:** Sistema robusto e resiliente ✅
 
-### Fase 3: Qualidade + Documentação (8h) — 50% CONCLUÍDO
+### Fase 3: Qualidade + Documentação (8h) — 75% CONCLUÍDO
 - Task #34 (2h): ✅ **CONCLUÍDO** - QA com IA
 - Task #35 (2h): ✅ **CONCLUÍDO** - DevOps inteligente
-- Task #37 (1h): A Fazer - Documentação
+- Task #37 (1h): ✅ **CONCLUÍDO** - Documentação expandida (8 seções M2.2)
 - Task #38 (30min): A Fazer - Refinamentos
 - Task #40 (1h): A Fazer - Testes finais
-- **Resultado esperado:** Código pronto para produção (25% concluído)
+- **Resultado esperado:** Código pronto para produção (75% concluído)
 
 ### Fase 4: Apresentação (2h45min)
 - Task #41 (1.5h): A Fazer - Vídeo
