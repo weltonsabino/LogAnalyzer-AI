@@ -120,7 +120,7 @@ class TestLLMIntegration:
 
         # Valida resultado
         assert llm is not None
-        assert llm.model_name == "gpt-4-turbo-preview"
+        assert llm.model_name == "gpt-4o-mini"
 
     def test_analyze_with_llm_returns_fallback_without_api_key(self):
         """Testa que analyze_with_llm retorna fallback sem LLM disponível."""

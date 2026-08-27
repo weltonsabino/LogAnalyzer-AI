@@ -23,6 +23,7 @@ from src.loganalyzer.nodes import (
     analyze_high_severity_node,
     analyze_medium_severity_node,
     analyze_low_severity_node,
+    notify_webhook_node,
 )
 
 
@@ -210,6 +211,9 @@ def create_agent_graph() -> StateGraph:
     graph.add_node("analyze_medium_severity", analyze_medium_severity_node)
     graph.add_node("analyze_low_severity", analyze_low_severity_node)
 
+    # Nó de notificação webhook (Task #36)
+    graph.add_node("notify_webhook", notify_webhook_node)
+
     # ============================================
     # 2. DEFINE PONTO DE ENTRADA
     # ============================================
@@ -276,11 +280,14 @@ def create_agent_graph() -> StateGraph:
     # Aresta da análise paralela para interpretação LLM
     graph.add_edge("analyze_patterns_parallel", "interpret_with_llm")
 
-    # Aresta final: generate_report para END
-    graph.add_edge("generate_report", END)
+    # Aresta: generate_report para notify_webhook
+    graph.add_edge("generate_report", "notify_webhook")
 
-    # Aresta final: error_handling para END
-    graph.add_edge("error_handling", END)
+    # Aresta: error_handling para notify_webhook
+    graph.add_edge("error_handling", "notify_webhook")
+
+    # Aresta final: notify_webhook para END
+    graph.add_edge("notify_webhook", END)
 
     # ============================================
     # 4. COMPILA O GRAFO
@@ -328,4 +335,5 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
         severity_routes={},
         trace_collector=trace_collector,
         execution_id=trace_collector.execution_id,
+        webhook_status=None,
     )
