@@ -3,7 +3,7 @@
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
 **Período:** 07/07/2026 — 27/08/2026  
-**Total de Prompts:** 24  
+**Total de Prompts:** 25  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -36,6 +36,7 @@
 | 22 | 2026-08-25 20:20 | W. Sabino | Task #36 pt2: Webhook no LangGraph + Segurança | 🔒 Segurança |
 | 23 | 2026-08-27 20:18 | W. Sabino | Task #37: Documentação Expandida (8 seções M2.2) | 📚 Documentação |
 | 24 | 2026-08-27 20:58 | W. Sabino | Task #38: Ciclos de Refinamento + Limitações | 📝 Refinamentos |
+| 25 | 2026-08-27 21:37 | W. Sabino | Task #40: Testes Finais + Validação de Qualidade | ✅ Qualidade |
 
 
 ---
@@ -215,7 +216,7 @@ Validação final e estatísticas
 
 | Métrica | Valor |
 |---------|-------|
-| Total de prompts | 24 |
+| Total de prompts | 25 |
 | Período | 11 dias (20 de julho - 20 de agosto) |
 | Prompts/dia (média) | 1.3 |
 | Responsáveis | 2 (Welton, W. Sabino) |
@@ -303,7 +304,7 @@ docs/prompts/
 
 **Última atualização:** 27 de Agosto, 2026  
 **Status:** ✅ Completo — Pronto para avaliação  
-**Próximo:** Task #39 (Kanban Completo)
+**Próximo:** Task #40 (Testes + Validação)
 
 
 
@@ -727,3 +728,33 @@ Documentar ciclos de refinamento, limitações conhecidas e possibilidades de ev
 **Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
 
 Referência: `docs/prompts/2026-08-27_task-38-refinamentos-limitacoes.md`
+
+
+---
+
+## ✅ Prompt #25: Task #40 — Testes Finais + Validação de Qualidade
+
+**Data:** 2026-08-27 21:37:00  
+**Responsável:** Welton Sabino
+
+Executar validação completa de qualidade de código e testes antes da entrega final do Projeto Final M2.2.
+
+**Entregas:**
+- Execução e validação de Pylint (target: ≥9.8/10)
+- Execução e validação de Pytest (target: 100% pass, ≥95% cobertura)
+- Execução e validação de Flake8 (target: 0 errors)
+- Checklist dos 15 critérios de avaliação
+- Teste end-to-end final do pipeline completo
+
+**Validações:**
+1. Pylint ≥ 9.8/10
+2. Todos os testes passando (0 failures)
+3. Cobertura ≥ 95%
+4. Flake8 com 0 erros
+5. E2E sem erros
+6. 15 critérios verificados (14/15 atendidos, vídeo pendente)
+7. Issues encontradas corrigidas
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
+
+Referência: `docs/prompts/2026-08-27_task-40-testes-finais-validacao.md`

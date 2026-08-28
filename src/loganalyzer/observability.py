@@ -40,18 +40,18 @@ TRACE_LEVELS = {
 class TraceCollector:
     """
     Centraliza coleta de traces e correlação de execução.
-    
+
     Responsável por:
     - Gerar execution_id único (UUID) para cada execução
     - Armazenar traces com timestamp em ordem cronológica
     - Correlacionar traces por execution_id
     - Gerar resumo de correlação com duração total
     """
-    
+
     def __init__(self, execution_id: Optional[str] = None):
         """
         Inicializa TraceCollector com ID único de execução.
-        
+
         Argumentos:
             execution_id: ID de execução (gerado se None)
         """
@@ -61,20 +61,20 @@ class TraceCollector:
         self.traces: List[Dict[str, Any]] = []
         # Timestamp de início da execução
         self.start_time = time.time()
-    
+
     def _generate_execution_id(self) -> str:
         """
         Gera UUID único para execução.
-        
+
         Retorno:
             String UUID no formato padrão
         """
         return str(uuid.uuid4())
-    
+
     def add_trace(self, node_name: str, event_type: str, data: Dict[str, Any]) -> None:
         """
         Adiciona trace com timestamp automático.
-        
+
         Argumentos:
             node_name: Nome do nó que gerou o trace
             event_type: Tipo de evento (node_start, node_end, error, warning)
@@ -90,41 +90,41 @@ class TraceCollector:
         }
         # Adiciona à lista de traces
         self.traces.append(trace)
-    
+
     def get_traces(self) -> List[Dict[str, Any]]:
         """
         Retorna lista de traces ordenada por timestamp.
-        
+
         Retorno:
             Lista de traces em ordem cronológica
         """
         # Retorna todos os traces armazenados
         return self.traces
-    
+
     def get_correlation_summary(self) -> Dict[str, Any]:
         """
         Retorna sumário correlacionado de execução.
-        
+
         Retorno:
             Dicionário com execution_id, trace_count, duration, status
         """
         # Calcula duração total em segundos
         end_time = time.time()
         duration = end_time - self.start_time
-        
+
         # Conta eventos por tipo
         event_counts = {}
         for trace in self.traces:
             event_type = trace.get("event_type", "unknown")
             event_counts[event_type] = event_counts.get(event_type, 0) + 1
-        
+
         # Determina status geral (ERROR se houve error, warning se houve warning, OK senão)
         status = "OK"
         if event_counts.get("error", 0) > 0:
             status = "ERROR"
         elif event_counts.get("warning", 0) > 0:
             status = "WARNING"
-        
+
         # Retorna sumário estruturado
         return {
             "execution_id": self.execution_id,
@@ -144,10 +144,10 @@ class TraceCollector:
 def with_timeout(seconds: int = 30) -> Callable:
     """
     Decorator que limita tempo de execução de função.
-    
+
     Argumentos:
         seconds: Tempo máximo em segundos
-    
+
     Retorno:
         Função decorada com timeout
     """
@@ -157,11 +157,11 @@ def with_timeout(seconds: int = 30) -> Callable:
         def wrapper(*args, **kwargs):
             """Executa função com limite de tempo."""
             import signal
-            
+
             def timeout_handler(signum, frame):
                 """Handler para timeout."""
                 raise TimeoutError(f"Função {func.__name__} excedeu {seconds}s")
-            
+
             # Configurar signal para timeout (funciona em Unix/Linux)
             try:
                 signal.signal(signal.SIGALRM, timeout_handler)
@@ -173,7 +173,7 @@ def with_timeout(seconds: int = 30) -> Callable:
                 # Em Windows, signal.SIGALRM não existe
                 # Apenas executa função sem timeout
                 return func(*args, **kwargs)
-        
+
         return wrapper
     return decorator
 
@@ -181,11 +181,11 @@ def with_timeout(seconds: int = 30) -> Callable:
 def with_retry(max_attempts: int = 3, backoff: float = 1.5) -> Callable:
     """
     Decorator que implementa retry automático com backoff exponencial.
-    
+
     Argumentos:
         max_attempts: Número máximo de tentativas
         backoff: Fator de backoff exponencial
-    
+
     Retorno:
         Função decorada com retry
     """
@@ -196,12 +196,12 @@ def with_retry(max_attempts: int = 3, backoff: float = 1.5) -> Callable:
             """Executa função com retry automático."""
             attempt = 0
             wait_time = 1
-            
+
             while attempt < max_attempts:
                 try:
                     # Tenta executar função
                     return func(*args, **kwargs)
-                except (TimeoutError, PermissionError, OSError) as e:
+                except (TimeoutError, PermissionError, OSError):
                     # Erros transientes que justificam retry
                     attempt += 1
                     if attempt >= max_attempts:
@@ -209,7 +209,8 @@ def with_retry(max_attempts: int = 3, backoff: float = 1.5) -> Callable:
                     # Aguarda antes de próxima tentativa
                     time.sleep(wait_time)
                     wait_time *= backoff
-        
+            return None
+
         return wrapper
     return decorator
 
@@ -217,10 +218,10 @@ def with_retry(max_attempts: int = 3, backoff: float = 1.5) -> Callable:
 def observability_middleware(collector: Optional['TraceCollector'] = None) -> Callable:
     """
     Decorator que instrumenta função com observabilidade.
-    
+
     Argumentos:
         collector: TraceCollector para registrar traces
-    
+
     Retorno:
         Função decorada com observabilidade
     """
@@ -232,14 +233,14 @@ def observability_middleware(collector: Optional['TraceCollector'] = None) -> Ca
             if collector is None:
                 # Se sem collector, apenas executa função
                 return func(*args, **kwargs)
-            
+
             # Registra início de execução
             collector.add_trace(
                 node_name=func.__name__,
                 event_type="node_start",
                 data={"args_count": len(args), "kwargs_keys": list(kwargs.keys())}
             )
-            
+
             start = time.time()
             try:
                 # Executa função
@@ -265,6 +266,6 @@ def observability_middleware(collector: Optional['TraceCollector'] = None) -> Ca
                     }
                 )
                 raise
-        
+
         return wrapper
     return decorator

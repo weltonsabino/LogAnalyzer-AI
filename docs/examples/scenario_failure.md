@@ -211,7 +211,7 @@ Este cenário testa:
 
 ## 8. Comparação com Cenário Normal
 
-| Aspecto | Normal (sample.log) | Falha (scenario_failure.log) |
+| Aspecto | Normal (sample_critical.log) | Falha (scenario_failure.log) |
 |---------|-------------------|------------------------------|
 | Eventos | ~47 | ~43 |
 | CRITICAL | 0 | 6 |

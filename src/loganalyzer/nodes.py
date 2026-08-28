@@ -19,7 +19,6 @@ from src.loganalyzer.tools.detector import detect_patterns
 from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
 from src.loganalyzer.tools.formatter import format_report
 from src.loganalyzer.governance import GovernancePolicy, AutonomyLevel
-from src.loganalyzer.observability import observability_middleware
 
 
 def _emit_trace(state: LogAnalysisState, node_name: str, event_type: str, data: dict) -> None:
@@ -290,19 +289,19 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
 async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysisState:
     """
     Analisa padrões em paralelo usando asyncio.
-    
+
     Implementação da Task #30: Análise paralela de padrões.
-    
+
     Este nó:
     - Processa eventos em paralelo com asyncio.gather()
     - Detecta padrões recorrentes
     - Analisa frequência de erros
     - Identifica anomalias
     - Combina resultados de forma thread-safe
-    
+
     Argumentos:
         state: Estado atual contendo parsed_events
-    
+
     Retorno:
         Estado atualizado com patterns analisados em paralelo
     """
@@ -310,11 +309,11 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando análise paralela - parsing anterior falhou"
         return state
-    
+
     try:
         # Extrai eventos
         events = state.get("parsed_events", [])
-        
+
         # Define tarefas paralelas (3 análises diferentes)
         async def analyze_recurrence():
             """Detecta padrões recorrentes nos eventos"""
@@ -323,7 +322,7 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
                 message = event.get("message", "")
                 pattern_map[message] = pattern_map.get(message, 0) + 1
             return {k: v for k, v in pattern_map.items() if v > 1}  # Apenas recorrentes
-        
+
         async def analyze_frequency():
             """Analisa frequência de erros por tipo"""
             level_counts = {}
@@ -331,7 +330,7 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
                 level = event.get("level", "UNKNOWN")
                 level_counts[level] = level_counts.get(level, 0) + 1
             return level_counts
-        
+
         async def analyze_anomalies():
             """Identifica anomalias (timestamps fora do padrão, etc)"""
             # Extrai timestamps e detecta gaps
@@ -339,7 +338,7 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
             for event in events:
                 if "timestamp" in event:
                     timestamps.append(event["timestamp"])
-            
+
             anomalies = []
             if len(timestamps) > 1:
                 # Detecta timestamps fora de sequência
@@ -349,52 +348,52 @@ async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysis
                             "type": "out_of_order_timestamp",
                             "index": i
                         })
-            
+
             return anomalies
-        
+
         # Executa tarefas em paralelo
         recurrence, frequency, anomalies = await asyncio.gather(
             analyze_recurrence(),
             analyze_frequency(),
             analyze_anomalies()
         )
-        
+
         # Combina resultados em analysis_result
         parallel_analysis = {
             "recurrent_patterns": recurrence,
             "frequency_by_level": frequency,
             "anomalies": anomalies,
         }
-        
+
         # Popula no estado (merges com análise anterior se existir)
         current_analysis = state.get("analysis_result", {})
         current_analysis["parallel_patterns"] = parallel_analysis
         state["analysis_result"] = current_analysis
         state["detection_error"] = None
-        
+
         # Metadados
         state["metadata"]["parallel_analysis_timestamp"] = datetime.now().isoformat()
         state["metadata"]["parallel_analysis_status"] = "concluída com sucesso"
-        
+
     except Exception as e:
         state["is_valid"] = False
         error_msg = f"Erro ao analisar padrões em paralelo: {str(e)}"
         state["error_message"] = error_msg
         state["detection_error"] = error_msg
-    
+
     return state
 
 
 def analyze_patterns_parallel_sync(state: LogAnalysisState) -> LogAnalysisState:
     """
     Wrapper síncrono para análise paralela de padrões.
-    
+
     Executa a corrotina analyze_patterns_node_parallel usando asyncio.run(),
     permitindo integração no grafo síncrono.
-    
+
     Argumentos:
         state: Estado atual contendo parsed_events
-    
+
     Retorno:
         Estado atualizado com patterns analisados em paralelo
     """
@@ -552,18 +551,18 @@ def error_handling_node(state: LogAnalysisState) -> LogAnalysisState:
 def analyze_high_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     """
     Analisa eventos de alta severidade com prioridade máxima.
-    
+
     Implementação da Task #30: Nó especializado para eventos críticos/erro.
-    
+
     Este nó:
     - Processa CRITICAL e ERROR com modelo focado em incidentes
     - Chama LLM com contexto crítico
     - Popula analysis_result com severity_level = "HIGH"
     - Adiciona recomendações urgentes
-    
+
     Argumentos:
         state: Estado atual contendo events parseados
-    
+
     Retorno:
         Estado atualizado com analysis_result populado
     """
@@ -571,11 +570,11 @@ def analyze_high_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando análise alta severidade - etapas anteriores falharam"
         return state
-    
+
     try:
         # Obtém provider
         provider = state.get("llm_provider")
-        
+
         # Chama LLM com foco em eventos críticos
         analysis_result = analyze_with_llm(
             errors_found=state.get("errors_found", []),
@@ -584,43 +583,43 @@ def analyze_high_severity_node(state: LogAnalysisState) -> LogAnalysisState:
             parsed_events=state.get("parsed_events", []),
             provider=provider,
         )
-        
+
         # Seta severidade no resultado
         analysis_result["severity_level"] = "HIGH"
         analysis_result["urgency"] = "IMEDIATA"
-        
+
         # Popula no estado
         state["analysis_result"] = analysis_result
         state["analysis_error"] = None
-        
+
         # Metadados
         state["metadata"]["severity_analysis"] = "HIGH"
         state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
-        
+
     except Exception as e:
         state["is_valid"] = False
         error_msg = f"Erro ao analisar alta severidade: {str(e)}"
         state["error_message"] = error_msg
         state["analysis_error"] = error_msg
-    
+
     return state
 
 
 def analyze_medium_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     """
     Analisa eventos de severidade média com análise balanceada.
-    
+
     Implementação da Task #30: Nó especializado para avisos.
-    
+
     Este nó:
     - Processa WARNING com modelo balanceado
     - Chama LLM com contexto padrão
     - Popula analysis_result com severity_level = "MEDIUM"
     - Adiciona recomendações preventivas
-    
+
     Argumentos:
         state: Estado atual contendo events parseados
-    
+
     Retorno:
         Estado atualizado com analysis_result populado
     """
@@ -628,11 +627,11 @@ def analyze_medium_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando análise média severidade - etapas anteriores falharam"
         return state
-    
+
     try:
         # Obtém provider
         provider = state.get("llm_provider")
-        
+
         # Chama LLM com análise padrão
         analysis_result = analyze_with_llm(
             errors_found=state.get("errors_found", []),
@@ -641,43 +640,43 @@ def analyze_medium_severity_node(state: LogAnalysisState) -> LogAnalysisState:
             parsed_events=state.get("parsed_events", []),
             provider=provider,
         )
-        
+
         # Seta severidade no resultado
         analysis_result["severity_level"] = "MEDIUM"
         analysis_result["urgency"] = "NORMAL"
-        
+
         # Popula no estado
         state["analysis_result"] = analysis_result
         state["analysis_error"] = None
-        
+
         # Metadados
         state["metadata"]["severity_analysis"] = "MEDIUM"
         state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
-        
+
     except Exception as e:
         state["is_valid"] = False
         error_msg = f"Erro ao analisar média severidade: {str(e)}"
         state["error_message"] = error_msg
         state["analysis_error"] = error_msg
-    
+
     return state
 
 
 def analyze_low_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     """
     Analisa eventos de baixa severidade com análise simplificada.
-    
+
     Implementação da Task #30: Nó especializado para info/debug.
-    
+
     Este nó:
     - Processa INFO e DEBUG com análise simplificada
     - Chama LLM para análise complementar
     - Popula analysis_result com severity_level = "LOW"
     - Adiciona insights informativos
-    
+
     Argumentos:
         state: Estado atual contendo events parseados
-    
+
     Retorno:
         Estado atualizado com analysis_result populado
     """
@@ -685,11 +684,11 @@ def analyze_low_severity_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando análise baixa severidade - etapas anteriores falharam"
         return state
-    
+
     try:
         # Obtém provider
         provider = state.get("llm_provider")
-        
+
         # Chama LLM para consistência
         analysis_result = analyze_with_llm(
             errors_found=state.get("errors_found", []),
@@ -698,25 +697,25 @@ def analyze_low_severity_node(state: LogAnalysisState) -> LogAnalysisState:
             parsed_events=state.get("parsed_events", []),
             provider=provider,
         )
-        
+
         # Seta severidade no resultado
         analysis_result["severity_level"] = "LOW"
         analysis_result["urgency"] = "BAIXA"
-        
+
         # Popula no estado
         state["analysis_result"] = analysis_result
         state["analysis_error"] = None
-        
+
         # Metadados
         state["metadata"]["severity_analysis"] = "LOW"
         state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
-        
+
     except Exception as e:
         state["is_valid"] = False
         error_msg = f"Erro ao analisar baixa severidade: {str(e)}"
         state["error_message"] = error_msg
         state["analysis_error"] = error_msg
-    
+
     return state
 
 

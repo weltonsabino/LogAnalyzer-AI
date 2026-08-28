@@ -12,17 +12,18 @@ import traceback
 from pathlib import Path
 from typing import Optional
 
+from dotenv import load_dotenv
+
+from src.loganalyzer.agent import create_agent_graph, get_initial_state
+from src.loganalyzer.models import LogAnalysisState
+
 # Configure UTF-8 encoding for output
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 if sys.stderr.encoding != 'utf-8':
     sys.stderr.reconfigure(encoding='utf-8')
 
-from src.loganalyzer.agent import create_agent_graph, get_initial_state
-from src.loganalyzer.models import LogAnalysisState
-
 # Carrega variaveis de ambiente do .env
-from dotenv import load_dotenv
 load_dotenv()
 
 # Adiciona diretório raiz ao path para imports

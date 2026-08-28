@@ -15,7 +15,6 @@ from src.loganalyzer.nodes import (
     read_file_node,
     parse_events_node,
     analyze_patterns_node,
-    analyze_patterns_node_parallel,
     analyze_patterns_parallel_sync,
     interpret_with_llm_node,
     generate_report_node,
@@ -98,15 +97,15 @@ def route_after_analysis(state: LogAnalysisState) -> str:
 def route_by_severity(state: LogAnalysisState) -> str:
     """
     Roteia análise com base na severidade dos eventos detectados.
-    
+
     Implementação da Task #30: Ramificação inteligente por severidade.
-    
+
     Determina o nó de análise apropriado baseado na severidade máxima
     dos eventos encontrados no estado.
-    
+
     Argumentos:
         state: Estado atual contendo parsed_events
-    
+
     Retorno:
         - "analyze_high_severity": Se há eventos críticos (CRITICAL, ERROR)
         - "analyze_medium_severity": Se há eventos médios (WARNING)
@@ -114,37 +113,36 @@ def route_by_severity(state: LogAnalysisState) -> str:
     """
     # Extrai eventos já parseados do estado
     events = state.get("parsed_events", [])
-    
+
     # Inicializa contadores de severidade
     severity_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
-    
+
     # Mapeia níveis de severidade para categorias
     high_severity_levels = ["CRITICAL", "ERROR"]
     medium_severity_levels = ["WARNING", "WARN"]
     low_severity_levels = ["INFO", "DEBUG", "TRACE"]
-    
+
     # Conta eventos por severidade
     for event in events:
         # Extrai nível de severidade do evento
         level = event.get("level", "").upper()
-        
+
         if level in high_severity_levels:
             severity_counts["HIGH"] += 1
         elif level in medium_severity_levels:
             severity_counts["MEDIUM"] += 1
         elif level in low_severity_levels:
             severity_counts["LOW"] += 1
-    
+
     # Armazena contadores no estado para rastreabilidade
     state["severity_routes"] = severity_counts
-    
+
     # Retorna rota baseada na severidade máxima encontrada
     if severity_counts["HIGH"] > 0:
         return "analyze_high_severity"
-    elif severity_counts["MEDIUM"] > 0:
+    if severity_counts["MEDIUM"] > 0:
         return "analyze_medium_severity"
-    else:
-        return "analyze_low_severity"
+    return "analyze_low_severity"
 
 
 def create_agent_graph() -> StateGraph:
@@ -310,7 +308,7 @@ def get_initial_state(file_path: str, provider: Optional[str] = None) -> LogAnal
     """
     # Cria coletor de observabilidade com execution_id único
     trace_collector = TraceCollector()
-    
+
     return LogAnalysisState(
         file_path=file_path,
         file_content="",

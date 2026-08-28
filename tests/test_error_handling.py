@@ -157,7 +157,7 @@ class TestConditionalEdgesAnalysis:
     def test_analysis_error_routes_to_error_handler(self):
         """Testa roteamento para error_handling quando análise IA falha."""
         # Prepara estado com dados para análise
-        state = get_initial_state(file_path="examples/sample.log")
+        state = get_initial_state(file_path="examples/sample_critical.log")
         state["file_content"] = "ERROR: Test error"
         state["parsed_events"] = [{"level": "ERROR", "message": "Erro crítico"}]
         state["errors_found"] = [{"level": "ERROR", "count": 1}]

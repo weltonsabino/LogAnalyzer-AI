@@ -76,7 +76,7 @@ A apresentação contém 2 slides com:
        Phase 1 (3h):    Bloqueadores (Task #27-#29)
        Phase 2 (7h):    Features (Task #30-#33, #36)
        Phase 3 (8h):    Qualidade (Task #34-#35, #37-#38, #40)
-       Phase 4 (2.75h): Apresentação (Task #41-#43)
+       Phase 4 (2.5h):  Apresentação (Task #41-#42)
 ```
 
 ---
@@ -252,7 +252,7 @@ vs.
 
 ### Executar Exemplo
 ```bash
-# Processa sample.log incluído no projeto
+# Processa sample_critical.log incluído no projeto
 python examples/run_example.py
 ```
 
@@ -837,7 +837,7 @@ mypy src/
 ## 📝 Exemplos
 
 ### Entrada
-Arquivo `examples/sample.log` com 47 linhas:
+Arquivo `examples/sample_critical.log` com 47 linhas:
 ```
 2026-07-12 10:00:01 INFO Application started
 2026-07-12 10:00:02 INFO Loading configuration
@@ -941,7 +941,7 @@ LogAnalyzer AI foi validado com **2 cenários completos** que demonstram robuste
 
 ### Cenário 1: Operação Normal (Sucesso)
 
-- **Arquivo:** `examples/sample.log` (47 linhas)
+- **Arquivo:** `examples/sample_critical.log` (47 linhas)
 - **Tipo:** Aplicação rodando normalmente com alguns avisos e erros esporádicos
 - **Severidade detectada:** LOW/MEDIUM
 - **Roteamento:** `route_by_severity()` → rota MEDIUM (warnings predominam)
@@ -977,13 +977,13 @@ LogAnalyzer AI foi validado com **2 cenários completos** que demonstram robuste
 **Reproduzir:**
 ```bash
 # Executar análise completa
-python -m src.loganalyzer.main examples/sample.log
+python -m src.loganalyzer.main examples/sample_critical.log
 
 # Com output em arquivo
-python -m src.loganalyzer.main examples/sample.log --output resultado.md
+python -m src.loganalyzer.main examples/sample_critical.log --output resultado.md
 
 # Com provedor Groq (grátis)
-python -m src.loganalyzer.main examples/sample.log --provider groq
+python -m src.loganalyzer.main examples/sample_critical.log --provider groq
 ```
 
 **Saída completa:** [`examples/sample_output.md`](examples/sample_output.md)
@@ -1132,7 +1132,7 @@ LogAnalyzer-AI/
 ├── examples/
 │   ├── run_example.py                 # Script de demonstração básico
 │   ├── run_with_webhook.py            # Demo com webhook n8n
-│   └── sample.log                     # Log de exemplo
+│   └── sample_critical.log             # Log de exemplo (severidade alta)
 │
 ├── .github/workflows/
 │   ├── lint.yml                       # Pylint + Flake8

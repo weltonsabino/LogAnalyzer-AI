@@ -23,7 +23,7 @@ def main():
     print()
 
     # Define caminho do log de exemplo
-    log_file = Path(__file__).parent / "sample.log"
+    log_file = Path(__file__).parent / "sample_critical.log"
 
     if not log_file.exists():
         print(f"[ERRO] Arquivo de exemplo nao encontrado: {log_file}")

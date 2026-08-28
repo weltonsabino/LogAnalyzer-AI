@@ -53,7 +53,7 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
 
         return llm
 
-    elif provider == "openai":
+    if provider == "openai":
         # Inicializa com OpenAI (GPT-4)
         api_key = os.getenv("OPENAI_API_KEY")
 
@@ -71,9 +71,8 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
 
         return llm
 
-    else:
-        # Provedor desconhecido, retorna None
-        return None
+    # Provedor desconhecido, retorna None
+    return None
 
 
 def analyze_with_llm(

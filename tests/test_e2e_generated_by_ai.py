@@ -26,7 +26,7 @@ def sample_log_path():
     """Retorna caminho do arquivo de log de exemplo."""
     # Resolve caminho absoluto a partir da raiz do projeto
     project_root = Path(__file__).parent.parent
-    return str(project_root / "examples" / "sample.log")
+    return str(project_root / "examples" / "sample_critical.log")
 
 
 @pytest.fixture
@@ -284,10 +284,10 @@ class TestE2ESecurity:
         validator = InputValidator()
         
         # Caminhos válidos
-        is_safe, message = validator.validate_file_path("examples/sample.log")
+        is_safe, message = validator.validate_file_path("examples/sample_critical.log")
         assert is_safe is True
         
-        is_safe, message = validator.validate_file_path("tests/fixtures/sample.log")
+        is_safe, message = validator.validate_file_path("tests/fixtures/sample_critical.log")
         assert is_safe is True
 
 
