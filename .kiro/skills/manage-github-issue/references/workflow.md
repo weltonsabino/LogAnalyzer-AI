@@ -2,9 +2,9 @@
 
 ## Repositório e projeto fixos
 
-- Repositório: `weltonsabino/mini-projeto-LogAnalyzer-AI`
+- Repositório: `weltonsabino/LogAnalyzer-AI`
 - Projeto: `projeto-avaliativo-m12-ai-CineRankAI` (project number: 19, owner: `IA-para-DEVs-SCTEC-T2`)
-- Sempre use `--repo weltonsabino/mini-projeto-LogAnalyzer-AI` em todos os comandos `gh`
+- Sempre use `--repo weltonsabino/LogAnalyzer-AI` em todos os comandos `gh`
 
 ---
 
@@ -74,7 +74,7 @@ Apresente o comando que será executado e aguarde confirmação antes de prosseg
 
 ```bash
 gh issue create \
-  --repo weltonsabino/mini-projeto-LogAnalyzer-AI \
+  --repo weltonsabino/LogAnalyzer-AI \
   --title "[TIPO] Título da issue" \
   --type Feature \
   --body-file <arquivo-temporario>.md
@@ -98,7 +98,7 @@ gh project item-add 19 --owner IA-para-DEVs-SCTEC-T2 --url <URL_DA_ISSUE_CRIADA>
 O `gh issue create` nem sempre aplica o campo `type` corretamente. Execute sempre após a criação:
 
 ```bash
-gh api repos/weltonsabino/mini-projeto-LogAnalyzer-AI/issues/<ISSUE_NUMBER> \
+gh api repos/weltonsabino/LogAnalyzer-AI/issues/<ISSUE_NUMBER> \
   --method PATCH -f type="Feature" 2>&1 | head -5
 ```
 
@@ -119,7 +119,7 @@ Aguarde a resposta antes de prosseguir.
 Ao receber o número ou URL, execute imediatamente:
 
 ```bash
-gh issue view <ISSUE_NUMBER> --repo weltonsabino/mini-projeto-LogAnalyzer-AI
+gh issue view <ISSUE_NUMBER> --repo weltonsabino/LogAnalyzer-AI
 ```
 
 Use as informações retornadas (título, descrição, labels, assignees, type, status) como contexto base para a alteração. Nunca altere uma issue sem antes buscar seus dados atuais.
@@ -136,7 +136,7 @@ Apresente as alterações que serão aplicadas e aguarde confirmação antes de 
 
 ```bash
 gh issue edit <ISSUE_NUMBER> \
-  --repo weltonsabino/mini-projeto-LogAnalyzer-AI \
+  --repo weltonsabino/LogAnalyzer-AI \
   --title "Novo título" \
   --body-file <arquivo-temporario>.md
 ```
@@ -146,7 +146,7 @@ gh issue edit <ISSUE_NUMBER> \
 ## Regras gerais
 
 - Sempre usar `gh` CLI.
-- Sempre operar no repositório `weltonsabino/mini-projeto-LogAnalyzer-AI`.
+- Sempre operar no repositório `weltonsabino/LogAnalyzer-AI`.
 - Títulos sempre em português, claros e objetivos.
 - Labels e assignees somente quando explicitamente informados.
 - Proibido executar comandos sem solicitar permissão do usuário antes.

@@ -159,7 +159,7 @@ Adicionar seção "Versão e Evolução":
 - **Estratégia:** Continuação e expansão do mini-projeto
 - **Referência:** `docs/M2.2_CONTINUACAO_ESTRATEGIA.md`
 - **Mapeamento de requisitos:** `docs/M2.2_REQUISITOS_MAPEAMENTO.md`
-- **GitHub Project:** [Link ao Kanban](https://github.com/weltonsabino/mini-projeto-LogAnalyzer-AI/projects/XX)
+- **GitHub Project:** [Link ao Kanban](https://github.com/weltonsabino/LogAnalyzer-AI/projects/XX)
 
 ### Linha do Tempo
 

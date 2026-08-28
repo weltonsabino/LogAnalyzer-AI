@@ -1178,7 +1178,7 @@ python -m src.loganalyzer.main examples/sample_critical.log
 #### 10.3 Submissão
 - [ ] README final com todos os links
 - [ ] Links prontos:
-  - Repositório: `https://github.com/weltonsabino/mini-projeto-LogAnalyzer-AI`
+  - Repositório: `https://github.com/weltonsabino/LogAnalyzer-AI`
   - Quadro Kanban: `https://github.com/users/weltonsabino/projects/...`
   - Vídeo YouTube: `https://youtube.com/watch?v=...`
 - [ ] Submeter no AVA

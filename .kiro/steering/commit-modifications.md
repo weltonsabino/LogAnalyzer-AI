@@ -9,7 +9,7 @@ Execute o fluxo de commit seguindo as etapas abaixo:
 
 2. Se a branch não seguir o padrão `feature/<nome>_task<N>` ou `bugfix/<nome>_task<N>`:
    a. Pergunte ao desenvolvedor: "Qual o número da task (issue) que você está trabalhando?"
-   b. Com o número informado, busque os dados da issue no GitHub com `gh issue view <número> --repo weltonsabino/mini-projeto-LogAnalyzer-AI`
+   b. Com o número informado, busque os dados da issue no GitHub com `gh issue view <número> --repo weltonsabino/LogAnalyzer-AI`
    c. A partir do título da issue, gere um slug curto e descritivo em português:
       - Remova o prefixo entre colchetes (ex: `[STORY]`, `[TECH]`, `[DOCS]`, `[EPIC]`)
       - Resuma o título em no máximo 3 palavras-chave que capturam a essência da tarefa

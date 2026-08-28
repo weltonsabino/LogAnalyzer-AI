@@ -4,7 +4,7 @@
 
 ## 📋 Visão Geral
 
-**LogAnalyzer AI** é um agente inteligente que analisa automaticamente arquivos de log, identificando padrões importantes (erros, avisos, exceções) e gerando relatórios técnicos estruturados em markdown.
+**LogAnalyzer AI** é um agente inteligente de IA construído com LangGraph que automatiza a análise de logs de aplicações. O sistema implementa um fluxo híbrido: utiliza regras determinísticas para validação, parsing multi-formato e roteamento inteligente por severidade, enquanto integra modelos de IA (OpenAI GPT-4 ou Groq) para análise semântica profunda. A arquitetura é composta por 12 nós especializados organizados em um StateGraph com ramificação condicional, paralelização e tratamento robusto de erros. Produz relatórios estruturados em markdown com análise executiva, identificação de padrões, eventos críticos priorizados e recomendações de ação baseadas em risco. Implementa segurança em múltiplas camadas (validação adversarial, limites de autonomia, proteção de credenciais) e observabilidade completa com TraceCollector correlacionado por execution_id. Integra-se a n8n para automação low-code de notificações via webhook.
 
 ### Objetivo
 
@@ -34,18 +34,6 @@ Demonstrar o uso de agentes LangGraph em um caso real de análise de logs, com c
 - **Docker** para rodar n8n localmente
 - **Pytest** para testes
 
----
-
-## 📊 Apresentação
-
-**[Clique aqui para visualizar a apresentação interativa](docs/Apresentacao/Apresentação_LogAnalyzer_ai.html)** 🎬
-
-A apresentação contém 2 slides com:
-- **Slide 1:** Problema e Solução — O gargalo tradicional vs. a resolução inteligente com agentes
-- **Slide 2:** Arquitetura e Métricas — Diagrama do StateGraph interativo, nós funcionais e métricas de qualidade
-
----
-
 ## 📌 Versão e Evolução
 
 ### Mini-Projeto M2.1 (Concluído ✅)
@@ -71,7 +59,7 @@ A apresentação contém 2 slides com:
        ✅ Concluído (Score: 9.5/10)
 
 17/08 - 31/08/2026: Projeto Final M2.2
-       🔄 Em progresso (17 tasks mapeadas)
+       ✅ Concluído (17 tasks mapeadas)
        
        Phase 1 (3h):    Bloqueadores (Task #27-#29)
        Phase 2 (7h):    Features (Task #30-#33, #36)
@@ -91,8 +79,8 @@ A apresentação contém 2 slides com:
 
 ### 2. Clonar Repositório
 ```bash
-git clone https://github.com/weltonsabino/mini-projeto-LogAnalyzer-AI
-cd mini-projeto-LogAnalyzer-AI
+git clone https://github.com/weltonsabino/LogAnalyzer-AI
+cd LogAnalyzer-AI
 ```
 
 ### 3. Criar Virtual Environment
@@ -1430,7 +1418,7 @@ pytest tests/ -v
 - **Instituição:** SCTEC
 - **Prazo:** 31/08/2026 (Projeto Final M2.2)
 - **Avaliação:** 30% do módulo
-- **Repositório:** [GitHub - weltonsabino/mini-projeto-LogAnalyzer-AI](https://github.com/weltonsabino/mini-projeto-LogAnalyzer-AI)
+- **Repositório:** [GitHub - weltonsabino/LogAnalyzer-AI](https://github.com/weltonsabino/LogAnalyzer-AI)
 
 ---
 
