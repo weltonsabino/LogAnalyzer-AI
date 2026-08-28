@@ -89,7 +89,7 @@ def _get_message_pattern(message: str) -> str:
 
 def _detect_critical_events(
     errors: List[Dict[str, Any]],
-    warnings: List[Dict[str, Any]],
+    _warnings: List[Dict[str, Any]],
     errors_by_message: Dict[str, List[Dict[str, Any]]]
 ) -> List[Dict[str, Any]]:
     """
@@ -120,7 +120,7 @@ def _detect_critical_events(
             critical.append(error)
 
     # Detecta padrões recorrentes (múltiplas ocorrências)
-    for pattern, events in errors_by_message.items():
+    for _pattern, events in errors_by_message.items():
         if len(events) > 2:
             # Marca eventos de padrão recorrente como críticos
             for event in events[:len(events) - 1]:  # Marca exceto o último

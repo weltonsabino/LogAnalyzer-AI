@@ -102,7 +102,7 @@ docs/
 ├── ARCHITECTURE.md            # Design do agente
 ├── prompts.md                 # Prompts utilizados
 └── examples/
-    ├── sample.log             # Log de exemplo
+    ├── sample_critical.log     # Log de exemplo (severidade alta)
     └── sample_output.md       # Saída esperada
 
 examples/

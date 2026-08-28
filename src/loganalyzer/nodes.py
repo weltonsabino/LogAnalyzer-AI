@@ -10,6 +10,7 @@ Implementação:
 """
 
 from datetime import datetime
+import asyncio
 from src.loganalyzer.models import LogAnalysisState
 from src.loganalyzer.tools.validators import validate_file_path, validate_file_content
 from src.loganalyzer.tools.file_reader import read_log_file
@@ -17,6 +18,22 @@ from src.loganalyzer.tools.parser import parse_log_content
 from src.loganalyzer.tools.detector import detect_patterns
 from src.loganalyzer.analysis.llm_interpreter import analyze_with_llm
 from src.loganalyzer.tools.formatter import format_report
+from src.loganalyzer.governance import GovernancePolicy, AutonomyLevel
+
+
+def _emit_trace(state: LogAnalysisState, node_name: str, event_type: str, data: dict) -> None:
+    """
+    Emite trace no TraceCollector do estado, se disponível.
+
+    Argumentos:
+        state: Estado contendo trace_collector
+        node_name: Nome do nó que gerou o trace
+        event_type: Tipo do evento (node_start, node_end, error)
+        data: Dados adicionais do trace
+    """
+    collector = state.get("trace_collector")
+    if collector is not None:
+        collector.add_trace(node_name, event_type, data)
 
 
 def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
@@ -24,10 +41,11 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     Valida o caminho do arquivo de log e prepara para leitura.
 
     Este nó:
+    - Aplica validação de governança (segurança adversarial)
     - Verifica se file_path foi fornecido
     - Valida se arquivo existe e é legível (verificações básicas)
-    - Define flag is_valid
-    - Popula metadata com timestamp de validação
+    - Define flag is_valid e validation_error
+    - Popula metadata com timestamp de validação e status de governança
 
     Argumentos:
         state: Estado atual de execução
@@ -35,20 +53,50 @@ def validate_input_node(state: LogAnalysisState) -> LogAnalysisState:
     Retorno:
         Estado atualizado com resultados de validação
     """
+    # Inicializa política de governança (nível ANALYZE = padrão)
+    policy = GovernancePolicy(autonomy_level=AutonomyLevel.ANALYZE)
+    file_path = state.get("file_path", "")
+
+    # Registra início do nó na observabilidade
+    _emit_trace(state, "validate_input", "node_start", {"file_path": file_path})
+
+    # Validação de governança (adversarial) — executa ANTES de tudo
+    governance_safe, governance_msg = policy.validate_file_path(file_path)
+    state["metadata"]["governance_check_timestamp"] = datetime.now().isoformat()
+
+    if not governance_safe:
+        # Entrada adversarial detectada — bloqueia imediatamente
+        state["is_valid"] = False
+        state["error_message"] = f"Bloqueado por governança: {governance_msg}"
+        state["validation_error"] = f"Bloqueado por governança: {governance_msg}"
+        state["metadata"]["governance_status"] = "bloqueado"
+        state["metadata"]["governance_reason"] = governance_msg
+        state["metadata"]["validation_timestamp"] = datetime.now().isoformat()
+        state["metadata"]["validation_message"] = governance_msg
+        return state
+
+    # Governança aprovada — prossegue com validação padrão
+    state["metadata"]["governance_status"] = "aprovado"
+
     # Valida arquivo usando ferramenta
-    is_valid, message = validate_file_path(state.get("file_path", ""))
+    is_valid, message = validate_file_path(file_path)
 
     # Atualiza estado com resultado de validação
     state["is_valid"] = is_valid
 
     if not is_valid:
         state["error_message"] = message
+        state["validation_error"] = message
     else:
         state["error_message"] = None
+        state["validation_error"] = None
 
     # Popula metadata com timestamp de validação
     state["metadata"]["validation_timestamp"] = datetime.now().isoformat()
     state["metadata"]["validation_message"] = message
+
+    # Registra fim do nó na observabilidade
+    _emit_trace(state, "validate_input", "node_end", {"is_valid": state["is_valid"]})
 
     return state
 
@@ -72,6 +120,9 @@ def read_file_node(state: LogAnalysisState) -> LogAnalysisState:
     if not state.get("is_valid", False):
         state["error_message"] = "Pulando leitura - validação anterior falhou"
         return state
+
+    # Registra início do nó
+    _emit_trace(state, "read_file", "node_start", {"file_path": state.get("file_path", "")})
 
     try:
         # Lê arquivo usando ferramenta
@@ -102,6 +153,9 @@ def read_file_node(state: LogAnalysisState) -> LogAnalysisState:
         state["is_valid"] = False
         state["error_message"] = f"Erro ao ler arquivo: {str(e)}"
 
+    # Registra fim do nó
+    _emit_trace(state, "read_file", "node_end", {"is_valid": state["is_valid"]})
+
     return state
 
 
@@ -112,7 +166,7 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
     Este nó:
     - Chama a ferramenta parser
     - Extrai eventos do conteúdo bruto do log
-    - Popula lista parsed_events
+    - Popula lista parsed_events e flag parsing_error
     - Trata vários formatos de log (JSON, texto plano, customizado)
 
     Argumentos:
@@ -126,6 +180,9 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = "Pulando parsing - leitura anterior falhou"
         return state
 
+    # Registra início do nó
+    _emit_trace(state, "parse_events", "node_start", {})
+
     try:
         # Faz parsing do conteúdo
         content = state.get("file_content", "")
@@ -134,17 +191,27 @@ def parse_events_node(state: LogAnalysisState) -> LogAnalysisState:
         # Valida que eventos foram extraídos
         if not events:
             state["is_valid"] = False
-            state["error_message"] = "Nenhum evento foi parseado do arquivo"
+            error_msg = "Nenhum evento foi parseado do arquivo"
+            state["error_message"] = error_msg
+            state["parsing_error"] = error_msg
             return state
 
         # Popula eventos no estado
         state["parsed_events"] = events
+        state["parsing_error"] = None
         state["metadata"]["parsed_events_count"] = len(events)
         state["metadata"]["parse_timestamp"] = datetime.now().isoformat()
 
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao parsear log: {str(e)}"
+        error_msg = f"Erro ao parsear log: {str(e)}"
+        state["error_message"] = error_msg
+        state["parsing_error"] = error_msg
+
+    # Registra fim do nó
+    _emit_trace(state, "parse_events", "node_end", {
+        "events_count": len(state.get("parsed_events", []))
+    })
 
     return state
 
@@ -156,7 +223,7 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
     Este nó:
     - Chama a ferramenta detector
     - Identifica erros, avisos, eventos críticos
-    - Agrupa eventos similares
+    - Agrupa eventos similares e seta flag detection_error se falhar
     - Usa regex e heurísticas para detecção de padrões
     - Popula listas errors_found, warnings_found, critical_events
 
@@ -171,6 +238,9 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = "Pulando análise - parsing anterior falhou"
         return state
 
+    # Registra início do nó
+    _emit_trace(state, "analyze_patterns", "node_start", {})
+
     try:
         # Detecta padrões nos eventos
         events = state.get("parsed_events", [])
@@ -180,6 +250,7 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         state["errors_found"] = analysis.get("errors", [])
         state["warnings_found"] = analysis.get("warnings", [])
         state["critical_events"] = analysis.get("critical", [])
+        state["detection_error"] = None
 
         # Atualiza metadados
         state["metadata"]["errors_count"] = len(state["errors_found"])
@@ -187,11 +258,146 @@ def analyze_patterns_node(state: LogAnalysisState) -> LogAnalysisState:
         state["metadata"]["critical_count"] = len(state["critical_events"])
         state["metadata"]["analysis_timestamp"] = datetime.now().isoformat()
 
+        # Calcula rotas de severidade para rastreabilidade
+        severity_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+        high_levels = ["CRITICAL", "ERROR"]
+        medium_levels = ["WARNING", "WARN"]
+        for event in events:
+            level = event.get("level", "").upper()
+            if level in high_levels:
+                severity_counts["HIGH"] += 1
+            elif level in medium_levels:
+                severity_counts["MEDIUM"] += 1
+            else:
+                severity_counts["LOW"] += 1
+        state["severity_routes"] = severity_counts
+
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao analisar padrões: {str(e)}"
+        error_msg = f"Erro ao analisar padrões: {str(e)}"
+        state["error_message"] = error_msg
+        state["detection_error"] = error_msg
+
+    # Registra fim do nó
+    _emit_trace(state, "analyze_patterns", "node_end", {
+        "is_valid": state["is_valid"]
+    })
 
     return state
+
+
+async def analyze_patterns_node_parallel(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Analisa padrões em paralelo usando asyncio.
+
+    Implementação da Task #30: Análise paralela de padrões.
+
+    Este nó:
+    - Processa eventos em paralelo com asyncio.gather()
+    - Detecta padrões recorrentes
+    - Analisa frequência de erros
+    - Identifica anomalias
+    - Combina resultados de forma thread-safe
+
+    Argumentos:
+        state: Estado atual contendo parsed_events
+
+    Retorno:
+        Estado atualizado com patterns analisados em paralelo
+    """
+    # Verifica se parsing anterior passou
+    if not state.get("is_valid", False):
+        state["error_message"] = "Pulando análise paralela - parsing anterior falhou"
+        return state
+
+    try:
+        # Extrai eventos
+        events = state.get("parsed_events", [])
+
+        # Define tarefas paralelas (3 análises diferentes)
+        async def analyze_recurrence():
+            """Detecta padrões recorrentes nos eventos"""
+            pattern_map = {}
+            for event in events:
+                message = event.get("message", "")
+                pattern_map[message] = pattern_map.get(message, 0) + 1
+            return {k: v for k, v in pattern_map.items() if v > 1}  # Apenas recorrentes
+
+        async def analyze_frequency():
+            """Analisa frequência de erros por tipo"""
+            level_counts = {}
+            for event in events:
+                level = event.get("level", "UNKNOWN")
+                level_counts[level] = level_counts.get(level, 0) + 1
+            return level_counts
+
+        async def analyze_anomalies():
+            """Identifica anomalias (timestamps fora do padrão, etc)"""
+            # Extrai timestamps e detecta gaps
+            timestamps = []
+            for event in events:
+                if "timestamp" in event:
+                    timestamps.append(event["timestamp"])
+
+            anomalies = []
+            if len(timestamps) > 1:
+                # Detecta timestamps fora de sequência
+                for i in range(1, len(timestamps)):
+                    if timestamps[i] < timestamps[i-1]:
+                        anomalies.append({
+                            "type": "out_of_order_timestamp",
+                            "index": i
+                        })
+
+            return anomalies
+
+        # Executa tarefas em paralelo
+        recurrence, frequency, anomalies = await asyncio.gather(
+            analyze_recurrence(),
+            analyze_frequency(),
+            analyze_anomalies()
+        )
+
+        # Combina resultados em analysis_result
+        parallel_analysis = {
+            "recurrent_patterns": recurrence,
+            "frequency_by_level": frequency,
+            "anomalies": anomalies,
+        }
+
+        # Popula no estado (merges com análise anterior se existir)
+        current_analysis = state.get("analysis_result", {})
+        current_analysis["parallel_patterns"] = parallel_analysis
+        state["analysis_result"] = current_analysis
+        state["detection_error"] = None
+
+        # Metadados
+        state["metadata"]["parallel_analysis_timestamp"] = datetime.now().isoformat()
+        state["metadata"]["parallel_analysis_status"] = "concluída com sucesso"
+
+    except Exception as e:
+        state["is_valid"] = False
+        error_msg = f"Erro ao analisar padrões em paralelo: {str(e)}"
+        state["error_message"] = error_msg
+        state["detection_error"] = error_msg
+
+    return state
+
+
+def analyze_patterns_parallel_sync(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Wrapper síncrono para análise paralela de padrões.
+
+    Executa a corrotina analyze_patterns_node_parallel usando asyncio.run(),
+    permitindo integração no grafo síncrono.
+
+    Argumentos:
+        state: Estado atual contendo parsed_events
+
+    Retorno:
+        Estado atualizado com patterns analisados em paralelo
+    """
+    return asyncio.run(analyze_patterns_node_parallel(state))
 
 
 def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
@@ -200,7 +406,7 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
     Este nó:
     - Chama LangChain/LLM com contexto de análise
-    - Gera analysis_result estruturado
+    - Gera analysis_result estruturado com flag analysis_error se falhar
     - Adiciona recomendações e insights
     - Pode chamar LLM múltiplas vezes para diferentes aspectos
 
@@ -217,6 +423,9 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
         state["error_message"] = "Pulando interpretação LLM - análise anterior falhou"
         return state
 
+    # Registra início do nó
+    _emit_trace(state, "interpret_with_llm", "node_start", {})
+
     try:
         # Obtém provider do estado (padrão: None, lê de ambiente)
         provider = state.get("llm_provider")
@@ -230,8 +439,14 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
             provider=provider,
         )
 
-        # Popula resultado no estado
+        # Merge com análise existente (preserva dados de severity/parallel)
+        existing_analysis = state.get("analysis_result", {})
+        # LLM result como base, preservando campos existentes que não vêm do LLM
+        for key, value in existing_analysis.items():
+            if key not in analysis_result:
+                analysis_result[key] = value
         state["analysis_result"] = analysis_result
+        state["analysis_error"] = None
 
         # Atualiza metadados
         state["metadata"]["llm_analysis_timestamp"] = datetime.now().isoformat()
@@ -240,7 +455,14 @@ def interpret_with_llm_node(state: LogAnalysisState) -> LogAnalysisState:
 
     except Exception as e:
         state["is_valid"] = False
-        state["error_message"] = f"Erro ao interpretar com LLM: {str(e)}"
+        error_msg = f"Erro ao interpretar com LLM: {str(e)}"
+        state["error_message"] = error_msg
+        state["analysis_error"] = error_msg
+
+    # Registra fim do nó
+    _emit_trace(state, "interpret_with_llm", "node_end", {
+        "is_valid": state["is_valid"]
+    })
 
     return state
 
@@ -264,6 +486,9 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     Implementação e ferramenta: Issue #3 & #4
     """
     try:
+        # Registra início do nó
+        _emit_trace(state, "generate_report", "node_start", {})
+
         # Formata relatório usando ferramenta
         report = format_report(
             analysis_result=state.get("analysis_result", {}),
@@ -283,6 +508,11 @@ def generate_report_node(state: LogAnalysisState) -> LogAnalysisState:
     except Exception as e:
         state["is_valid"] = False
         state["error_message"] = f"Erro ao gerar relatório: {str(e)}"
+
+    # Registra fim do nó
+    _emit_trace(state, "generate_report", "node_end", {
+        "report_length": len(state.get("report", ""))
+    })
 
     return state
 
@@ -314,5 +544,255 @@ def error_handling_node(state: LogAnalysisState) -> LogAnalysisState:
     # Popula metadados de erro
     state["metadata"]["error_timestamp"] = datetime.now().isoformat()
     state["metadata"]["error_message"] = state.get("error_message")
+
+    return state
+
+
+def analyze_high_severity_node(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Analisa eventos de alta severidade com prioridade máxima.
+
+    Implementação da Task #30: Nó especializado para eventos críticos/erro.
+
+    Este nó:
+    - Processa CRITICAL e ERROR com modelo focado em incidentes
+    - Chama LLM com contexto crítico
+    - Popula analysis_result com severity_level = "HIGH"
+    - Adiciona recomendações urgentes
+
+    Argumentos:
+        state: Estado atual contendo events parseados
+
+    Retorno:
+        Estado atualizado com analysis_result populado
+    """
+    # Verifica se análise anterior passou
+    if not state.get("is_valid", False):
+        state["error_message"] = "Pulando análise alta severidade - etapas anteriores falharam"
+        return state
+
+    try:
+        # Obtém provider
+        provider = state.get("llm_provider")
+
+        # Chama LLM com foco em eventos críticos
+        analysis_result = analyze_with_llm(
+            errors_found=state.get("errors_found", []),
+            warnings_found=state.get("warnings_found", []),
+            critical_events=state.get("critical_events", []),
+            parsed_events=state.get("parsed_events", []),
+            provider=provider,
+        )
+
+        # Seta severidade no resultado
+        analysis_result["severity_level"] = "HIGH"
+        analysis_result["urgency"] = "IMEDIATA"
+
+        # Popula no estado
+        state["analysis_result"] = analysis_result
+        state["analysis_error"] = None
+
+        # Metadados
+        state["metadata"]["severity_analysis"] = "HIGH"
+        state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
+
+    except Exception as e:
+        state["is_valid"] = False
+        error_msg = f"Erro ao analisar alta severidade: {str(e)}"
+        state["error_message"] = error_msg
+        state["analysis_error"] = error_msg
+
+    return state
+
+
+def analyze_medium_severity_node(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Analisa eventos de severidade média com análise balanceada.
+
+    Implementação da Task #30: Nó especializado para avisos.
+
+    Este nó:
+    - Processa WARNING com modelo balanceado
+    - Chama LLM com contexto padrão
+    - Popula analysis_result com severity_level = "MEDIUM"
+    - Adiciona recomendações preventivas
+
+    Argumentos:
+        state: Estado atual contendo events parseados
+
+    Retorno:
+        Estado atualizado com analysis_result populado
+    """
+    # Verifica se análise anterior passou
+    if not state.get("is_valid", False):
+        state["error_message"] = "Pulando análise média severidade - etapas anteriores falharam"
+        return state
+
+    try:
+        # Obtém provider
+        provider = state.get("llm_provider")
+
+        # Chama LLM com análise padrão
+        analysis_result = analyze_with_llm(
+            errors_found=state.get("errors_found", []),
+            warnings_found=state.get("warnings_found", []),
+            critical_events=state.get("critical_events", []),
+            parsed_events=state.get("parsed_events", []),
+            provider=provider,
+        )
+
+        # Seta severidade no resultado
+        analysis_result["severity_level"] = "MEDIUM"
+        analysis_result["urgency"] = "NORMAL"
+
+        # Popula no estado
+        state["analysis_result"] = analysis_result
+        state["analysis_error"] = None
+
+        # Metadados
+        state["metadata"]["severity_analysis"] = "MEDIUM"
+        state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
+
+    except Exception as e:
+        state["is_valid"] = False
+        error_msg = f"Erro ao analisar média severidade: {str(e)}"
+        state["error_message"] = error_msg
+        state["analysis_error"] = error_msg
+
+    return state
+
+
+def analyze_low_severity_node(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Analisa eventos de baixa severidade com análise simplificada.
+
+    Implementação da Task #30: Nó especializado para info/debug.
+
+    Este nó:
+    - Processa INFO e DEBUG com análise simplificada
+    - Chama LLM para análise complementar
+    - Popula analysis_result com severity_level = "LOW"
+    - Adiciona insights informativos
+
+    Argumentos:
+        state: Estado atual contendo events parseados
+
+    Retorno:
+        Estado atualizado com analysis_result populado
+    """
+    # Verifica se análise anterior passou
+    if not state.get("is_valid", False):
+        state["error_message"] = "Pulando análise baixa severidade - etapas anteriores falharam"
+        return state
+
+    try:
+        # Obtém provider
+        provider = state.get("llm_provider")
+
+        # Chama LLM para consistência
+        analysis_result = analyze_with_llm(
+            errors_found=state.get("errors_found", []),
+            warnings_found=state.get("warnings_found", []),
+            critical_events=state.get("critical_events", []),
+            parsed_events=state.get("parsed_events", []),
+            provider=provider,
+        )
+
+        # Seta severidade no resultado
+        analysis_result["severity_level"] = "LOW"
+        analysis_result["urgency"] = "BAIXA"
+
+        # Popula no estado
+        state["analysis_result"] = analysis_result
+        state["analysis_error"] = None
+
+        # Metadados
+        state["metadata"]["severity_analysis"] = "LOW"
+        state["metadata"]["severity_analysis_timestamp"] = datetime.now().isoformat()
+
+    except Exception as e:
+        state["is_valid"] = False
+        error_msg = f"Erro ao analisar baixa severidade: {str(e)}"
+        state["error_message"] = error_msg
+        state["analysis_error"] = error_msg
+
+    return state
+
+
+def notify_webhook_node(state: LogAnalysisState) -> LogAnalysisState:
+    """
+    Envia notificacao via webhook ao final da execucao do pipeline.
+
+    Este no:
+    - Le configuracao de variaveis de ambiente (N8N_WEBHOOK_URL, N8N_WEBHOOK_ENABLED)
+    - Se nao configurado, faz skip silencioso sem alterar pipeline
+    - Se configurado, envia resultado da analise via POST HTTP
+    - Registra status em metadata e campo webhook_status
+    - NUNCA crashar o pipeline — erros de webhook sao capturados
+
+    Argumentos:
+        state: Estado atual de execucao (apos generate_report ou error_handling)
+
+    Retorno:
+        Estado atualizado com webhook_status preenchido
+    """
+    import os
+    from src.loganalyzer.integrations.webhook import WebhookIntegration
+
+    # Registra inicio do no
+    _emit_trace(state, "notify_webhook", "node_start", {})
+
+    # Le configuracao de variaveis de ambiente
+    webhook_url = os.getenv("N8N_WEBHOOK_URL", "")
+    webhook_enabled = os.getenv("N8N_WEBHOOK_ENABLED", "false").lower() == "true"
+
+    # Instancia integracao
+    webhook = WebhookIntegration(webhook_url=webhook_url, enabled=webhook_enabled)
+
+    # Verifica se esta configurado
+    if not webhook.is_configured():
+        state["webhook_status"] = "skipped"
+        state["metadata"]["webhook_status"] = "skipped"
+        state["metadata"]["webhook_reason"] = "Webhook nao configurado ou desabilitado"
+        _emit_trace(state, "notify_webhook", "node_end", {"status": "skipped"})
+        return state
+
+    # Tenta enviar notificacao
+    try:
+        # Usa report se disponivel, senao usa error_message como fallback
+        report_content = state.get("report", "")
+        if not report_content:
+            error_msg = state.get("error_message", "Execucao sem relatorio gerado")
+            report_content = f"[ERRO] {error_msg}"
+
+        result = webhook.send_report(
+            report=report_content,
+            analysis={
+                "errors_found": state.get("errors_found", []),
+                "warnings_found": state.get("warnings_found", []),
+                "critical_events": state.get("critical_events", []),
+                "analysis_result": state.get("analysis_result", {}),
+            },
+        )
+
+        if result["success"]:
+            state["webhook_status"] = "sent"
+            state["metadata"]["webhook_status"] = "sent"
+            state["metadata"]["webhook_status_code"] = result["status_code"]
+        else:
+            state["webhook_status"] = "error"
+            state["metadata"]["webhook_status"] = "error"
+            state["metadata"]["webhook_error"] = result["message"]
+
+    except Exception as e:
+        # Captura qualquer erro inesperado sem crashar pipeline
+        state["webhook_status"] = "error"
+        state["metadata"]["webhook_status"] = "error"
+        state["metadata"]["webhook_error"] = f"Erro inesperado: {str(e)}"
+
+    # Registra fim do no
+    _emit_trace(state, "notify_webhook", "node_end", {
+        "status": state.get("webhook_status", "unknown")
+    })
 
     return state

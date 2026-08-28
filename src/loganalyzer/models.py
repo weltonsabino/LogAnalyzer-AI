@@ -5,7 +5,10 @@ Define o estado compartilhado (LogAnalysisState) usado pelo StateGraph
 para manter informações durante a execução do agente.
 """
 
-from typing import TypedDict, Optional, List, Dict, Any
+from typing import TypedDict, Optional, List, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from loganalyzer.observability import TraceCollector  # noqa: F401
 
 
 class LogAnalysisState(TypedDict):
@@ -28,6 +31,13 @@ class LogAnalysisState(TypedDict):
         llm_provider (str): Provedor LLM a usar (openai ou groq). Padrão: openai
         is_valid (bool): Se a entrada e processamento são válidos
         error_message (Optional[str]): Descrição do erro se algo deu errado
+        validation_error (Optional[str]): Erro específico de validação
+        parsing_error (Optional[str]): Erro específico de parsing
+        detection_error (Optional[str]): Erro específico de detecção de padrões
+        analysis_error (Optional[str]): Erro específico de análise IA
+        severity_routes (dict): Contagem de eventos por severidade {HIGH: N, MEDIUM: N, LOW: N}
+        trace_collector (Optional[TraceCollector]): Coletor de traces para observabilidade
+        execution_id (str): ID único de execução para correlação de traces
     """
 
     # Entrada e conteúdo do arquivo
@@ -49,3 +59,19 @@ class LogAnalysisState(TypedDict):
     llm_provider: Optional[str]
     is_valid: bool
     error_message: Optional[str]
+
+    # Flags de erro específicas por etapa (para roteamento condicional)
+    validation_error: Optional[str]
+    parsing_error: Optional[str]
+    detection_error: Optional[str]
+    analysis_error: Optional[str]
+
+    # Roteamento por severidade
+    severity_routes: Dict[str, int]
+
+    # Observabilidade e rastreamento
+    trace_collector: Optional[Any]  # TraceCollector type
+    execution_id: str
+
+    # Integracao webhook (notificacao low-code)
+    webhook_status: Optional[str]  # "sent", "skipped", "error"

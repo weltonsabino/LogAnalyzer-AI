@@ -54,6 +54,9 @@ htmlcov/
 
 # Logs
 *.log
+!examples/sample_critical.log
+!examples/*.log
+!tests/fixtures/**/*.log
 logs/
 *.pot
 
@@ -66,3 +69,12 @@ Thumbs.db
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Artefatos temporarios de execucao
+test_result.txt
+quality_report.txt
+flake8_report.txt
+e2e_report.txt
+test_e2e_output.md
+pylint_output.txt
+pylint_report.txt

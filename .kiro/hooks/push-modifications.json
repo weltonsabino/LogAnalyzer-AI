@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Push e Abrir Pull Request",
+      "description": "Executa push da branch atual e abre Pull Request para develop, vinculado a issue correspondente. Executa open_pr.ps1 no Windows. Bloqueia push direto em main ou develop.",
+      "trigger": "Manual",
+      "action": {
+        "type": "command",
+        "command": "powershell -ExecutionPolicy Bypass -File scripts/open_pr.ps1"
+      },
+      "enabled": true
+    }
+  ]
+}

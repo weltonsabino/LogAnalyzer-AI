@@ -1,10 +1,10 @@
 # Saída Esperada do LogAnalyzer AI
 
-Este documento demonstra a saída esperada quando o agente processa um arquivo de log com o exemplo fornecido (`sample.log`).
+Este documento demonstra a saída esperada quando o agente processa um arquivo de log com o exemplo fornecido (`sample_critical.log`).
 
 ## Entrada
 
-**Arquivo:** `examples/sample.log`  
+**Arquivo:** `examples/sample_critical.log`  
 **Tamanho:** 48 linhas  
 **Tipo:** Log de aplicação com eventos INFO, WARNING, ERROR e CRITICAL
 
@@ -116,12 +116,12 @@ Total: **9** aviso(s)
 
 2. **Ou usar via CLI:**
    ```bash
-   python -m src.loganalyzer.main examples/sample.log
+   python -m src.loganalyzer.main examples/sample_critical.log
    ```
 
 3. **Salvar saída em arquivo:**
    ```bash
-   python -m src.loganalyzer.main examples/sample.log --output resultado.md
+   python -m src.loganalyzer.main examples/sample_critical.log --output resultado.md
    ```
 
 ## Informações Adicionais

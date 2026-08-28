@@ -46,14 +46,14 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
         # Cria instância do Groq
         llm = ChatGroq(
             api_key=api_key,
-            model="mixtral-8x7b-32768",  # Modelo Groq disponível
+            model="openai/gpt-oss-120b",  # Modelo Groq gratuito (120B parametros)
             temperature=0.3,  # Mesma temperatura para consistência
             max_tokens=1000,  # Mesmo limite de tokens
         )
 
         return llm
 
-    elif provider == "openai":
+    if provider == "openai":
         # Inicializa com OpenAI (GPT-4)
         api_key = os.getenv("OPENAI_API_KEY")
 
@@ -64,16 +64,15 @@ def initialize_llm(provider: Optional[str] = None) -> Optional[Union[ChatOpenAI,
         # Cria instância do OpenAI
         llm = ChatOpenAI(
             api_key=api_key,
-            model="gpt-4-turbo-preview",  # Usa GPT-4
+            model="gpt-4o-mini",  # Modelo OpenAI rapido e acessivel
             temperature=0.3,  # Baixa temperatura para respostas consistentes
             max_tokens=1000,  # Limita tokens para respostas concisas
         )
 
         return llm
 
-    else:
-        # Provedor desconhecido, retorna None
-        return None
+    # Provedor desconhecido, retorna None
+    return None
 
 
 def analyze_with_llm(
@@ -145,8 +144,8 @@ def analyze_with_llm(
         analysis_result = _parse_llm_response(response_text)
         return analysis_result
 
-    except (ValueError, AttributeError, TypeError) as e:
-        # Se erro ao chamar LLM, retorna análise padrão
+    except Exception as e:
+        # Se erro ao chamar LLM, retorna análise fallback
         print(f"Aviso: Erro ao chamar LLM: {str(e)}")
         return _generate_fallback_analysis(
             errors_found, warnings_found, critical_events
@@ -274,6 +273,26 @@ def _generate_fallback_analysis(
     recommendations = []
     root_causes = []
 
+    # Identifica componentes afetados nas mensagens dos eventos
+    all_events = errors_found + warnings_found + critical_events
+    all_messages = " ".join(
+        event.get("message", "") for event in all_events
+    ).lower()
+
+    # Detecta componentes mencionados
+    affected_components = []
+    component_keywords = {
+        "database": ["database", "db", "sql", "connection pool"],
+        "cache": ["cache", "redis", "memcached"],
+        "memory": ["memory", "heap", "out of memory", "oom"],
+        "connection": ["connection", "timeout", "refused"],
+        "network": ["network", "dns", "socket"],
+    }
+
+    for component, keywords in component_keywords.items():
+        if any(kw in all_messages for kw in keywords):
+            affected_components.append(component)
+
     # Insights baseado em contadores
     if len(critical_events) > 0:
         msg = (
@@ -282,19 +301,30 @@ def _generate_fallback_analysis(
         )
         insights.append(msg)
 
-    if len(errors_found) > 10:
+    if len(errors_found) > 5:
         msg = (
             f"Elevada quantidade de erros ({len(errors_found)}) "
             "sugere problema sistêmico"
         )
         insights.append(msg)
-        msg = "Múltiplos erros podem indicar falha no componente central"
-        root_causes.append(msg)
 
-    if len(warnings_found) > 20:
+    if affected_components:
+        msg = (
+            f"Componentes afetados identificados: "
+            f"{', '.join(affected_components)}"
+        )
+        insights.append(msg)
+        root_causes.append(
+            f"Falha nos componentes: {', '.join(affected_components)}"
+        )
+
+    if len(errors_found) > 10:
+        root_causes.append("Múltiplos erros indicam falha no componente central")
+
+    if len(warnings_found) > 5:
         msg = (
             f"Muitos avisos ({len(warnings_found)}) "
-            "indicam situações anormais"
+            "indicam degradação progressiva"
         )
         insights.append(msg)
 

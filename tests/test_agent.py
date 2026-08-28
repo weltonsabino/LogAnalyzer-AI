@@ -286,7 +286,7 @@ class TestGraphIntegration:
     def test_graph_preserves_file_path(self):
         """Testa que file_path é preservado durante execução."""
         graph = create_agent_graph()
-        initial_path = "/test/sample.log"
+        initial_path = "/test/sample_critical.log"
         initial_state = get_initial_state(initial_path)
 
         result = graph.invoke(initial_state)
