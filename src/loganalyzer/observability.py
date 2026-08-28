@@ -8,7 +8,7 @@ para instrumentar nós do agente LangGraph.
 import uuid
 import time
 from typing import Any, Dict, List, Optional, Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 
 
@@ -85,7 +85,7 @@ class TraceCollector:
             "execution_id": self.execution_id,
             "node_name": node_name,
             "event_type": event_type,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "data": data
         }
         # Adiciona à lista de traces

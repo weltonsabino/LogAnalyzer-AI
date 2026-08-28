@@ -122,13 +122,7 @@ def analyze_log_file(
             print("ℹ️  Inicializando LogAnalyzer AI...")
             print(f"📄 Arquivo de log: {file_path}")
 
-        # Valida caminho do arquivo
-        if not os.path.exists(file_path):
-            print(f"❌ Erro: Arquivo não encontrado: {file_path}", file=sys.stderr)
-            return 1
-
         if verbose:
-            print("✅ Arquivo encontrado")
             print("🚀 Criando agente e iniciando análise...")
 
         # Cria agente
@@ -146,7 +140,17 @@ def analyze_log_file(
         # Verifica se execução foi bem-sucedida
         if not final_state.get("is_valid", False):
             error_msg = final_state.get("error_message", "Erro desconhecido")
-            print(f"❌ Erro durante análise: {error_msg}", file=sys.stderr)
+            governance_status = final_state.get("metadata", {}).get("governance_status", "")
+            governance_reason = final_state.get("metadata", {}).get("governance_reason", "")
+            
+            # Se foi bloqueado por governança, mostra mensagem específica
+            if governance_status == "bloqueado":
+                print(f"🛡️  BLOQUEADO POR SEGURANÇA", file=sys.stderr)
+                print(f"   Motivo: {governance_reason}", file=sys.stderr)
+                if verbose:
+                    print(f"   Detalhes: {error_msg}", file=sys.stderr)
+            else:
+                print(f"❌ Erro durante análise: {error_msg}", file=sys.stderr)
             return 1
 
         if verbose:

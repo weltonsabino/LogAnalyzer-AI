@@ -69,6 +69,25 @@ Demonstrar o uso de agentes LangGraph em um caso real de análise de logs, com c
 
 ---
 
+## 🎬 Vídeo de Demonstração
+
+Demonstração completa do projeto — arquitetura, cenários, segurança, QA, DevOps e integração low-code:
+
+📺 **[Assista no YouTube (não listado)](https://youtu.be/qRc8GvghgPg)** — 10 minutos
+
+### Conteúdo do Vídeo
+
+- Problema, objetivo e classificação (agente híbrido)
+- Arquitetura LangGraph e integrações
+- Dois cenários: fluxo principal + risco/falha
+- Segurança (validação, adversarial, bloqueios)
+- QA com IA (code review + testes E2E)
+- DevOps inteligente (pipeline, anomalias, risco)
+- Automação low-code (n8n webhook)
+- Limitações, melhorias futuras e rastreabilidade (Kanban)
+
+---
+
 ## 🚀 Instalação e Setup
 
 ### 1. Pré-requisitos
@@ -1417,10 +1436,10 @@ pytest tests/ -v
 - **Disciplina:** IA para Desenvolvedores [T2]
 - **Instituição:** SCTEC
 - **Prazo:** 31/08/2026 (Projeto Final M2.2)
-- **Avaliação:** 30% do módulo
 - **Repositório:** [GitHub - weltonsabino/LogAnalyzer-AI](https://github.com/weltonsabino/LogAnalyzer-AI)
+- **Kanban:** [GitHub Project - Acompanhamento](https://github.com/users/weltonsabino/projects/1/views/1)
 
 ---
 
 **Última atualização:** 27 de Agosto, 2026  
-**Status:** 🔄 Em Progresso (Projeto Final M2.2)
+**Status:** ✅ Concluído (Projeto Final M2.2)

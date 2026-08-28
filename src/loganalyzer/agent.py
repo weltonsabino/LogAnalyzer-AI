@@ -6,7 +6,8 @@ incluindo nós, arestas e fluxo de execução para automação de análise de lo
 """
 
 from typing import Optional
-from langgraph.graph import StateGraph, END
+from langgraph.graph import StateGraph
+from langgraph.constants import END
 
 from src.loganalyzer.models import LogAnalysisState
 from src.loganalyzer.observability import TraceCollector

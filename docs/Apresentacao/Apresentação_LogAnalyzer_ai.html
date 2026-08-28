@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogAnalyzer AI - Apresentação Executiva</title>
+    <title>LogAnalyzer AI - Projeto Final M2.2</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -90,10 +90,10 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <span class="text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">
-                <i class="fa-solid fa-circle-nodes mr-1.5 animate-pulse"></i> Agentic Presentation
+            <span class="text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">
+                <i class="fa-solid fa-circle-check mr-1.5 animate-pulse"></i> Projeto Final M2.2
             </span>
-            <span class="text-xs font-mono text-slate-500">v1.1.0</span>
+            <span class="text-xs font-mono text-slate-500">v2.0.0</span>
         </div>
     </header>
 
@@ -179,14 +179,28 @@
                                     <i class="fa-solid fa-circle-nodes text-blue-400 text-sm"></i>
                                     <div class="min-w-0">
                                         <span class="block text-[11px] font-bold text-slate-200">LangGraph Core</span>
-                                        <span class="block text-[9px] text-slate-400 truncate">Orquestração determinística</span>
+                                        <span class="block text-[9px] text-slate-400 truncate">11 nós + ramificação condicional</span>
                                     </div>
                                 </div>
                                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg flex items-center gap-2.5">
                                     <i class="fa-solid fa-bolt-lightning text-amber-400 text-sm"></i>
                                     <div class="min-w-0">
-                                        <span class="block text-[11px] font-bold text-slate-200">Híbrido LLM</span>
-                                        <span class="block text-[9px] text-slate-400 truncate">Llama-3 (Groq) & GPT-4o</span>
+                                        <span class="block text-[11px] font-bold text-slate-200">Multi-LLM</span>
+                                        <span class="block text-[9px] text-slate-400 truncate">GPT-4o + Groq Llama-3</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg flex items-center gap-2.5">
+                                    <i class="fa-solid fa-shield-halved text-purple-400 text-sm"></i>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-200">Segurança</span>
+                                        <span class="block text-[9px] text-slate-400 truncate">GovernancePolicy adversarial</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg flex items-center gap-2.5">
+                                    <i class="fa-solid fa-chart-line text-cyan-400 text-sm"></i>
+                                    <div class="min-w-0">
+                                        <span class="block text-[11px] font-bold text-slate-200">Observabilidade</span>
+                                        <span class="block text-[9px] text-slate-400 truncate">Traces + retry + timeout</span>
                                     </div>
                                 </div>
                             </div>
@@ -194,11 +208,11 @@
                             <ul class="space-y-2.5 text-xs text-slate-300">
                                 <li class="flex items-start gap-2.5">
                                     <i class="fa-solid fa-check-double text-emerald-400 mt-0.5"></i>
-                                    <span><strong>Análise Híbrida Inteligente:</strong> Detecção de anomalias veloz aliada à interpretação contextual robusta para identificar a causa raiz.</span>
+                                    <span><strong>Roteamento por Severidade:</strong> Ramificação inteligente em 3 caminhos (HIGH/MEDIUM/LOW) com análise paralela via asyncio.</span>
                                 </li>
                                 <li class="flex items-start gap-2.5">
                                     <i class="fa-solid fa-file-invoice text-emerald-400 mt-0.5"></i>
-                                    <span><strong>Entrega Executiva:</strong> Consolidação automática de incidentes em relatórios estruturados com planos de correção de alto impacto.</span>
+                                    <span><strong>Automação Completa:</strong> Relatório executivo em markdown + notificação webhook via n8n (low-code) com envio de email.</span>
                                 </li>
                             </ul>
                         </div>
@@ -207,7 +221,7 @@
 
                 <!-- Slide Footer Info -->
                 <div class="flex justify-between items-center border-t border-slate-900 pt-3 text-[11px] text-slate-500 font-mono">
-                    <span>LogAnalyzer AI — Pitch Técnico</span>
+                    <span>LogAnalyzer AI — Projeto Final M2.2</span>
                     <span>Slide 1 de 2</span>
                 </div>
             </div>
@@ -221,7 +235,7 @@
                         <span>Parte 02</span> <span class="h-1 w-1 bg-emerald-500 rounded-full"></span> <span>Engenharia &amp; Métricas</span>
                     </div>
                     <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                        Arquitetura de Grafo &amp; <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Robustez em Produção</span>
+                        Grafo com Ramificação &amp; <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Robustez em Produção</span>
                     </h1>
                 </div>
 
@@ -233,14 +247,14 @@
                         <div class="flex items-center justify-between">
                             <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
                                 <i class="fa-solid fa-bezier-curve text-blue-400"></i>
-                                StateGraph Interativo (Toque nos nós para inspecionar)
+                                StateGraph (11 Nós + 5 Rotas Condicionais)
                             </h2>
-                            <span class="text-[10px] font-mono text-blue-400 animate-pulse bg-blue-500/5 px-2 py-0.5 rounded">Seletor Ativo</span>
+                            <span class="text-[10px] font-mono text-blue-400 animate-pulse bg-blue-500/5 px-2 py-0.5 rounded">Interativo</span>
                         </div>
 
                         <!-- Graph pipeline wrapper -->
                         <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex flex-col justify-between min-h-[220px]">
-                            <!-- Visual flow graph nodes -->
+                            <!-- Visual flow graph nodes - Linha principal -->
                             <div class="flex justify-between items-center gap-1.5">
                                 <button onclick="selectNode(1)" id="g-node-1" class="flex-1 py-2 px-1 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[10px] md:text-xs font-mono font-semibold transition-all duration-300 node-active hover:bg-blue-500/10">
                                     <span class="block text-[10px] text-blue-400">01</span>
@@ -263,28 +277,43 @@
                                 </button>
                             </div>
 
-                            <!-- Loop Node representation -->
+                            <!-- Ramificação por Severidade -->
                             <div class="flex justify-center my-1.5">
-                                <span class="text-slate-800 text-[10px] font-mono"><i class="fa-solid fa-arrow-down-long"></i> Loop do Grafo <i class="fa-solid fa-arrow-down-long"></i></span>
+                                <span class="text-amber-400/80 text-[10px] font-mono bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/15"><i class="fa-solid fa-code-branch mr-1"></i> route_by_severity</span>
                             </div>
 
-                            <!-- Rest of nodes -->
-                            <div class="flex justify-between items-center gap-1.5">
-                                <div class="flex-1"></div>
-                                <button onclick="selectNode(5)" id="g-node-5" class="flex-1 py-2 px-1 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[10px] md:text-xs font-mono font-semibold transition-all duration-300 hover:bg-blue-500/10">
-                                    <span class="block text-[10px] text-blue-400">05</span>
-                                    LLM Core
+                            <!-- Três caminhos + paralelo + LLM + Report + Webhook -->
+                            <div class="flex justify-between items-center gap-1">
+                                <button onclick="selectNode(5)" id="g-node-5" class="flex-1 py-1.5 px-0.5 text-center border border-red-500/30 bg-red-500/5 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-red-500/10">
+                                    <span class="text-red-400">HIGH</span>
                                 </button>
-                                <span class="text-slate-700 text-xs"><i class="fa-solid fa-arrow-right"></i></span>
-                                <button onclick="selectNode(6)" id="g-node-6" class="flex-1 py-2 px-1 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[10px] md:text-xs font-mono font-semibold transition-all duration-300 hover:bg-blue-500/10">
-                                    <span class="block text-[10px] text-blue-400">06</span>
-                                    Formatar
+                                <button onclick="selectNode(6)" id="g-node-6" class="flex-1 py-1.5 px-0.5 text-center border border-amber-500/30 bg-amber-500/5 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-amber-500/10">
+                                    <span class="text-amber-400">MED</span>
                                 </button>
-                                <span class="text-slate-700 text-xs"><i class="fa-solid fa-arrow-right"></i></span>
-                                <button onclick="selectNode(7)" id="g-node-7" class="flex-1 py-2 px-1 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[10px] md:text-xs font-mono font-semibold transition-all duration-300 hover:bg-blue-500/10">
-                                    <span class="block text-[10px] text-blue-400">07</span>
-                                    Relatório
+                                <button onclick="selectNode(7)" id="g-node-7" class="flex-1 py-1.5 px-0.5 text-center border border-emerald-500/30 bg-emerald-500/5 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-emerald-500/10">
+                                    <span class="text-emerald-400">LOW</span>
                                 </button>
+                                <span class="text-slate-700 text-[10px]"><i class="fa-solid fa-arrow-right"></i></span>
+                                <button onclick="selectNode(8)" id="g-node-8" class="flex-1 py-1.5 px-0.5 text-center border border-purple-500/30 bg-purple-500/5 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-purple-500/10">
+                                    <span class="text-purple-400">Paralelo</span>
+                                </button>
+                                <span class="text-slate-700 text-[10px]"><i class="fa-solid fa-arrow-right"></i></span>
+                                <button onclick="selectNode(9)" id="g-node-9" class="flex-1 py-1.5 px-0.5 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-blue-500/10">
+                                    <span class="text-blue-400">LLM</span>
+                                </button>
+                                <span class="text-slate-700 text-[10px]"><i class="fa-solid fa-arrow-right"></i></span>
+                                <button onclick="selectNode(10)" id="g-node-10" class="flex-1 py-1.5 px-0.5 text-center border border-slate-800 bg-slate-900/60 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-blue-500/10">
+                                    <span class="text-blue-400">Report</span>
+                                </button>
+                                <span class="text-slate-700 text-[10px]"><i class="fa-solid fa-arrow-right"></i></span>
+                                <button onclick="selectNode(11)" id="g-node-11" class="flex-1 py-1.5 px-0.5 text-center border border-cyan-500/30 bg-cyan-500/5 rounded-lg text-[9px] font-mono font-semibold transition-all duration-300 hover:bg-cyan-500/10">
+                                    <span class="text-cyan-400">n8n</span>
+                                </button>
+                            </div>
+
+                            <!-- Error handling indicator -->
+                            <div class="flex justify-center mt-2">
+                                <span class="text-[9px] font-mono text-red-400/60 bg-red-500/5 px-2 py-0.5 rounded border border-red-500/10"><i class="fa-solid fa-shield-exclamation mr-1"></i>error_handling (4 rotas condicionais → qualquer nó pode redirecionar)</span>
                             </div>
 
                             <!-- Live description area -->
@@ -293,7 +322,7 @@
                                     <i class="fa-solid fa-shield-halved"></i>
                                 </div>
                                 <p id="node-desc-text" class="text-xs text-slate-300 leading-relaxed">
-                                    <strong class="text-white block">LogValidator (Nó 1)</strong> Validação de integridade dos dados e tratamento estrutural de entrada antes do parsing profundo.
+                                    <strong class="text-white block">validate_input (Nó 1)</strong> Valida existência, permissões e encoding. Se falha → error_handling via aresta condicional.
                                 </p>
                             </div>
                         </div>
@@ -308,11 +337,11 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-xl text-center flex flex-col justify-center min-h-[90px] transition-transform duration-300 hover:scale-[1.03]">
-                                <span class="text-3xl font-extrabold font-mono text-emerald-400 block tracking-tight">100%</span>
-                                <span class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-1">76 Testes Passed</span>
+                                <span class="text-3xl font-extrabold font-mono text-emerald-400 block tracking-tight">222</span>
+                                <span class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-1">Testes Passed 100%</span>
                             </div>
                             <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-xl text-center flex flex-col justify-center min-h-[90px] transition-transform duration-300 hover:scale-[1.03]">
-                                <span class="text-3xl font-extrabold font-mono text-blue-400 block tracking-tight">9.92</span>
+                                <span class="text-3xl font-extrabold font-mono text-blue-400 block tracking-tight">10.0</span>
                                 <span class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-1">Pylint Score</span>
                             </div>
                         </div>
@@ -322,10 +351,10 @@
                             <div class="space-y-1.5">
                                 <div class="flex justify-between items-center text-xs">
                                     <span class="text-slate-400 font-mono">Cobertura de Código:</span>
-                                    <span class="text-emerald-400 font-bold font-mono">88%</span>
+                                    <span class="text-emerald-400 font-bold font-mono">95%</span>
                                 </div>
                                 <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 88%"></div>
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 95%"></div>
                                 </div>
                             </div>
 
@@ -344,7 +373,7 @@
 
                 <!-- Slide Footer Info -->
                 <div class="flex justify-between items-center border-t border-slate-900 pt-3 text-[11px] text-slate-500 font-mono">
-                    <span>LogAnalyzer AI — Engenharia de Software</span>
+                    <span>LogAnalyzer AI — Arquitetura &amp; Métricas M2.2</span>
                     <span>Slide 2 de 2</span>
                 </div>
             </div>
@@ -423,39 +452,59 @@
         // Active graph node data structures
         const nodesData = {
             1: {
-                title: "LogValidator (Nó 1)",
+                title: "validate_input (Nó 1)",
                 icon: "fa-shield-halved",
-                text: "Validação estrita de encoding, integridade de arquivos de entrada e suporte Pydantic."
+                text: "Valida existência, permissões e encoding do arquivo. Se falha → error_handling via route_after_validation."
             },
             2: {
-                title: "SmartFileReader (Nó 2)",
+                title: "read_file (Nó 2)",
                 icon: "fa-book-open-reader",
-                text: "Leitura otimizada por fluxos (streams) e buffers para processar gigabytes sem estourar RAM."
+                text: "Leitura do arquivo de log com suporte a UTF-8 e fallback de encoding. Popula file_content no estado."
             },
             3: {
-                title: "LogParser (Nó 3)",
+                title: "parse_events (Nó 3)",
                 icon: "fa-code",
-                text: "Conversão dinâmica de dados não estruturados de logs em objetos JSON usando expressões regulares."
+                text: "Extrai eventos estruturados (timestamp, level, message) usando regex multi-formato. Se falha → error_handling."
             },
             4: {
-                title: "PatternDetector (Nó 4)",
+                title: "analyze_patterns (Nó 4)",
                 icon: "fa-magnifying-glass-chart",
-                text: "Detecção determinística de assinaturas de erro críticas com classificação por severidade."
+                text: "Detecta padrões de erro, warnings e eventos críticos. Alimenta route_by_severity para ramificação."
             },
             5: {
-                title: "LLM Core Analyzer (Nó 5)",
-                icon: "fa-brain",
-                text: "Orquestração híbrida de IAs com Groq/Llama-3 e GPT-4o para diagnosticar causa raiz precisa."
+                title: "analyze_high_severity (Nó 5)",
+                icon: "fa-fire",
+                text: "Processamento especializado para CRITICAL/ERROR. Foco em recuperação de falhas. Urgência: IMEDIATA."
             },
             6: {
-                title: "Formatter Node (Nó 6)",
-                icon: "fa-file-lines",
-                text: "Geração limpa de relatórios automatizados escritos em formato Markdown executivo legível."
+                title: "analyze_medium_severity (Nó 6)",
+                icon: "fa-exclamation-triangle",
+                text: "Análise balanceada preventiva para WARNINGs. Identifica degradação antes de falha. Urgência: NORMAL."
             },
             7: {
-                title: "Final Output (Nó 7)",
-                icon: "fa-flag-checkered",
-                text: "Processo concluído com sucesso e persistência de relatórios executivos finais."
+                title: "analyze_low_severity (Nó 7)",
+                icon: "fa-info-circle",
+                text: "Análise simplificada para INFO/DEBUG/TRACE. Foco em otimização e insights operacionais. Urgência: BAIXA."
+            },
+            8: {
+                title: "analyze_patterns_parallel (Nó 8)",
+                icon: "fa-layer-group",
+                text: "Execução paralela com asyncio.gather. Processa múltiplos padrões simultaneamente para performance."
+            },
+            9: {
+                title: "interpret_with_llm (Nó 9)",
+                icon: "fa-brain",
+                text: "Análise com GPT-4o ou Groq Llama-3. Identifica causa raiz e gera recomendações. Fallback heurístico sem API key."
+            },
+            10: {
+                title: "generate_report (Nó 10)",
+                icon: "fa-file-lines",
+                text: "Formata análise em relatório Markdown estruturado com métricas, severity breakdown e plano de ação."
+            },
+            11: {
+                title: "notify_webhook (Nó 11)",
+                icon: "fa-paper-plane",
+                text: "Envia resultado para n8n via webhook HTTP POST. Automação: n8n → Email com resumo do incidente."
             }
         };
 
@@ -463,8 +512,8 @@
         function selectNode(id) {
             playSynthesizedSound('click');
             
-            // Remove active classes
-            for (let i = 1; i <= 7; i++) {
+            // Remove active classes de todos os nós
+            for (let i = 1; i <= 11; i++) {
                 const nodeBtn = document.getElementById(`g-node-${i}`);
                 if (nodeBtn) {
                     nodeBtn.classList.remove('node-active', 'border-blue-500', 'bg-blue-500/10');
@@ -479,8 +528,10 @@
 
             // Update details
             const data = nodesData[id];
-            document.getElementById('node-desc-icon').innerHTML = `<i class="fa-solid ${data.icon}"></i>`;
-            document.getElementById('node-desc-text').innerHTML = `<strong class="text-white block">${data.title}</strong> ${data.text}`;
+            if (data) {
+                document.getElementById('node-desc-icon').innerHTML = `<i class="fa-solid ${data.icon}"></i>`;
+                document.getElementById('node-desc-text').innerHTML = `<strong class="text-white block">${data.title}</strong> ${data.text}`;
+            }
         }
 
         function updateUI() {
