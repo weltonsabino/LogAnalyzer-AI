@@ -370,7 +370,7 @@ Cada nó seta o campo correspondente quando ocorre erro:
 ```
 ╔════════════════════════╗
 ║  Arquivo de Log        ║
-║  (sample.log)          ║
+║  (sample_critical.log)   ║
 ╚────────────┬───────────╝
              │
              ▼

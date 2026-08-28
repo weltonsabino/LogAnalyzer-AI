@@ -262,11 +262,11 @@ print("Recomendações:", result.get("recommendations"))
 
 ```bash
 # Com LLM (se OPENAI_API_KEY configurada)
-python -m src.loganalyzer.main examples/sample.log --verbose
+python -m src.loganalyzer.main examples/sample_critical.log --verbose
 
 # Sem LLM (fallback automático)
 unset OPENAI_API_KEY
-python -m src.loganalyzer.main examples/sample.log --verbose
+python -m src.loganalyzer.main examples/sample_critical.log --verbose
 ```
 
 ---

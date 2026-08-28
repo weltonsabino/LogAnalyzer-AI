@@ -40,7 +40,7 @@ def main():
         print(f"  N8N_WEBHOOK_ENABLED={webhook_enabled}")
 
     # Executa analise
-    sample_log = str(project_root / "examples" / "sample.log")
+    sample_log = str(project_root / "examples" / "sample_critical.log")
     print(f"[INFO] Analisando: {sample_log}")
 
     graph = create_agent_graph()

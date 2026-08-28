@@ -155,7 +155,7 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 
 - `src/loganalyzer/main.py` — CLI do agente (170 linhas)
 - `examples/run_example.py` — Script de demonstração (76 linhas)
-- `examples/sample.log` — Log com 47 eventos reais
+- `examples/sample_critical.log` — Log com 47 eventos reais (severidade alta)
 
 ### Recursos Implementados
 
@@ -337,7 +337,7 @@ Este documento lista todas as tarefas (tasks) para implementação do projeto Lo
 - test_tools.py: 18 testes
 
 **End-to-End:**
-- CLI: `python -m src.loganalyzer.main examples/sample.log --output test_output.md` ✅
+- CLI: `python -m src.loganalyzer.main examples/sample_critical.log --output test_output.md` ✅
 - Output: 3104 bytes, markdown bem-formado ✅
 - Conteúdo: Resumo, críticos, erros, avisos, insights, metadados ✅
 

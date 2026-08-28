@@ -544,7 +544,7 @@ Inclua testes para:
 def test_e2e_complete_flow():
     """E2E: Fluxo completo de análise."""
     # 1. Preparar entrada
-    log_file = "examples/sample.log"
+    log_file = "examples/sample_critical.log"
     
     # 2. Executar agente
     result = agent.invoke(get_initial_state(log_file))
@@ -864,7 +864,7 @@ MAKE_ENABLED=true
 ### Teste
 
 ```bash
-python -m src.loganalyzer.main examples/sample.log
+python -m src.loganalyzer.main examples/sample_critical.log
 # Verificar mensagem no Slack
 # Verificar Issue criada no GitHub
 ```
@@ -915,7 +915,7 @@ def test_make_webhook_integration():
 ## Cenários de Uso
 
 ### Cenário 1: Fluxo Principal
-Input: `examples/sample.log` (47 eventos)
+Input: `examples/sample_critical.log` (47 eventos)
 Output: Relatório com 11 erros, 9 avisos
 [Exemplo de entrada/saída]
 
@@ -1171,7 +1171,7 @@ python -m build
 # Sem erros
 
 # Execução
-python -m src.loganalyzer.main examples/sample.log
+python -m src.loganalyzer.main examples/sample_critical.log
 # Saída estruturada esperada
 ```
 

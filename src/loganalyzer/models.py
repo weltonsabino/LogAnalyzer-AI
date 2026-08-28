@@ -8,7 +8,7 @@ para manter informações durante a execução do agente.
 from typing import TypedDict, Optional, List, Dict, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from loganalyzer.observability import TraceCollector
+    from loganalyzer.observability import TraceCollector  # noqa: F401
 
 
 class LogAnalysisState(TypedDict):

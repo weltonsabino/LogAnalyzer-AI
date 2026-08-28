@@ -258,6 +258,14 @@ A abordagem iterativa permitiu que cada melhoria fosse implementada, testada e v
 
 ---
 
+## Notas de Manutenção
+
+| Data | Alteração | Motivo |
+|------|-----------|--------|
+| 2026-08-27 | `examples/sample.log` → `examples/sample_critical.log` | Padronizar nomes com os outros logs (sample_low.log, sample_medium.log, sample_critical.log) |
+
+---
+
 **Última atualização:** 27 de Agosto, 2026  
 **Responsável:** Welton Sabino  
 **Status:** ✅ Completo

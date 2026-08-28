@@ -221,7 +221,7 @@ class TestNotifyWebhookNode:
 
     def test_notify_webhook_node_skips_when_disabled(self):
         """Sem env vars configuradas, no retorna state com webhook_status=skipped."""
-        state = get_initial_state("examples/sample.log")
+        state = get_initial_state("examples/sample_critical.log")
 
         # Garante que env vars nao estao setadas
         with patch.dict("os.environ", {}, clear=True):
@@ -238,7 +238,7 @@ class TestNotifyWebhookNode:
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        state = get_initial_state("examples/sample.log")
+        state = get_initial_state("examples/sample_critical.log")
         state["report"] = "Relatorio de teste"
         state["errors_found"] = [{"level": "ERROR", "message": "test"}]
 
@@ -262,7 +262,7 @@ class TestNotifyWebhookNode:
         # Configura mock para erro
         mock_post.side_effect = requests.exceptions.ConnectionError("refused")
 
-        state = get_initial_state("examples/sample.log")
+        state = get_initial_state("examples/sample_critical.log")
         state["report"] = "Relatorio"
 
         env_vars = {
@@ -281,7 +281,7 @@ class TestNotifyWebhookNode:
 
     def test_notify_webhook_node_populates_metadata(self):
         """metadata["webhook_status"] e preenchido independente do resultado."""
-        state = get_initial_state("examples/sample.log")
+        state = get_initial_state("examples/sample_critical.log")
 
         with patch.dict("os.environ", {}, clear=True):
             result = notify_webhook_node(state)

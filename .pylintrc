@@ -1,0 +1,13 @@
+[MAIN]
+# Configuracao do Pylint para LogAnalyzer AI
+
+[MESSAGES CONTROL]
+# Desabilita warnings intencionais e justificados:
+# W0718: broad-exception-caught - Intencional em nodes de error handling do LangGraph
+# C0415: import-outside-toplevel - Lazy imports para evitar circular dependencies
+# R0912: too-many-branches - main.py CLI parser tem branches necessarios
+# R0911: too-many-return-statements - governance.py validacao precisa de early returns
+disable=W0718,C0415,R0912,R0911
+
+[FORMAT]
+max-line-length=120
