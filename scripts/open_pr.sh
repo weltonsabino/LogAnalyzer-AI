@@ -2,7 +2,7 @@
 
 set -e
 
-REPO="weltonsabino/mini-projeto-LogAnalyzer-AI"
+REPO="weltonsabino/LogAnalyzer-AI"
 
 # ── 1. Validação: alterações não commitadas ──────────────────────────────────
 if ! git diff --quiet || ! git diff --cached --quiet; then

@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 $ErrorActionPreference = "Stop"
 
-$REPO = "weltonsabino/mini-projeto-LogAnalyzer-AI"
+$REPO = "weltonsabino/LogAnalyzer-AI"
 
 # ── 1. Validacao: alteracoes nao commitadas ──────────────────────────────────
 $null = git diff --exit-code 2>&1

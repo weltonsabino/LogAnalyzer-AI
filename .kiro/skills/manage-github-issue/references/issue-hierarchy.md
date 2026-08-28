@@ -34,10 +34,10 @@ Além do texto no body, **sempre** crie o vínculo nativo de sub-issue no GitHub
 
 ```bash
 # ID da issue pai
-gh issue view <ISSUE_PAI_NUMBER> --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id
+gh issue view <ISSUE_PAI_NUMBER> --repo weltonsabino/LogAnalyzer-AI --json id --jq .id
 
 # ID da issue filha
-gh issue view <ISSUE_FILHA_NUMBER> --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id
+gh issue view <ISSUE_FILHA_NUMBER> --repo weltonsabino/LogAnalyzer-AI --json id --jq .id
 ```
 
 ### Passo 2 — Criar o vínculo de sub-issue
@@ -54,15 +54,15 @@ Substitua:
 
 **Story vinculada a uma Epic:**
 ```bash
-EPIC_ID=$(gh issue view 60 --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id)
-STORY_ID=$(gh issue view 62 --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id)
+EPIC_ID=$(gh issue view 60 --repo weltonsabino/LogAnalyzer-AI --json id --jq .id)
+STORY_ID=$(gh issue view 62 --repo weltonsabino/LogAnalyzer-AI --json id --jq .id)
 gh api graphql -f query="mutation { addSubIssue(input: { issueId: \"$EPIC_ID\", subIssueId: \"$STORY_ID\" }) { issue { id title } subIssue { id title } } }"
 ```
 
 **Tech vinculada a uma Story:**
 ```bash
-STORY_ID=$(gh issue view 62 --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id)
-TECH_ID=$(gh issue view 99 --repo weltonsabino/mini-projeto-LogAnalyzer-AI --json id --jq .id)
+STORY_ID=$(gh issue view 62 --repo weltonsabino/LogAnalyzer-AI --json id --jq .id)
+TECH_ID=$(gh issue view 99 --repo weltonsabino/LogAnalyzer-AI --json id --jq .id)
 gh api graphql -f query="mutation { addSubIssue(input: { issueId: \"$STORY_ID\", subIssueId: \"$TECH_ID\" }) { issue { id title } subIssue { id title } } }"
 ```
 
