@@ -9,6 +9,7 @@ Valida:
 """
 
 import pytest
+import inspect
 from src.loganalyzer.models import LogAnalysisState
 from src.loganalyzer.agent import (
     route_by_severity,
@@ -209,10 +210,8 @@ def test_analyze_patterns_parallel_structure(state_high_severity):
 
 def test_parallel_analyzer_imports():
     """Valida que nó paralelo foi importado corretamente"""
-    import asyncio
-    
     # Valida que função é corrotina
-    assert asyncio.iscoroutinefunction(analyze_patterns_node_parallel)
+    assert inspect.iscoroutinefunction(analyze_patterns_node_parallel)
 
 
 # ============================================
