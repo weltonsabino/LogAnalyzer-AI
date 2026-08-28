@@ -3,7 +3,7 @@
 > Consolidação de todos os prompts utilizados para implementar o agente LangGraph de análise de logs
 
 **Período:** 07/07/2026 — 27/08/2026  
-**Total de Prompts:** 23  
+**Total de Prompts:** 24  
 **Status:** ✅ Completo e funcional | 🔄 Projeto Final M2.2 em andamento
 
 ---
@@ -35,6 +35,7 @@
 | 21 | 2026-08-24 21:51 | W. Sabino | Task #36: Low-Code Integration (n8n Webhook) | 🔗 Integração |
 | 22 | 2026-08-25 20:20 | W. Sabino | Task #36 pt2: Webhook no LangGraph + Segurança | 🔒 Segurança |
 | 23 | 2026-08-27 20:18 | W. Sabino | Task #37: Documentação Expandida (8 seções M2.2) | 📚 Documentação |
+| 24 | 2026-08-27 20:58 | W. Sabino | Task #38: Ciclos de Refinamento + Limitações | 📝 Refinamentos |
 
 
 ---
@@ -214,7 +215,7 @@ Validação final e estatísticas
 
 | Métrica | Valor |
 |---------|-------|
-| Total de prompts | 23 |
+| Total de prompts | 24 |
 | Período | 11 dias (20 de julho - 20 de agosto) |
 | Prompts/dia (média) | 1.3 |
 | Responsáveis | 2 (Welton, W. Sabino) |
@@ -302,7 +303,7 @@ docs/prompts/
 
 **Última atualização:** 27 de Agosto, 2026  
 **Status:** ✅ Completo — Pronto para avaliação  
-**Próximo:** Task #38 (Refinamentos)
+**Próximo:** Task #39 (Kanban Completo)
 
 
 
@@ -684,3 +685,45 @@ Expandir README.md com todas as 8 seções obrigatórias do Projeto Final M2.2, 
 **Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
 
 Referência: `docs/prompts/2026-08-27_task-37-documentacao-expandida.md`
+
+
+---
+
+## 📝 Prompt #24: Task #38 — Ciclos de Refinamento + Limitações
+
+**Data:** 2026-08-27 20:58:00  
+**Responsável:** Welton Sabino
+
+Documentar ciclos de refinamento, limitações conhecidas e possibilidades de evolução futura do LogAnalyzer AI.
+
+**Entregas:**
+- Documento: `docs/REFINEMENTS.md` (novo)
+- 3 ciclos de refinamento documentados (formato: Problema → Alteração → Resultado)
+- Tabela de limitações conhecidas (6 itens)
+- Lista de possibilidades de evolução futura (7 itens)
+
+**Ciclos de Refinamento:**
+1. Error Handling LangGraph (Task #28) — Arestas condicionais para roteamento de erros
+2. Segurança Adversarial (Task #32) — Validação em 4 camadas (path, size, symlink, content)
+3. Observabilidade (Task #33) — TraceCollector + métricas correlacionadas por execution_id
+
+**Limitações Documentadas:**
+- Máximo ~1000 eventos por análise
+- Timeout 30s para arquivos > 50MB
+- RAG não implementado
+- Detecção heurística (não ML)
+- Formato texto plano + JSON básico
+- LLM: OpenAI/Groq apenas
+
+**Evolução Futura:**
+- RAG com embeddings
+- Modelos ML para predição
+- Análise paralela de múltiplos arquivos
+- Dashboard real-time
+- OpenTelemetry integration
+- Logs binários (protobuf, msgpack)
+- Modelos locais (Ollama)
+
+**Status:** ⏳ PRONTO PARA IMPLEMENTAÇÃO
+
+Referência: `docs/prompts/2026-08-27_task-38-refinamentos-limitacoes.md`
